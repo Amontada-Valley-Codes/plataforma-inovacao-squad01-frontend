@@ -42,6 +42,7 @@ export function Dashboard({ user, onNavigate, onLogout }: DashboardProps) {
   const [selectedCompany, setSelectedCompany] = useState(user.company);
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
+  console.log('User role in Dashboard:', user.role);
   // Mock data para o dashboard
   const companies = ['TechCorp Brasil', 'InnovateCorp', 'FutureTech', 'StartupHub'];
   
@@ -96,41 +97,41 @@ export function Dashboard({ user, onNavigate, onLogout }: DashboardProps) {
   return (
     <div className="flex h-screen bg-background">
       {/* Sidebar */}
-      <div className={`${sidebarOpen ? 'w-64' : 'w-16'} transition-all duration-300 bg-card border-r border-border`}>
+      <div className={`${sidebarOpen ? 'w-64' : 'w-16'} transition-all duration-300 bg-card shadow-md relative`}>
         <div className="p-4">
           <div className="flex items-center gap-2 mb-8">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <Lightbulb className="w-4 h-4 text-primary-foreground" />
+            <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center">
+              <Lightbulb className="w-4 h-4 text-white" />
             </div>
             {sidebarOpen && <span className="font-semibold">InnovatePlatform</span>}
           </div>
           
           <nav className="space-y-2">
-            <Button variant="secondary" className="w-full justify-start">
+            <Button variant="secondary" className="w-full justify-start hover:bg-gray-200">
               <TrendingUp className="w-4 h-4 mr-2" />
               {sidebarOpen && 'Dashboard'}
             </Button>
-            <Button variant="ghost" className="w-full justify-start">
+            <Button variant="ghost" className="w-full justify-start hover:bg-gray-200">
               <Target className="w-4 h-4 mr-2" />
               {sidebarOpen && 'Funil de Inovação'}
             </Button>
             <Button 
               variant="ghost" 
-              className="w-full justify-start"
+              className="w-full justify-start hover:bg-gray-200"
               onClick={() => onNavigate('challenge-form')}
             >
-              <Plus className="w-4 h-4 mr-2" />
+              <Plus className="w-4 h-4 mr-2 " />
               {sidebarOpen && 'Desafios'}
             </Button>
             <Button 
               variant="ghost" 
-              className="w-full justify-start"
+              className="w-full justify-start hover:bg-gray-200"
               onClick={() => onNavigate('startup-database')}
             >
               <Database className="w-4 h-4 mr-2" />
               {sidebarOpen && 'Base de Startups'}
             </Button>
-            <Button variant="ghost" className="w-full justify-start">
+            <Button variant="ghost" className="w-full justify-start hover:bg-gray-200">
               <FileText className="w-4 h-4 mr-2" />
               {sidebarOpen && 'Relatórios'}
             </Button>
@@ -139,7 +140,7 @@ export function Dashboard({ user, onNavigate, onLogout }: DashboardProps) {
         
         {sidebarOpen && (
           <div className="absolute bottom-4 left-4 right-4">
-            <div className="bg-muted rounded-lg p-3 mb-4">
+            <div className="bg-gray-300 rounded-lg p-3 mb-4" style={{width: 200}}>
               <div className="flex items-center gap-2 mb-2">
                 <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
                   <span className="text-xs text-primary-foreground">{user.name[0]}</span>
@@ -150,7 +151,7 @@ export function Dashboard({ user, onNavigate, onLogout }: DashboardProps) {
                 </div>
               </div>
             </div>
-            <Button variant="ghost" size="sm" onClick={onLogout} className="w-full justify-start">
+            <Button variant="ghost" size="sm" onClick={onLogout} className="w-100 justify-start">
               <LogOut className="w-4 h-4 mr-2" />
               Sair
             </Button>
@@ -172,14 +173,14 @@ export function Dashboard({ user, onNavigate, onLogout }: DashboardProps) {
                 <Menu className="w-4 h-4" />
               </Button>
               <div>
-                <h1>Dashboard de Inovação</h1>
-                <p className="text-muted-foreground">Visão geral dos indicadores e atividades</p>
+                <h1 className='font-bold text-2xl'>Dashboard de Inovação</h1>
+                <p className="text-gray-500">Visão geral dos indicadores e atividades</p>
               </div>
             </div>
             
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground">Empresa:</span>
+              <div className="flex items-center gap-2 ">
+                <span className="text-sm text-gray-500">Empresa:</span>
                 <Select value={selectedCompany} onValueChange={setSelectedCompany}>
                   <SelectTrigger className="w-48">
                     <SelectValue />
@@ -197,7 +198,8 @@ export function Dashboard({ user, onNavigate, onLogout }: DashboardProps) {
           </div>
 
           {/* KPI Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+          {user.role === 'gestor' && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Ideias Submetidas</CardTitle>
@@ -250,8 +252,11 @@ export function Dashboard({ user, onNavigate, onLogout }: DashboardProps) {
               </CardContent>
             </Card>
           </div>
+          )}
+          
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          {user.role === 'avaliador' || user.role === 'gestor' && (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
             {/* Funil de Inovação */}
             <Card className="lg:col-span-2">
               <CardHeader>
@@ -278,8 +283,10 @@ export function Dashboard({ user, onNavigate, onLogout }: DashboardProps) {
               </CardContent>
             </Card>
           </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          )}
+          
+          {user.role === 'avaliador' || user.role === 'gestor' && (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
             {/* Gráfico de Tendências */}
             <Card>
               <CardHeader>
@@ -326,6 +333,8 @@ export function Dashboard({ user, onNavigate, onLogout }: DashboardProps) {
               </CardContent>
             </Card>
           </div>
+          )}
+          
 
           {/* Desafios Recentes */}
           <Card>
@@ -334,17 +343,17 @@ export function Dashboard({ user, onNavigate, onLogout }: DashboardProps) {
                 <CardTitle>Desafios Ativos</CardTitle>
                 <CardDescription>Desafios em andamento na plataforma</CardDescription>
               </div>
-              <Button onClick={() => onNavigate('challenge-form')}>
+              <Button className='bg-black text-white' onClick={() => onNavigate('challenge-form')}>
                 <Plus className="w-4 h-4 mr-2" />
                 Novo Desafio
               </Button>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
+              <div className="space-y-4 ">
                 {recentChallenges.map((challenge) => (
                   <div 
                     key={challenge.id} 
-                    className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-muted/50 cursor-pointer"
+                    className="flex items-center justify-between p-4 shadow-lg rounded-lg hover:bg-gray-200 cursor-pointer"
                     onClick={() => onNavigate('challenge-details', challenge)}
                   >
                     <div className="space-y-1">
