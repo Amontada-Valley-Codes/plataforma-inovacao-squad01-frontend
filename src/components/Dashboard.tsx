@@ -96,29 +96,29 @@ export function Dashboard({ user, onNavigate, onLogout }: DashboardProps) {
   ];
 
   return (
-    <div className="flex h-screen bg-background">
+    <div className="flex h-screen bg-background bg-[#011677] text-white">
       {/* Sidebar */}
       <div className={`${sidebarOpen ? 'w-64' : 'w-16'} transition-all duration-300 bg-card shadow-md relative`}>
         <div className="p-4">
           <div className="flex items-center gap-2 mb-8">
-            <div className="w-8 h-8 bg-blue-950 rounded-lg flex items-center justify-center">
-              <Image alt="logo" src='/img/Ninna_logo.png' width={60} height={60} />
+            <div className="w-8 h-8 bg-[#160430] rounded-lg flex items-center justify-center">
+              <Image alt="logo" src='/Ninna_logo.png' width={60} height={60} />
             </div>
             {sidebarOpen && <span className="font-semibold">InnovatePlatform</span>}
           </div>
           
           <nav className="space-y-2">
-            <Button variant="secondary" className="w-full justify-start hover:bg-gray-200">
+            <Button variant="secondary" className="w-full justify-start cursor-pointer hover:bg-[#160430]">
               <TrendingUp className="w-4 h-4 mr-2" />
               {sidebarOpen && 'Dashboard'}
             </Button>
-            <Button variant="ghost" className="w-full justify-start hover:bg-gray-200">
+            <Button variant="ghost" className="w-full justify-start cursor-pointer hover:bg-[#160430]">
               <Target className="w-4 h-4 mr-2" />
               {sidebarOpen && 'Funil de Inovação'}
             </Button>
             <Button 
               variant="ghost" 
-              className="w-full justify-start hover:bg-gray-200"
+              className="w-full justify-start cursor-pointer hover:bg-[#160430]"
               onClick={() => onNavigate('challenge-form')}
             >
               <Plus className="w-4 h-4 mr-2 " />
@@ -126,13 +126,13 @@ export function Dashboard({ user, onNavigate, onLogout }: DashboardProps) {
             </Button>
             <Button 
               variant="ghost" 
-              className="w-full justify-start hover:bg-gray-200"
+              className="w-full justify-start cursor-pointer hover:bg-[#160430]"
               onClick={() => onNavigate('startup-database')}
             >
               <Database className="w-4 h-4 mr-2" />
               {sidebarOpen && 'Base de Startups'}
             </Button>
-            <Button variant="ghost" className="w-full justify-start hover:bg-gray-200">
+            <Button variant="ghost" className="w-full justify-start cursor-pointer hover:bg-[#160430]">
               <FileText className="w-4 h-4 mr-2" />
               {sidebarOpen && 'Relatórios'}
             </Button>
@@ -141,7 +141,7 @@ export function Dashboard({ user, onNavigate, onLogout }: DashboardProps) {
         
         {sidebarOpen && (
           <div className="absolute bottom-4 left-4 right-4">
-            <div className="bg-gray-300 rounded-lg p-3 mb-4" style={{width: 200}}>
+            <div className="bg-[#160430] rounded-lg p-3 mb-4 cursor-pointer">
               <div className="flex items-center gap-2 mb-2">
                 <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
                   <span className="text-xs text-primary-foreground">{user.name[0]}</span>
@@ -152,7 +152,7 @@ export function Dashboard({ user, onNavigate, onLogout }: DashboardProps) {
                 </div>
               </div>
             </div>
-            <Button variant="ghost" size="sm" onClick={onLogout} className="w-100 justify-start">
+            <Button variant="ghost" size="sm" onClick={onLogout} className="w-100 cursor-pointer justify-start">
               <LogOut className="w-4 h-4 mr-2" />
               Sair
             </Button>
@@ -161,7 +161,7 @@ export function Dashboard({ user, onNavigate, onLogout }: DashboardProps) {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-auto bg-white text-black">
         <div className="p-6">
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
@@ -170,8 +170,9 @@ export function Dashboard({ user, onNavigate, onLogout }: DashboardProps) {
                 variant="ghost"
                 size="sm"
                 onClick={() => setSidebarOpen(!sidebarOpen)}
+                className='cursor-pointer'
               >
-                <Menu className="w-4 h-4" />
+                <Menu className="w-5 h-5" />
               </Button>
               <div>
                 <h1 className='font-bold text-2xl'>Dashboard de Inovação</h1>
@@ -343,7 +344,7 @@ export function Dashboard({ user, onNavigate, onLogout }: DashboardProps) {
                 <CardTitle>Desafios Ativos</CardTitle>
                 <CardDescription>Desafios em andamento na plataforma</CardDescription>
               </div>
-              <Button className='bg-black text-white' onClick={() => onNavigate('challenge-form')}>
+              <Button className='bg-[#160430] cursor-pointer text-white' onClick={() => onNavigate('challenge-form')}>
                 <Plus className="w-4 h-4 mr-2" />
                 Novo Desafio
               </Button>
