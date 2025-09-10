@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
@@ -100,8 +101,8 @@ export function Dashboard({ user, onNavigate, onLogout }: DashboardProps) {
       <div className={`${sidebarOpen ? 'w-64' : 'w-16'} transition-all duration-300 bg-card shadow-md relative`}>
         <div className="p-4">
           <div className="flex items-center gap-2 mb-8">
-            <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center">
-              <Lightbulb className="w-4 h-4 text-white" />
+            <div className="w-8 h-8 bg-blue-950 rounded-lg flex items-center justify-center">
+              <Image alt="logo" src='/Ninna_logo.png' width={60} height={60} />
             </div>
             {sidebarOpen && <span className="font-semibold">InnovatePlatform</span>}
           </div>
