@@ -6,6 +6,8 @@ import { Badge } from './ui/badge';
 import { Separator } from './ui/separator';
 import { Progress } from './ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import { Textarea } from './ui/textarea';
 import { 
   ArrowLeft, 
   Calendar, 
@@ -19,7 +21,8 @@ import {
   CheckCircle,
   AlertCircle,
   Star,
-  TrendingUp
+  TrendingUp,
+  Paperclip
 } from 'lucide-react';
 import { User, Challenge, Startup } from '../app/context/UserContext';
 
@@ -29,8 +32,41 @@ interface ChallengeDetailsProps {
   onNavigate: (page: 'dashboard' | 'startup-database') => void;
 }
 
+// Mock de dados para os comentários
+const mockComments = [
+  {
+    id: 'c1',
+    author: { name: 'Ana Silva', avatar: 'https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?q=80&w=2067&auto=format&fit=crop' },
+    text: 'Achei a FinanceAI muito promissora. O match score de 95% é impressionante e a descrição alinha-se perfeitamente com o nosso objetivo de automação.',
+    timestamp: '2 dias atrás',
+  },
+  {
+    id: 'c2',
+    author: { name: 'Carlos Santos', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1974&auto=format&fit=crop' },
+    text: 'Concordo com a Ana. Já solicitei uma demonstração com a FinanceAI. A SmartAudit também parece interessante, podemos avaliá-la como uma segunda opção?',
+    timestamp: '1 dia atrás',
+  },
+  {
+    id: 'c3',
+    author: { name: 'Maria Costa', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1974&auto=format&fit=crop' },
+    text: 'Ótima iniciativa, Carlos. Adicionei um anexo com a análise de mercado que fizemos no último trimestre, pode ajudar na avaliação. A ProcessBot, apesar de ter um score menor, usa RPA, que é uma tecnologia que já temos internamente.',
+    timestamp: '3 horas atrás',
+  },
+];
+
+
 export function ChallengeDetails({ user, challenge, onNavigate }: ChallengeDetailsProps) {
   const [selectedStartups, setSelectedStartups] = useState<string[]>([]);
+  const [newComment, setNewComment] = useState('');
+
+  const handlePostComment = () => {
+    if (newComment.trim()) {
+      console.log('Novo comentário:', newComment);
+      // Aqui, você adicionaria o comentário ao estado
+      setNewComment('');
+    }
+  };
+
 
   // Mock data de startups recomendadas para este desafio
   const recommendedStartups: (Startup & { 
@@ -242,7 +278,7 @@ export function ChallengeDetails({ user, challenge, onNavigate }: ChallengeDetai
                 <CardTitle>Ações Rápidas</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Button className="w-full justify-start">
+                <Button className="w-full justify-start hover:bg-gray-400" variant='outline'>
                   <Users className="w-4 h-4 mr-2" />
                   Gerenciar Participantes
                 </Button>
@@ -267,118 +303,198 @@ export function ChallengeDetails({ user, challenge, onNavigate }: ChallengeDetai
           </div>
         </div>
 
-        {/* Recommended Startups */}
+        {/* Tabs for Startups and Discussion */}
         <div className="mt-8">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Star className="w-5 h-5" />
-                Recomendações Automáticas de Startups
-              </CardTitle>
-              <CardDescription>
-                Startups compatíveis com este desafio baseadas em IA e histórico de matches
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {recommendedStartups.map((startup) => (
-                  <div key={startup.id} className="border border-border rounded-lg p-4">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2">
-                          <h4 className="font-medium">{startup.name}</h4>
-                          <Badge variant="outline">{startup.segment}</Badge>
-                          <Badge className="bg-green-100 text-green-800">
-                            {startup.matchScore}% Match
-                          </Badge>
-                        </div>
-                        <p className="text-sm text-muted-foreground">{startup.description}</p>
-                        <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                          <span>Estágio: {startup.stage}</span>
-                          <span>Tecnologia: {startup.technology}</span>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-2xl font-bold text-green-600">{startup.matchScore}%</div>
-                        <p className="text-xs text-muted-foreground">Compatibilidade</p>
-                      </div>
-                    </div>
+          <Tabs defaultValue="startups">
+            <TabsList className="mb-4">
+              <TabsTrigger value="startups">
+                <Star className="w-4 h-4 mr-2" />
+                Startups Recomendadas
+              </TabsTrigger>
+              <TabsTrigger value="discussion">
+                <MessageCircle className="w-4 h-4 mr-2" />
+                Discussão Interna
+              </TabsTrigger>
+            </TabsList>
 
-                    {/* Connection Workflow */}
-                    <div className="flex items-center justify-between pt-4 border-t border-border">
-                      <div className="flex items-center gap-2">
-                        <Badge className={getStatusColor(startup.connectionStatus)}>
-                          {getStatusIcon(startup.connectionStatus)}
-                          <span className="ml-1">{getStatusLabel(startup.connectionStatus)}</span>
-                        </Badge>
-                        {startup.lastInteraction && (
-                          <span className="text-xs text-muted-foreground">
-                            Última interação: {new Date(startup.lastInteraction).toLocaleDateString('pt-BR')}
-                          </span>
-                        )}
-                      </div>
-                      
-                      <div className="flex gap-2">
-                        {startup.connectionStatus === 'nenhum' && (
-                          <>
-                            <Button 
-                              variant="outline" 
-                              size="sm"
-                              onClick={() => handleConnectionAction(startup.id, 'interesse')}
-                            >
-                              <Heart className="w-4 h-4 mr-1" />
-                              Registrar Interesse
-                            </Button>
-                            <Button 
-                              size="sm"
-                              onClick={() => handleConnectionAction(startup.id, 'convidar')}
-                            >
-                              <Send className="w-4 h-4 mr-1" />
-                              Convidar para POC
-                            </Button>
-                          </>
-                        )}
-                        
-                        {startup.connectionStatus === 'interesse' && (
-                          <Button 
-                            size="sm"
-                            onClick={() => handleConnectionAction(startup.id, 'convidar')}
-                          >
-                            <Send className="w-4 h-4 mr-1" />
-                            Convidar para POC
-                          </Button>
-                        )}
-                        
-                        {startup.connectionStatus === 'convidada' && (
+            <TabsContent value="startups">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    Recomendações Automáticas
+                  </CardTitle>
+                  <CardDescription>
+                    Startups compatíveis com este desafio baseadas em IA e histórico de matches
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {recommendedStartups.map((startup) => (
+                      <div key={startup.id} className="shadow-md rounded-lg p-4">
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-2">
+                              <h4 className="font-medium">{startup.name}</h4>
+                              <Badge variant="outline">{startup.segment}</Badge>
+                              <Badge className="bg-green-100 text-green-800">
+                                {startup.matchScore}% Match
+                              </Badge>
+                            </div>
+                            <p className="text-sm text-muted-foreground">{startup.description}</p>
+                            <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                              <span>Estágio: {startup.stage}</span>
+                              <span>Tecnologia: {startup.technology}</span>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-2xl font-bold text-green-600">{startup.matchScore}%</div>
+                            <p className="text-xs text-muted-foreground">Compatibilidade</p>
+                          </div>
+                        </div>
+
+                        {/* Connection Workflow */}
+                        <div className="flex items-center justify-between pt-4 border-t border-border">
+                          <div className="flex items-center gap-2">
+                            <Badge className={getStatusColor(startup.connectionStatus)}>
+                              {getStatusIcon(startup.connectionStatus)}
+                              <span className="ml-1">{getStatusLabel(startup.connectionStatus)}</span>
+                            </Badge>
+                            {startup.lastInteraction && (
+                              <span className="text-xs text-muted-foreground">
+                                Última interação: {new Date(startup.lastInteraction).toLocaleDateString('pt-BR')}
+                              </span>
+                            )}
+                          </div>
+                          
                           <div className="flex gap-2">
-                            <Button variant="outline" size="sm">
-                              <MessageCircle className="w-4 h-4 mr-1" />
-                              Ver Histórico
-                            </Button>
-                            <Button size="sm">
-                              <CheckCircle className="w-4 h-4 mr-1" />
-                              Iniciar POC
+                            {startup.connectionStatus === 'nenhum' && (
+                              <>
+                                <Button
+                                  className='bg-emerald-600 text-white hover:bg-emerald-700' 
+                                  variant="outline" 
+                                  size="sm"
+                                  onClick={() => handleConnectionAction(startup.id, 'interesse')}
+                                >
+                                  <Heart className="w-4 h-4 mr-1" />
+                                  Registrar Interesse
+                                </Button>
+                                <Button
+                                  className='bg-blue-600 text-white hover:bg-blue-700'
+                                  variant="outline" 
+                                  size="sm"
+                                  onClick={() => handleConnectionAction(startup.id, 'convidar')}
+                                >
+                                  <Send className="w-4 h-4 mr-1" />
+                                  Convidar para POC
+                                </Button>
+                              </>
+                            )}
+                            
+                            {startup.connectionStatus === 'interesse' && (
+                              <Button 
+                                className='bg-blue-600 text-white hover:bg-blue-700'
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleConnectionAction(startup.id, 'convidar')}
+                              >
+                                <Send className="w-4 h-4 mr-1" />
+                                Convidar para POC
+                              </Button>
+                            )}
+                            
+                            {startup.connectionStatus === 'convidada' && (
+                              <div className="flex gap-2">
+                                <Button 
+                                  className='bg-red-600 text-white hover:bg-red-700'
+                                  variant="outline" size="sm">
+                                  <MessageCircle className="w-4 h-4 mr-1" />
+                                  Ver Histórico
+                                </Button>
+                                <Button 
+                                  className='bg-green-600 text-white hover:bg-green-700' size="sm">
+                                  <CheckCircle className="w-4 h-4 mr-1" />
+                                  Iniciar POC
+                                </Button>
+                              </div>
+                            )}
+                            
+                            {startup.connectionStatus === 'poc' && (
+                              <Button className='bg-yellow-600 text-white hover:bg-yellow-700' variant="outline" size="sm">
+                                <TrendingUp className="w-4 h-4 mr-1" />
+                                Acompanhar POC
+                              </Button>
+                            )}
+                            
+                            <Button className='bg-black text-white hover:bg-gray-700' variant="ghost" size="sm">
+                              Ver Detalhes
                             </Button>
                           </div>
-                        )}
-                        
-                        {startup.connectionStatus === 'poc' && (
-                          <Button variant="outline" size="sm">
-                            <TrendingUp className="w-4 h-4 mr-1" />
-                            Acompanhar POC
-                          </Button>
-                        )}
-                        
-                        <Button variant="ghost" size="sm">
-                          Ver Detalhes
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="discussion">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Discussão Interna</CardTitle>
+                  <CardDescription>
+                    Espaço para colaboradores discutirem o desafio, submissões e startups.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {/* Post Comment */}
+                  <div className="flex items-start gap-4">
+                    <Avatar>
+                      <AvatarImage src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1974&auto=format&fit=crop" alt={user.name} />
+                      <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    <div className="w-full space-y-2">
+                      <Textarea 
+                        placeholder="Adicione um comentário..."
+                        value={newComment}
+                        onChange={(e) => setNewComment(e.target.value)}
+                      />
+                      <div className="flex justify-between items-center">
+                        <Button variant="outline" size="sm">
+                          <Paperclip className="w-4 h-4 mr-2" />
+                          Anexar
+                        </Button>
+                        <Button onClick={handlePostComment} size="sm">
+                          <Send className="w-4 h-4 mr-2" />
+                          Publicar
                         </Button>
                       </div>
                     </div>
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+
+                  <Separator />
+
+                  {/* Comments List */}
+                  <div className="space-y-6">
+                    {mockComments.map((comment) => (
+                      <div key={comment.id} className="flex items-start gap-4">
+                        <Avatar>
+                          <AvatarImage src={comment.author.avatar} alt={comment.author.name} />
+                          <AvatarFallback>{comment.author.name.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                        <div className="w-full">
+                          <div className="flex items-center gap-2 mb-1">
+                            <p className="font-medium text-sm">{comment.author.name}</p>
+                            <p className="text-xs text-muted-foreground">{comment.timestamp}</p>
+                          </div>
+                          <p className="text-sm text-muted-foreground">{comment.text}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
     </div>

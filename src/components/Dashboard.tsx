@@ -200,7 +200,7 @@ export function Dashboard({ user, onNavigate, onLogout }: DashboardProps) {
           {/* KPI Cards */}
           {user.role === 'gestor' && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-            <Card>
+            <Card> 
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Ideias Submetidas</CardTitle>
                 <Lightbulb className="h-4 w-4 text-muted-foreground" />
@@ -255,7 +255,7 @@ export function Dashboard({ user, onNavigate, onLogout }: DashboardProps) {
           )}
           
 
-          {user.role === 'avaliador' || user.role === 'gestor' && (
+          {user.role === 'avaliador' || user.role === 'gestor' ? (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
             {/* Funil de Inovação */}
             <Card className="lg:col-span-2">
@@ -283,9 +283,9 @@ export function Dashboard({ user, onNavigate, onLogout }: DashboardProps) {
               </CardContent>
             </Card>
           </div>
-          )}
-          
-          {user.role === 'avaliador' || user.role === 'gestor' && (
+          ) : null}
+
+          {user.role === 'avaliador' || user.role === 'gestor' ? (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
             {/* Gráfico de Tendências */}
             <Card>
@@ -333,8 +333,7 @@ export function Dashboard({ user, onNavigate, onLogout }: DashboardProps) {
               </CardContent>
             </Card>
           </div>
-          )}
-          
+          ) : null}
 
           {/* Desafios Recentes */}
           <Card>
