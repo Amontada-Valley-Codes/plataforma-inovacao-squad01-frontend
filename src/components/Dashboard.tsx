@@ -102,7 +102,7 @@ export function Dashboard({ user, onNavigate, onLogout }: DashboardProps) {
         <div className="p-4">
           <div className="flex items-center gap-2 mb-8">
             <div className="w-8 h-8 bg-blue-950 rounded-lg flex items-center justify-center">
-              <Image alt="logo" src='/Ninna_logo.png' width={60} height={60} />
+              <Image alt="logo" src='/img/Ninna_logo.png' width={60} height={60} />
             </div>
             {sidebarOpen && <span className="font-semibold">InnovatePlatform</span>}
           </div>
