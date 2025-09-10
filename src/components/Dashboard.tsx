@@ -98,66 +98,62 @@ export function Dashboard({ user, onNavigate, onLogout }: DashboardProps) {
   return (
     <div className="flex h-screen bg-background bg-[#011677] text-white">
       {/* Sidebar */}
-      <div className={`${sidebarOpen ? 'w-64' : 'w-16'} transition-all duration-300 bg-card shadow-md relative`}>
+      <div
+        className={`${sidebarOpen ? "w-64" : "w-16"} transition-all duration-300 bg-card shadow-md flex flex-col justify-between`}
+      >
+        {/* Topo da sidebar */}
         <div className="p-4">
           <div className="flex items-center gap-2 mb-8">
             <div className="w-8 h-8 bg-[#160430] rounded-lg flex items-center justify-center">
-              <Image alt="logo" src='/Ninna_logo.png' width={60} height={60} />
+              <Image alt="logo" src="/img/Ninna_logo.png" width={60} height={60} />
             </div>
             {sidebarOpen && <span className="font-semibold">InnovatePlatform</span>}
           </div>
-          
+
+          {/* Menu */}
           <nav className="space-y-2">
             <Button variant="secondary" className="w-full justify-start cursor-pointer hover:bg-[#160430]">
               <TrendingUp className="w-4 h-4 mr-2" />
-              {sidebarOpen && 'Dashboard'}
+              {sidebarOpen && "Dashboard"}
             </Button>
             <Button variant="ghost" className="w-full justify-start cursor-pointer hover:bg-[#160430]">
               <Target className="w-4 h-4 mr-2" />
-              {sidebarOpen && 'Funil de Inovação'}
+              {sidebarOpen && "Funil de Inovação"}
             </Button>
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               className="w-full justify-start cursor-pointer hover:bg-[#160430]"
-              onClick={() => onNavigate('challenge-form')}
+              onClick={() => onNavigate("challenge-form")}
             >
               <Plus className="w-4 h-4 mr-2 " />
-              {sidebarOpen && 'Desafios'}
+              {sidebarOpen && "Desafios"}
             </Button>
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               className="w-full justify-start cursor-pointer hover:bg-[#160430]"
-              onClick={() => onNavigate('startup-database')}
+              onClick={() => onNavigate("startup-database")}
             >
               <Database className="w-4 h-4 mr-2" />
-              {sidebarOpen && 'Base de Startups'}
+              {sidebarOpen && "Base de Startups"}
             </Button>
             <Button variant="ghost" className="w-full justify-start cursor-pointer hover:bg-[#160430]">
               <FileText className="w-4 h-4 mr-2" />
-              {sidebarOpen && 'Relatórios'}
+              {sidebarOpen && "Relatórios"}
             </Button>
           </nav>
         </div>
-        
-        {sidebarOpen && (
-          <div className="absolute bottom-4 left-4 right-4">
-            <div className="bg-[#160430] rounded-lg p-3 mb-4 cursor-pointer">
-              <div className="flex items-center gap-2 mb-2">
-                <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
-                  <span className="text-xs text-primary-foreground">{user.name[0]}</span>
-                </div>
-                <div className="text-sm">
-                  <p className="font-medium">{user.name}</p>
-                  <p className="text-muted-foreground text-xs">{user.role}</p>
-                </div>
-              </div>
-            </div>
-            <Button variant="ghost" size="sm" onClick={onLogout} className="w-100 cursor-pointer justify-start">
-              <LogOut className="w-4 h-4 mr-2" />
-              Sair
-            </Button>
-          </div>
-        )}
+
+        <div className="p-4 flex items-center justify-center">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="flex items-center justify-center gap-2 w-full cursor-pointer"
+          >
+            <Menu className="w-5 h-5" />
+            {sidebarOpen && <span>Recolher</span>}
+          </Button>
+        </div>
       </div>
 
       {/* Main Content */}
@@ -166,36 +162,25 @@ export function Dashboard({ user, onNavigate, onLogout }: DashboardProps) {
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-4">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setSidebarOpen(!sidebarOpen)}
-                className='cursor-pointer'
-              >
-                <Menu className="w-5 h-5" />
-              </Button>
               <div>
                 <h1 className='font-bold text-2xl'>Dashboard de Inovação</h1>
                 <p className="text-gray-500">Visão geral dos indicadores e atividades</p>
               </div>
             </div>
-            
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2 ">
-                <span className="text-sm text-gray-500">Empresa:</span>
-                <Select value={selectedCompany} onValueChange={setSelectedCompany}>
-                  <SelectTrigger className="w-48">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {companies.map((company) => (
-                      <SelectItem key={company} value={company}>
-                        {company}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              <div className="flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-lg">
+                <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+                  <span className="text-xs text-primary-foreground">{user.name[0]}</span>
+                </div>
+                <div className="text-sm">
+                  <p className="font-medium">{user.name}</p>
+                  <p className="text-xs text-gray-500">{user.role}</p>
+                </div>
               </div>
+              <Button variant="ghost" size="lg" onClick={onLogout} className="cursor-pointer bg-gray-100 hover:bg-gray-300">
+                <LogOut className="w-6 h-6 mr-1" />
+                Sair
+              </Button>
             </div>
           </div>
 
