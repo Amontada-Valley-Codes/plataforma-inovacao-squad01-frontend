@@ -1,0 +1,163 @@
+import React from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
+import { Button } from './ui/button';
+import { Separator } from './ui/separator';
+import { ArrowLeft, Plus, UserPlus, Users } from 'lucide-react';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
+import { Input } from './ui/input';
+import { Label } from './ui/label';
+import { User, UserRole } from '../app/context/UserContext';
+
+interface CollaboratorsProps {
+  user: User;
+  onNavigate: (page: 'dashboard') => void;
+}
+
+const mockCollaborators: User[] = [
+  { id: '1', name: 'Ana Silva', email: 'ana.silva@techcorp.com', role: 'gestor', company: 'TechCorp Brasil' },
+  { id: '2', name: 'Carlos Santos', email: 'carlos.santos@techcorp.com', role: 'avaliador', company: 'TechCorp Brasil' },
+  { id: '3', name: 'Maria Costa', email: 'maria.costa@techcorp.com', role: 'comum', company: 'TechCorp Brasil' },
+  { id: '4', name: 'João Pereira', email: 'joao.pereira@techcorp.com', role: 'comum', company: 'TechCorp Brasil' },
+];
+
+export function Collaborators({ user, onNavigate }: CollaboratorsProps) {
+
+  const getRoleLabel = (role: UserRole) => {
+    const labels = {
+      comum: 'Usuário Comum',
+      avaliador: 'Avaliador',
+      gestor: 'Gestor de Inovação',
+    };
+    return labels[role] || role;
+  }
+
+  return (
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <div className="bg-card border-b border-border sticky top-0 z-10">
+        <div className="container mx-auto px-6 py-4">
+          <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onNavigate('dashboard')}
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Voltar ao Dashboard
+            </Button>
+            <Separator orientation="vertical" className="h-6" />
+            <div className="flex items-center gap-2">
+              <Users className="w-5 h-5" />
+              <h1>Gestão de Colaboradores</h1>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="container mx-auto px-6 py-8">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div>
+              <CardTitle>Lista de Colaboradores</CardTitle>
+              <CardDescription>
+                Gerencie os acessos e permissões da sua equipa na plataforma.
+              </CardDescription>
+            </div>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button>
+                  <UserPlus className="w-4 h-4 mr-2" />
+                  Adicionar Colaborador
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="bg-white">
+                <DialogHeader>
+                  <DialogTitle>Adicionar Novo Colaborador</DialogTitle>
+                  <DialogDescription>
+                    Preencha os dados para convidar um novo membro para a sua empresa.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="name">Nome Completo</Label>
+                    <Input id="name" placeholder="Nome do colaborador" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="email">E-mail</Label>
+                    <Input id="email" type="email" placeholder="email@suaempresa.com" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="role">Nível de Acesso</Label>
+                    <Select>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione um nível" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="comum">Usuário Comum</SelectItem>
+                        <SelectItem value="avaliador">Avaliador</SelectItem>
+                        <SelectItem value="gestor">Gestor de Inovação</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <Button type="submit" className="w-full">
+                    Enviar Convite
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Colaborador</TableHead>
+                  <TableHead>Nível de Acesso</TableHead>
+                  <TableHead className="text-right">Ações</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {mockCollaborators.map((collab) => (
+                  <TableRow key={collab.id}>
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        <Avatar>
+                          <AvatarImage src={`https://i.pravatar.cc/40?u=${collab.email}`} alt={collab.name} />
+                          <AvatarFallback>{collab.name.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="font-medium">{collab.name}</p>
+                          <p className="text-sm text-muted-foreground">{collab.email}</p>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Select defaultValue={collab.role} disabled={user.id === collab.id || user.role !== 'gestor'}>
+                        <SelectTrigger className="w-48">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="comum">Usuário Comum</SelectItem>
+                          <SelectItem value="avaliador">Avaliador</SelectItem>
+                          <SelectItem value="gestor">Gestor de Inovação</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button variant="ghost" size="sm" disabled={user.id === collab.id}>
+                        Remover
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}

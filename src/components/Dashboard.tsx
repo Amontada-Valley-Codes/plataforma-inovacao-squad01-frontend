@@ -139,6 +139,17 @@ export function Dashboard({ user, onNavigate, onLogout }: DashboardProps) {
               <FileText className="w-4 h-4 mr-2" />
               {sidebarOpen && 'Relatórios'}
             </Button>
+
+            {user.role === 'gestor' && (
+              <Button
+                variant="ghost"
+                className="w-full justify-start"
+                onClick={() => onNavigate('collaborators' as any)}
+              >
+                <Users className="w-4 h-4 mr-2" />
+                {sidebarOpen && 'Colaboradores'}
+              </Button>
+            )}
           </nav>
         </div>
         

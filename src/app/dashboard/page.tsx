@@ -33,6 +33,9 @@ export default function DashboardPage() {
       case 'funnel': // <-- NOVO CASO
         router.push('/funnel');
         break;
+      case 'collaborators': // <-- NOVO CASO
+      router.push('/collaborators');
+      break;
       default:
         break;
     }
