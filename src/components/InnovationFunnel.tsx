@@ -8,6 +8,7 @@ import { User as UserType } from '../app/context/UserContext';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { Dialog, DialogContent, DialogTrigger } from './ui/dialog';
 import { IdeaForm } from './IdeaForm';// <-- Importar o novo formulário
+import { EvaluationForm } from './EvaluationForm';
 
 interface InnovationFunnelProps {
   user: UserType;
@@ -60,6 +61,10 @@ export function InnovationFunnel({ user, onNavigate }: InnovationFunnelProps) {
     }
   };
 
+  const isEvaluationStage = (stageId: string) => {
+    return stageId === 'pre-screening' || stageId === 'detailed-screening';
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
@@ -103,38 +108,49 @@ export function InnovationFunnel({ user, onNavigate }: InnovationFunnelProps) {
                       {ideas.filter(idea => idea.stage === stage.id).map((idea, index) => (
                         <Draggable key={idea.id} draggableId={idea.id} index={index}>
                           {(provided, snapshot) => (
-                            <div
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              {...provided.dragHandleProps}
-                              className={`shadow-md ${snapshot.isDragging ? 'opacity-80 shadow-lg' : ''}`}
-                            >
-                              <Card className="cursor-grab active:cursor-grabbing bg-white">
-                                <CardHeader className="p-4">
-                                  <div className="flex justify-between items-start">
-                                    {getPriorityBadge(idea.priority)}
-                                    <GripVertical className="w-4 h-4 text-gray-400" />
-                                  </div>
-                                  <CardTitle className="text-base mt-2 text-gray-900">{idea.title}</CardTitle>
-                                </CardHeader>
-                                <CardContent className="p-4 pt-0">
-                                  <div className="flex items-center justify-between text-xs text-gray-500">
-                                    <div className="flex items-center gap-1">
-                                      <Clock className="w-3 h-3" />
-                                      <span>{idea.days} dias</span>
+                            <Dialog>
+                                <DialogTrigger asChild>
+                                    <div
+                                    ref={provided.innerRef}
+                                    {...provided.draggableProps}
+                                    {...provided.dragHandleProps}
+                                    className={`shadow-md ${snapshot.isDragging ? 'opacity-80 shadow-lg' : ''}`}
+                                    >
+                                        
+                                            <Card className="cursor-grab active:cursor-grabbing bg-white">
+                                                <CardHeader className="p-4">
+                                                <div className="flex justify-between items-start">
+                                                    {getPriorityBadge(idea.priority)}
+                                                    <GripVertical className="w-4 h-4 text-gray-400" />
+                                                </div>
+                                                <CardTitle className="text-base mt-2 text-gray-900">{idea.title}</CardTitle>
+                                                </CardHeader>
+                                                <CardContent className="p-4 pt-0">
+                                                <div className="flex items-center justify-between text-xs text-gray-500">
+                                                    <div className="flex items-center gap-1">
+                                                    <Clock className="w-3 h-3" />
+                                                    <span>{idea.days} dias</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-1">
+                                                    <MessageSquare className="w-3 h-3" />
+                                                    <span>{idea.comments}</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-1">
+                                                    <User className="w-3 h-3" />
+                                                    <span>{idea.author}</span>
+                                                    </div>
+                                                </div>
+                                                </CardContent>
+                                            </Card>
+                                    
                                     </div>
-                                    <div className="flex items-center gap-1">
-                                      <MessageSquare className="w-3 h-3" />
-                                      <span>{idea.comments}</span>
-                                    </div>
-                                    <div className="flex items-center gap-1">
-                                      <User className="w-3 h-3" />
-                                      <span>{idea.author}</span>
-                                    </div>
-                                  </div>
-                                </CardContent>
-                              </Card>
-                            </div>
+                                </DialogTrigger>
+                                {isEvaluationStage(idea.stage) && (
+                                <DialogContent className="bg-white">
+                                  <EvaluationForm idea={idea} />
+                                </DialogContent>
+                                )}
+                            </Dialog>
                           )}
                         </Draggable>
                       ))}
