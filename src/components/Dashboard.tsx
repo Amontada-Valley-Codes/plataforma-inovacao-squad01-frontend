@@ -170,7 +170,7 @@ export function Dashboard({ user, onNavigate, onLogout }: DashboardProps) {
             {user.role === 'gestor' && (
               <Button
                 variant="ghost"
-                className="w-full justify-start"
+                className="w-full justify-start cursor-pointer  hover:bg-[#160430]"
                 onClick={() => onNavigate('collaborators' as any)}
               >
                 <Users className="w-4 h-4 mr-2" />
@@ -194,7 +194,7 @@ export function Dashboard({ user, onNavigate, onLogout }: DashboardProps) {
         </div>
       </div>
       {/* Main Content */}
-      <div className="flex-1 overflow-auto bg-white text-black">
+      <div className="flex-1 overflow-auto bg-gray-100 text-black">
         <div className="p-6">
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
