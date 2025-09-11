@@ -68,7 +68,7 @@ export function InnovationFunnel({ user, onNavigate }: InnovationFunnelProps) {
       </div>
 
       {/* Kanban Board */}
-      <div className="flex-1 overflow-x-auto p-6 bg-gray-600">
+      <div className="flex-1 overflow-x-auto p-6 bg-blue-900">
         <div className="flex gap-6 min-w-max h-full">
           {funnelStages.map(stage => (
             <div key={stage.id} className="w-80 bg-muted rounded-lg flex flex-col">

@@ -138,6 +138,7 @@ export function Dashboard({ user, onNavigate, onLogout }: DashboardProps) {
             <Button
               variant="ghost"
               className="w-full justify-start cursor-pointer hover:bg-[#160430]"
+              onClick={() => onNavigate('funnel' as any)}
             >
               <Target className="w-4 h-4 mr-2" />
               {sidebarOpen && "Funil de Inovação"}
