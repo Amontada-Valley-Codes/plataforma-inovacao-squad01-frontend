@@ -162,6 +162,7 @@ export function StartupDatabase({ user, onNavigate }: StartupDatabaseProps) {
                 variant="ghost" 
                 size="sm"
                 onClick={() => onNavigate('dashboard')}
+                className='hover:bg-gray-300 cursor-pointer'
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Voltar ao Dashboard

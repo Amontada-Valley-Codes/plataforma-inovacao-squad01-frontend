@@ -181,6 +181,7 @@ export function ChallengeDetails({ user, challenge, onNavigate }: ChallengeDetai
               variant="ghost" 
               size="sm"
               onClick={() => onNavigate('dashboard')}
+              className='hover:bg-gray-300 cursor-pointer'
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Voltar ao Dashboard
@@ -188,7 +189,7 @@ export function ChallengeDetails({ user, challenge, onNavigate }: ChallengeDetai
             <Separator orientation="vertical" className="h-6" />
             <div className="flex items-center gap-2">
               <Target className="w-5 h-5" />
-              <h1>Detalhes do Desafio</h1>
+              <h1>Detalhes do Desafioo</h1>
             </div>
           </div>
         </div>

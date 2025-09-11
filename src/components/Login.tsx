@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
+import { CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { User, UserRole } from '../app/context/UserContext';
-import { Lightbulb } from 'lucide-react';
+import Image from 'next/image';
 
 interface LoginProps {
   onLogin: (user: User) => void;
@@ -42,20 +42,28 @@ export function Login({ onLogin }: LoginProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-      <div className="w-full max-w-md space-y-6">
-        <div className="text-center">
+    <div className="h-screen flex flex-col w-auto md:flex-row items-center justify-center bg-[#160430]">
+      <div className="w-full space-y-6 flex justify-between">
+        <div className="md:text- justify-center flex-col md:ml-24 hidden md:flex">
           <div className="mx-auto w-12 h-12 bg-primary rounded-xl flex items-center justify-center mb-4">
-            <Lightbulb className="w-6 h-6 text-primary-foreground" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">Plataforma de Inovação Aberta</h1>
-          <p className="text-gray-600 mt-2">Conectando corporações e startups para acelerar a inovação</p>
+          <h1 className="text-6xl  w-1/2 font-bold text-white">Plataforma de <span className='text-[#5ff604]'>Inovação Aberta</span></h1>
+          <p className="text-white mt-4">Conectando corporações e startups para acelerar a inovação</p>
         </div>
 
-        <Card>
+        <div className='h-screen md:w-1/3 w-full flex space-y-2.5 md:px-4 flex-col justify-center  bg-[#011677] text-white shadow'>
           <CardHeader>
-            <CardTitle>Fazer Login</CardTitle>
-            <CardDescription>
+            <div className='flex justify-center'>
+              <Image
+              width={100}
+              height={100}
+              src='/img/ninna_logo.png'
+              alt="Ninna Logo"
+              className='w-[270px]'
+              />
+            </div>
+            <CardTitle className='font-medium'>Fazer Login</CardTitle>
+            <CardDescription className='text-white'>
               Entre com suas credenciais para acessar a plataforma
             </CardDescription>
           </CardHeader>
@@ -64,6 +72,7 @@ export function Login({ onLogin }: LoginProps) {
               <div className="space-y-2">
                 <Label htmlFor="email">E-mail</Label>
                 <Input
+                  className='bg-[#261046] border-none py-6'
                   id="email"
                   type="email"
                   placeholder="seu@email.com"
@@ -76,6 +85,7 @@ export function Login({ onLogin }: LoginProps) {
               <div className="space-y-2">
                 <Label htmlFor="company">Empresa</Label>
                 <Input
+                  className='bg-[#261046] border-none py-6'
                   id="company"
                   placeholder="Nome da sua empresa"
                   value={company}
@@ -86,53 +96,24 @@ export function Login({ onLogin }: LoginProps) {
               <div className="space-y-2">
                 <Label htmlFor="role">Nível de Acesso</Label>
                 <Select value={role} onValueChange={(value: UserRole) => setRole(value)}>
-                  <SelectTrigger>
+                  <SelectTrigger className='bg-[#261046] border-none text-[#93889d] py-6'>
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className='bg-[#261046] text-[#93889d] border-none'>
                     <SelectItem value="comum">Usuário Comum - Submete ideias</SelectItem>
                     <SelectItem value="avaliador">Avaliador - Analisa ideias</SelectItem>
                     <SelectItem value="gestor">Gestor de Inovação - Visão completa</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
+              <hr className='text-[#93889d] my-7'/>
 
-              <Button type="submit" className="w-full">
+              <Button type="submit" className="w-full bg-gradient-to-l to-[#5ff604] from-[#01733e] text-white cursor-pointer py-6">
                 Entrar na Plataforma
               </Button>
             </form>
           </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Login Rápido - Demo</CardTitle>
-            <CardDescription>Acesse rapidamente com perfis de exemplo</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <Button 
-              variant="outline" 
-              className="w-full justify-start" 
-              onClick={() => quickLogin('gestor', 'Ana Silva', 'TechCorp Brasil')}
-            >
-              👑 Ana Silva - Gestora de Inovação (TechCorp)
-            </Button>
-            <Button 
-              variant="outline" 
-              className="w-full justify-start"
-              onClick={() => quickLogin('avaliador', 'Carlos Santos', 'InnovateCorp')}
-            >
-              🔍 Carlos Santos - Avaliador (InnovateCorp)
-            </Button>
-            <Button 
-              variant="outline" 
-              className="w-full justify-start"
-              onClick={() => quickLogin('comum', 'Maria Costa', 'TechCorp Brasil')}
-            >
-              💡 Maria Costa - Usuário Comum (TechCorp)
-            </Button>
-          </CardContent>
-        </Card>
+        </div>
       </div>
     </div>
   );
