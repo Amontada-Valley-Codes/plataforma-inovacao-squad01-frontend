@@ -55,15 +55,16 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
   const suggestedTags = ['IA', 'Sustentabilidade', 'FinTech', 'HealthTech', 'EdTech', 'IoT', 'Blockchain', 'Automação'];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background h-screen w-full bg-[url('/ninnafundo.jpg')] bg-cover bg-center">
       {/* Header */}
-      <div className="bg-card border-b border-border">
+      <div className="bg-card bg-[#011677] text-white">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center gap-4">
             <Button 
               variant="ghost" 
               size="sm"
               onClick={() => onNavigate('dashboard')}
+              className='cursor-pointer'
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Voltar ao Dashboard
@@ -80,8 +81,8 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
       {/* Content */}
       <div className="container mx-auto px-6 py-8">
         <div className="max-w-2xl mx-auto">
-          <div className="mb-6">
-            <h2>Cadastrar Desafio</h2>
+          <div className="mb-6 text-center">
+            <h2 className='text-3xl mb-2.5'>Cadastrar Desafio</h2>
             <p className="text-muted-foreground">
               Crie um novo desafio para capturar ideias inovadoras e conectar com startups
             </p>
@@ -116,7 +117,7 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
                           variant="outline"
                           className="w-full justify-start text-left"
                         >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          <CalendarIcon className="mr-2 h-4 w-4 " />
                           {formData.startDate ? (
                             format(formData.startDate, "dd/MM/yyyy", { locale: pt })
                           ) : (
@@ -124,7 +125,7 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
                           )}
                         </Button>
                       </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0">
+                      <PopoverContent className="w-auto p-0 bg-white">
                         <Calendar
                           mode="single"
                           selected={formData.startDate}
@@ -150,7 +151,7 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
                           )}
                         </Button>
                       </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0">
+                      <PopoverContent className="w-auto p-0 bg-white">
                         <Calendar
                           mode="single"
                           selected={formData.endDate}
@@ -274,10 +275,10 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
                       setFormData({ ...formData, type: value })
                     }
                   >
-                    <div className="flex items-center space-x-2 p-4 border border-border rounded-lg">
+                    <div className="flex items-center space-x-2 p-4 border border-border rounded-lg cursor-pointer">
                       <RadioGroupItem value="interno" id="interno" />
                       <div className="space-y-1 flex-1">
-                        <Label htmlFor="interno" className="cursor-pointer">
+                        <Label htmlFor="interno">
                           🔒 Restrito (Inovação Interna)
                         </Label>
                         <p className="text-sm text-muted-foreground">
@@ -285,10 +286,10 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center space-x-2 p-4 border border-border rounded-lg">
+                    <div className="flex items-center space-x-2 p-4 border border-border rounded-lg cursor-pointer">
                       <RadioGroupItem value="publico" id="publico" />
                       <div className="space-y-1 flex-1">
-                        <Label htmlFor="publico" className="cursor-pointer">
+                        <Label htmlFor="publico">
                           🌍 Público (Externo)
                         </Label>
                         <p className="text-sm text-muted-foreground">
@@ -306,10 +307,11 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
                 type="button" 
                 variant="outline"
                 onClick={() => onNavigate('dashboard')}
+                className='cursor-pointer hover:bg-[#160430] hover:text-white'
               >
                 Cancelar
               </Button>
-              <Button type="submit">
+              <Button type="submit" className='bg-[#011677] hover:bg-[#160430] text-white cursor-pointer'>
                 <Save className="w-4 h-4 mr-2" />
                 Criar Desafio
               </Button>
