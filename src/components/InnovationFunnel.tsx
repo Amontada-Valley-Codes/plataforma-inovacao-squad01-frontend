@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Separator } from './ui/separator';
-import { ArrowLeft, GripVertical, Plus, User, Clock, MessageSquare } from 'lucide-react';
+import { ArrowLeft, GripVertical, Plus, User, Clock, MessageSquare, Target } from 'lucide-react';
 import { Badge } from './ui/badge';
 import { User as UserType } from '../app/context/UserContext';
-import { Target } from 'lucide-react';
-// NOVAS IMPORTAÇÕES DA BIBLIOTECA
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
+import { Dialog, DialogContent, DialogTrigger } from './ui/dialog';
+import { IdeaForm } from './IdeaForm';// <-- Importar o novo formulário
 
 interface InnovationFunnelProps {
   user: UserType;
@@ -33,7 +33,6 @@ const initialIdeas = [
 ];
 
 export function InnovationFunnel({ user, onNavigate }: InnovationFunnelProps) {
-  // GESTÃO DO ESTADO DAS IDEIAS
   const [ideas, setIdeas] = useState(initialIdeas);
 
   const getPriorityBadge = (priority: string) => {
@@ -46,12 +45,10 @@ export function InnovationFunnel({ user, onNavigate }: InnovationFunnelProps) {
     }
   };
 
-  // FUNÇÃO QUE ATUALIZA O ESTADO QUANDO UM CARD É MOVIDO
   const handleOnDragEnd = (result: DropResult) => {
     const { source, destination } = result;
-    if (!destination) return; // Sai se o card for solto fora de uma coluna
+    if (!destination) return;
 
-    // Se o card for movido para uma coluna diferente
     if (source.droppableId !== destination.droppableId) {
       const draggedIdea = ideas.find(idea => idea.id === result.draggableId);
       if (draggedIdea) {
@@ -65,7 +62,6 @@ export function InnovationFunnel({ user, onNavigate }: InnovationFunnelProps) {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* Header */}
       <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center gap-4">
@@ -82,7 +78,6 @@ export function InnovationFunnel({ user, onNavigate }: InnovationFunnelProps) {
         </div>
       </div>
 
-      {/* Kanban Board com Drag and Drop */}
       <DragDropContext onDragEnd={handleOnDragEnd}>
         <div className="flex-1 overflow-x-auto p-6">
           <div className="flex gap-6 min-w-max h-full">
@@ -94,7 +89,6 @@ export function InnovationFunnel({ user, onNavigate }: InnovationFunnelProps) {
                     {...provided.droppableProps}
                     className={`w-80 bg-gray-100 rounded-lg flex flex-col transition-colors ${snapshot.isDraggingOver ? 'bg-blue-50' : ''}`}
                   >
-                    {/* Column Header */}
                     <div className="p-4 border-b border-gray-200">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
@@ -105,7 +99,6 @@ export function InnovationFunnel({ user, onNavigate }: InnovationFunnelProps) {
                       </div>
                     </div>
 
-                    {/* Column Content */}
                     <div className="flex-1 p-4 space-y-4 overflow-y-auto">
                       {ideas.filter(idea => idea.stage === stage.id).map((idea, index) => (
                         <Draggable key={idea.id} draggableId={idea.id} index={index}>
@@ -148,12 +141,19 @@ export function InnovationFunnel({ user, onNavigate }: InnovationFunnelProps) {
                       {provided.placeholder}
                     </div>
                     
-                    {/* Add Card Button */}
+                    {/* BOTÃO AGORA ABRE UM MODAL */}
                     <div className="p-4 mt-auto">
-                      <Button variant="ghost" className="w-full text-gray-600">
-                        <Plus className="w-4 h-4 mr-2" />
-                        Adicionar Ideia
-                      </Button>
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button variant="ghost" className="w-full text-gray-600">
+                            <Plus className="w-4 h-4 mr-2" />
+                            Adicionar Ideia
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="bg-white">
+                          <IdeaForm stageTitle={stage.title} />
+                        </DialogContent>
+                      </Dialog>
                     </div>
                   </div>
                 )}
