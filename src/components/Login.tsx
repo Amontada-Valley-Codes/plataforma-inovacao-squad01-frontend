@@ -59,7 +59,7 @@ export function Login({ onLogin }: LoginProps) {
               height={100}
               src='/img/ninna_logo.png'
               alt="Ninna Logo"
-              className='w-[280px]'
+              className='w-[270px]'
               />
             </div>
             <CardTitle className='font-medium'>Fazer Login</CardTitle>
