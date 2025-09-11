@@ -35,9 +35,10 @@ export function Collaborators({ user, onNavigate }: CollaboratorsProps) {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    // Usando cores diretas do Tailwind
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-card border-b border-border sticky top-0 z-10">
+      <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center gap-4">
             <Button
@@ -50,8 +51,8 @@ export function Collaborators({ user, onNavigate }: CollaboratorsProps) {
             </Button>
             <Separator orientation="vertical" className="h-6" />
             <div className="flex items-center gap-2">
-              <Users className="w-5 h-5" />
-              <h1>Gestão de Colaboradores</h1>
+              <Users className="w-5 h-5 text-gray-700" />
+              <h1 className="text-lg font-semibold text-gray-800">Gestão de Colaboradores</h1>
             </div>
           </div>
         </div>
@@ -59,11 +60,11 @@ export function Collaborators({ user, onNavigate }: CollaboratorsProps) {
 
       {/* Content */}
       <div className="container mx-auto px-6 py-8">
-        <Card>
+        <Card className="bg-white border border-gray-200 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
-              <CardTitle>Lista de Colaboradores</CardTitle>
-              <CardDescription>
+              <CardTitle className="text-xl text-gray-900">Lista de Colaboradores</CardTitle>
+              <CardDescription className="text-gray-600">
                 Gerencie os acessos e permissões da sua equipa na plataforma.
               </CardDescription>
             </div>
@@ -83,15 +84,15 @@ export function Collaborators({ user, onNavigate }: CollaboratorsProps) {
                 </DialogHeader>
                 <div className="space-y-4 py-4">
                   <div className="space-y-2">
-                    <Label htmlFor="name">Nome Completo</Label>
+                    <Label htmlFor="name" className="text-gray-700">Nome Completo</Label>
                     <Input id="name" placeholder="Nome do colaborador" />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="email">E-mail</Label>
+                    <Label htmlFor="email" className="text-gray-700">E-mail</Label>
                     <Input id="email" type="email" placeholder="email@suaempresa.com" />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="role">Nível de Acesso</Label>
+                    <Label htmlFor="role" className="text-gray-700">Nível de Acesso</Label>
                     <Select>
                       <SelectTrigger>
                         <SelectValue placeholder="Selecione um nível" />
@@ -114,9 +115,9 @@ export function Collaborators({ user, onNavigate }: CollaboratorsProps) {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Colaborador</TableHead>
-                  <TableHead>Nível de Acesso</TableHead>
-                  <TableHead className="text-right">Ações</TableHead>
+                  <TableHead className="text-gray-600">Colaborador</TableHead>
+                  <TableHead className="text-gray-600">Nível de Acesso</TableHead>
+                  <TableHead className="text-right text-gray-600">Ações</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -129,8 +130,8 @@ export function Collaborators({ user, onNavigate }: CollaboratorsProps) {
                           <AvatarFallback>{collab.name.charAt(0)}</AvatarFallback>
                         </Avatar>
                         <div>
-                          <p className="font-medium">{collab.name}</p>
-                          <p className="text-sm text-muted-foreground">{collab.email}</p>
+                          <p className="font-semibold text-gray-800">{collab.name}</p>
+                          <p className="text-sm text-gray-500">{collab.email}</p>
                         </div>
                       </div>
                     </TableCell>
@@ -147,7 +148,7 @@ export function Collaborators({ user, onNavigate }: CollaboratorsProps) {
                       </Select>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button variant="ghost" size="sm" disabled={user.id === collab.id}>
+                      <Button variant="ghost" size="sm" disabled={user.id === collab.id} className="text-red-600 hover:bg-red-50">
                         Remover
                       </Button>
                     </TableCell>

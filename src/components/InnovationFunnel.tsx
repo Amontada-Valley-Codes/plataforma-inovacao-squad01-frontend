@@ -68,7 +68,7 @@ export function InnovationFunnel({ user, onNavigate }: InnovationFunnelProps) {
       </div>
 
       {/* Kanban Board */}
-      <div className="flex-1 overflow-x-auto p-6">
+      <div className="flex-1 overflow-x-auto p-6 bg-gray-600">
         <div className="flex gap-6 min-w-max h-full">
           {funnelStages.map(stage => (
             <div key={stage.id} className="w-80 bg-muted rounded-lg flex flex-col">
@@ -84,9 +84,9 @@ export function InnovationFunnel({ user, onNavigate }: InnovationFunnelProps) {
               </div>
 
               {/* Column Content */}
-              <div className="flex-1 p-4 mt-2 space-y-4 overflow-y-auto bg-gray-200 rounded-2xl">
+              <div className="flex-1 p-4 mt-2 space-y-4 overflow-y-auto rounded-2xl">
                 {mockIdeas.filter(idea => idea.stage === stage.id).map(idea => (
-                  <Card key={idea.id} className="cursor-grab active:cursor-grabbing">
+                  <Card key={idea.id} className="cursor-grab active:cursor-grabbing bg-white">
                     <CardHeader className="p-4">
                       <div className="flex justify-between items-start">
                         {getPriorityBadge(idea.priority)}
@@ -116,7 +116,7 @@ export function InnovationFunnel({ user, onNavigate }: InnovationFunnelProps) {
               
               {/* Add Card Button */}
               <div className="p-4 mt-auto">
-                <Button variant="ghost" className="w-full">
+                <Button variant="ghost" className="w-full bg-blue-500">
                   <Plus className="w-4 h-4 mr-2" />
                   Adicionar Ideia
                 </Button>
