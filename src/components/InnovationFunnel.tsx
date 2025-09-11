@@ -53,6 +53,7 @@ export function InnovationFunnel({ user, onNavigate }: InnovationFunnelProps) {
             <Button 
               variant="ghost" 
               size="sm"
+              className='hover:bg-gray-300 cursor-pointer'
               onClick={() => onNavigate('dashboard')}
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
