@@ -42,8 +42,9 @@ export function Login({ onLogin }: LoginProps) {
   };
 
   return (
-    <div className="h-screen flex flex-col w-auto md:flex-row items-center justify-center bg-[#160430]">
-      <div className="w-full space-y-6 flex justify-between">
+    <div className="h-screen flex flex-col w-auto md:flex-row items-center justify-center bg-[url(/img/ninnafundo.jpeg)] bg-center bg-cover">
+      <div className='absolute top-0 bottom-0 left-0 right-0 bg-[#011677]/40 '></div>
+      <div className="w-full space-y-6 flex justify-between z-10">
         <div className="md:text- justify-center flex-col md:ml-24 hidden md:flex">
           <div className="mx-auto w-12 h-12 bg-primary rounded-xl flex items-center justify-center mb-4">
           </div>
