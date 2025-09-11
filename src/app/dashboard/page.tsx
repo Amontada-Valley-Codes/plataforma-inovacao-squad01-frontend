@@ -30,6 +30,9 @@ export default function DashboardPage() {
           router.push(`/challenges/${challenge.id}`);
         }
         break;
+      case 'funnel': // <-- NOVO CASO
+        router.push('/funnel');
+        break;
       default:
         break;
     }

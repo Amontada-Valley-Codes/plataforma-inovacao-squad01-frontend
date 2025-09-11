@@ -111,7 +111,11 @@ export function Dashboard({ user, onNavigate, onLogout }: DashboardProps) {
               <TrendingUp className="w-4 h-4 mr-2" />
               {sidebarOpen && 'Dashboard'}
             </Button>
-            <Button variant="ghost" className="w-full justify-start hover:bg-gray-200">
+            <Button 
+              variant="ghost" 
+              className="w-full justify-start"
+              onClick={() => onNavigate('funnel' as any)} // Adicionando a navegação
+            >
               <Target className="w-4 h-4 mr-2" />
               {sidebarOpen && 'Funil de Inovação'}
             </Button>
@@ -368,7 +372,7 @@ export function Dashboard({ user, onNavigate, onLogout }: DashboardProps) {
                         </span>
                       </div>
                     </div>
-                    <Button variant="ghost" size="sm">
+                    <Button className='bg-blue-500 text-white' size="sm">
                       Ver Detalhes
                     </Button>
                   </div>
