@@ -82,19 +82,16 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
       <div className="container mx-auto px-6 py-8">
         <div className="max-w-2xl mx-auto">
           <div className="mb-6 text-center">
-            <h2 className='text-3xl mb-2.5'>Cadastrar Desafio</h2>
-            <p className="text-muted-foreground">
+            <h2 className='text-3xl mb-2.5 font-bold'>Cadastrar Desafio</h2>
+            <p className="text-gray-700">
               Crie um novo desafio para capturar ideias inovadoras e conectar com startups
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-8">
-            <Card>
+            <Card className='shadow-lg shadow-gray-200/80 rounded-2xl bg-white/90 backdrop-blur-sm'>
               <CardHeader>
-                <CardTitle>Informações Básicas</CardTitle>
-                <CardDescription>
-                  Defina as características principais do seu desafio
-                </CardDescription>
+                <CardTitle>Informações Básicas :</CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="space-y-2">
@@ -105,6 +102,7 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     required
+                    className='focus:border-[#011778] focus:ring focus:ring-[#011778]/70 rounded-lg'
                   />
                 </div>
 
@@ -115,7 +113,7 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
                       <PopoverTrigger asChild>
                         <Button
                           variant="outline"
-                          className="w-full justify-start text-left"
+                          className="w-full justify-start text-left hover:bg-gray-200 cursor-pointer"
                         >
                           <CalendarIcon className="mr-2 h-4 w-4 " />
                           {formData.startDate ? (
@@ -141,7 +139,7 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
                       <PopoverTrigger asChild>
                         <Button
                           variant="outline"
-                          className="w-full justify-start text-left"
+                          className="w-full justify-start text-left hover:bg-gray-200 cursor-pointer"
                         >
                           <CalendarIcon className="mr-2 h-4 w-4" />
                           {formData.endDate ? (
@@ -169,6 +167,7 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
                     placeholder="Ex: FinTech, HealthTech, Sustentabilidade..."
                     value={formData.area}
                     onChange={(e) => setFormData({ ...formData, area: e.target.value })}
+                    className='focus:border-[#011778] focus:ring focus:ring-[#011778]/70 rounded-lg'
                   />
                 </div>
 
@@ -177,6 +176,7 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
                   <div className="flex gap-2">
                     <Input
                       placeholder="Digite uma tag e pressione Enter"
+                      className='focus:border-[#011778] focus:ring focus:ring-[#011778]/70 rounded-lg'
                       value={currentTag}
                       onChange={(e) => setCurrentTag(e.target.value)}
                       onKeyPress={(e) => {
@@ -186,7 +186,7 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
                         }
                       }}
                     />
-                    <Button type="button" variant="outline" onClick={handleAddTag}>
+                    <Button type="button" variant="outline" onClick={handleAddTag} className='hover:bg-gray-300 cursor-pointer'>
                       <Plus className="w-4 h-4" />
                     </Button>
                   </div>
@@ -217,6 +217,7 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
                           type="button"
                           variant="outline"
                           size="sm"
+                          className='hover:bg-gray-300 cursor-pointer'
                           onClick={() => {
                             if (!tags.includes(tag)) {
                               setTags([...tags, tag]);
@@ -233,12 +234,9 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className='shadow-lg shadow-gray-200/80 rounded-2xl bg-white/90 backdrop-blur-sm'>
               <CardHeader>
                 <CardTitle>Descrição do Problema</CardTitle>
-                <CardDescription>
-                  Descreva detalhadamente o problema ou oportunidade que o desafio deve abordar
-                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
@@ -246,20 +244,16 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
                   <Textarea
                     id="description"
                     placeholder="Descreva o contexto, o problema específico, os objetivos esperados e quais tipos de soluções você está procurando..."
-                    className="min-h-32"
+                    className="min-h-32 focus:border-[#011778] focus:ring focus:ring-[#011778]/70 rounded-lg"
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     required
                   />
-                  <p className="text-sm text-muted-foreground">
-                    Seja específico sobre o problema, contexto e resultados esperados. 
-                    Isso ajuda startups e colaboradores a entenderem melhor como podem contribuir.
-                  </p>
                 </div>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className='shadow-lg shadow-gray-200/80 rounded-2xl bg-white/90 backdrop-blur-sm'>
               <CardHeader>
                 <CardTitle>Configurações de Publicação</CardTitle>
                 <CardDescription>
@@ -275,7 +269,7 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
                       setFormData({ ...formData, type: value })
                     }
                   >
-                    <div className="flex items-center space-x-2 p-4 border border-border rounded-lg cursor-pointer">
+                    <div className="flex items-center space-x-2 p-4 border border-border rounded-lg hover:bg-gray-200 cursor-pointer">
                       <RadioGroupItem value="interno" id="interno" />
                       <div className="space-y-1 flex-1">
                         <Label htmlFor="interno">
@@ -286,7 +280,7 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center space-x-2 p-4 border border-border rounded-lg cursor-pointer">
+                    <div className="flex items-center space-x-2 p-4 border border-border rounded-lg cursor-pointer hover:bg-gray-200">
                       <RadioGroupItem value="publico" id="publico" />
                       <div className="space-y-1 flex-1">
                         <Label htmlFor="publico">
@@ -311,7 +305,10 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
               >
                 Cancelar
               </Button>
-              <Button type="submit" className='bg-[#011677] hover:bg-[#160430] text-white cursor-pointer'>
+              <Button 
+                type="submit" 
+                className="bg-gradient-to-r from-[#011677] to-[#160430] hover:opacity-90 text-white shadow-md rounded-lg px-6 py-2 cursor-pointer"
+              >
                 <Save className="w-4 h-4 mr-2" />
                 Criar Desafio
               </Button>
