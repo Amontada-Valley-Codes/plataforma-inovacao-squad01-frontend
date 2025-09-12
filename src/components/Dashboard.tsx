@@ -303,7 +303,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
               </div>
               <Button
                 className="bg-[#011677] cursor-pointer text-white hover:bg-[#160430]"
-                onClick={() => router.push("/challenge-form")}
+                onClick={() => router.push("/challenges/new")}
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Novo Desafio
@@ -316,7 +316,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                     key={challenge.id}
                     className="flex items-center justify-between p-4 shadow-lg rounded-lg hover:bg-gray-200 cursor-pointer"
                     onClick={() =>
-                      router.push(`/challenge-details/${challenge.id}`)
+                      router.push(`/challenges/${challenge.id}`)
                     }
                   >
                     <div className="space-y-1">
