@@ -1,17 +1,16 @@
-import Image from "next/image";
-import React, { useState } from "react";
+'use client'
+
+import React, { useState } from "react"
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "./ui/card";
-import { Button } from "./ui/button";
-import { Badge } from "./ui/badge";
+} from "./ui/card"
+import { Button } from "./ui/button"
+import { Badge } from "./ui/badge"
 import {
-  BarChart,
-  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -22,36 +21,27 @@ import {
   Cell,
   LineChart,
   Line,
-} from "recharts";
+} from "recharts"
 import {
   Lightbulb,
   Rocket,
   Users,
-  TrendingUp,
   Clock,
   Plus,
   LogOut,
-  Menu,
-  Target,
-  Database,
-  FileText,
-} from "lucide-react";
-import { User, Challenge } from "../app/context/UserContext";
+} from "lucide-react"
+import { User, Challenge } from "../app/context/UserContext"
+import { Sidebar } from "./SideBar"
+import { useRouter } from "next/navigation"
 
 interface DashboardProps {
-  user: User;
-  onNavigate: (
-    page: "challenge-form" | "startup-database" | "challenge-details",
-    challenge?: Challenge
-  ) => void;
-  onLogout: () => void;
+  user: User
+  onLogout: () => void
 }
 
-export function Dashboard({ user, onNavigate, onLogout }: DashboardProps) {
-  const [selectedCompany, setSelectedCompany] = useState(user.company);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-
-  console.log("User role in Dashboard:", user.role);
+export function Dashboard({ user, onLogout }: DashboardProps) {
+  const [selectedCompany] = useState(user.company)
+  const router = useRouter()
 
   const funnelData = [
     { stage: "Geração/Captura", count: 45, color: "#3B82F6" },
@@ -59,7 +49,7 @@ export function Dashboard({ user, onNavigate, onLogout }: DashboardProps) {
     { stage: "Ideação", count: 18, color: "#06B6D4" },
     { stage: "Triagem Detalhada", count: 12, color: "#10B981" },
     { stage: "Experimentação (POC)", count: 7, color: "#F59E0B" },
-  ];
+  ]
 
   const kpiData = [
     { name: "Jan", ideias: 65, startups: 12, pocs: 3, tempo: 28 },
@@ -67,14 +57,14 @@ export function Dashboard({ user, onNavigate, onLogout }: DashboardProps) {
     { name: "Mar", ideias: 92, startups: 25, pocs: 8, tempo: 22 },
     { name: "Abr", ideias: 88, startups: 31, pocs: 12, tempo: 20 },
     { name: "Mai", ideias: 104, startups: 28, pocs: 15, tempo: 18 },
-  ];
+  ]
 
   const pieData = [
     { name: "FinTech", value: 35, color: "#3B82F6" },
     { name: "HealthTech", value: 25, color: "#10B981" },
     { name: "EdTech", value: 20, color: "#F59E0B" },
     { name: "Outros", value: 20, color: "#8B5CF6" },
-  ];
+  ]
 
   const recentChallenges: Challenge[] = [
     {
@@ -101,100 +91,15 @@ export function Dashboard({ user, onNavigate, onLogout }: DashboardProps) {
       company: selectedCompany,
       status: "ativo",
     },
-  ];
+  ]
 
   return (
     <div className="flex h-screen bg-background bg-[#011677] text-white">
-      <div
-        className={`${
-          sidebarOpen ? "w-64" : "w-16"
-        } transition-all duration-300 bg-card shadow-md flex flex-col justify-between`}
-      >
-        {/* Topo da sidebar */}
-        <div className="p-4 w-full flex flex-col">
-          <div className="flex items-center gap-2 mb-8 w-full">
-            <div className="w-8 h-8 bg-[#160430] rounded-lg flex items-center justify-center">
-              <Image
-                alt="logo"
-                src="/img/Ninna_logo.png"
-                width={60}
-                height={60}
-              />
-            </div>
-            {sidebarOpen && (
-              <span className="font-semibold">InnovatePlatform</span>
-            )}
-          </div>
+      {/* Sidebar */}
+      <Sidebar user={user} />
 
-          {/* Menu */}
-          <nav className="space-y-2 w-full">
-            <Button
-              variant="secondary"
-              className="w-full justify-start cursor-pointer hover:bg-[#001a90]"
-            >
-              <TrendingUp className="w-4 h-4 mr-2" />
-              {sidebarOpen && "Dashboard"}
-            </Button>
-            <Button
-              variant="ghost"
-              className="w-full justify-start cursor-pointer hover:bg-[#001a90]"
-              onClick={() => onNavigate('funnel' as any)}
-            >
-              <Target className="w-4 h-4 mr-2" />
-              {sidebarOpen && "Funil de Inovação"}
-            </Button>
-            <Button
-              variant="ghost"
-              className="w-full justify-start cursor-pointer hover:bg-[#001a90]"
-              onClick={() => onNavigate("challenge-form")}
-            >
-              <Plus className="w-4 h-4 mr-2 " />
-              {sidebarOpen && "Desafios"}
-            </Button>
-            <Button
-              variant="ghost"
-              className="w-full justify-start cursor-pointer hover:bg-[#001a90]"
-              onClick={() => onNavigate("startup-database")}
-            >
-              <Database className="w-4 h-4 mr-2" />
-              {sidebarOpen && "Base de Startups"}
-            </Button>
-            <Button
-              variant="ghost"
-              className="w-full justify-start cursor-pointer hover:bg-[#001a90]"
-            >
-              <FileText className="w-4 h-4 mr-2" />
-              {sidebarOpen && "Relatórios"}
-            </Button>
-
-            {user.role === 'gestor' && (
-              <Button
-                variant="ghost"
-                className="w-full justify-start cursor-pointer hover:bg-[#001a90]"
-                onClick={() => onNavigate('collaborators' as any)}
-              >
-                <Users className="w-4 h-4 mr-2" />
-                {sidebarOpen && 'Colaboradores  '}
-              </Button>
-            )}
-          </nav>
-        </div>
-
-        {/* Rodapé com botão toggle */}
-        <div className="p-4 flex items-center justify-center w-full">
-          <Button
-            variant="ghost"
-            size="lg"
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="flex items-center justify-center gap-2 w-full cursor-pointer hover:bg-[#001a90]"
-          >
-            {sidebarOpen && <span>Recolher</span>}
-            <Menu className="w-5 h-5 mt-1" />
-          </Button>
-        </div>
-      </div>
       {/* Main Content */}
-      <div className="flex-1 overflow-auto bg-gray-100 text-black">
+      <div className="flex-1 overflow-auto bg-[#f9fafb] text-black">
         <div className="p-6">
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
@@ -295,9 +200,9 @@ export function Dashboard({ user, onNavigate, onLogout }: DashboardProps) {
             </div>
           )}
 
+          {/* Funil de Inovação */}
           {user.role === "avaliador" || user.role === "gestor" ? (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-              {/* Funil de Inovação */}
               <Card className="lg:col-span-2">
                 <CardHeader>
                   <CardTitle>Funil de Inovação</CardTitle>
@@ -307,7 +212,7 @@ export function Dashboard({ user, onNavigate, onLogout }: DashboardProps) {
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-                    {funnelData.map((stage, index) => (
+                    {funnelData.map((stage) => (
                       <div key={stage.stage} className="text-center">
                         <div
                           className="h-20 rounded-lg mb-2 flex items-center justify-center text-white font-bold text-lg"
@@ -329,9 +234,9 @@ export function Dashboard({ user, onNavigate, onLogout }: DashboardProps) {
             </div>
           ) : null}
 
+          {/* Gráficos */}
           {user.role === "avaliador" || user.role === "gestor" ? (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-              {/* Gráfico de Tendências */}
               <Card>
                 <CardHeader>
                   <CardTitle>Tendência de Ideias</CardTitle>
@@ -349,7 +254,7 @@ export function Dashboard({ user, onNavigate, onLogout }: DashboardProps) {
                       <Line
                         type="monotone"
                         dataKey="ideias"
-                        stroke="#3B82F6"
+                        stroke="#011677"
                         strokeWidth={2}
                       />
                     </LineChart>
@@ -357,7 +262,6 @@ export function Dashboard({ user, onNavigate, onLogout }: DashboardProps) {
                 </CardContent>
               </Card>
 
-              {/* Distribuição por Segmento */}
               <Card>
                 <CardHeader>
                   <CardTitle>Distribuição por Segmento</CardTitle>
@@ -398,8 +302,8 @@ export function Dashboard({ user, onNavigate, onLogout }: DashboardProps) {
                 </CardDescription>
               </div>
               <Button
-                className="bg-[#160430] cursor-pointer text-white hover:bg-[#1f0977]"
-                onClick={() => onNavigate("challenge-form")}
+                className="bg-[#011677] cursor-pointer text-white hover:bg-[#160430]"
+                onClick={() => router.push("/challenge-form")}
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Novo Desafio
@@ -411,7 +315,9 @@ export function Dashboard({ user, onNavigate, onLogout }: DashboardProps) {
                   <div
                     key={challenge.id}
                     className="flex items-center justify-between p-4 shadow-lg rounded-lg hover:bg-gray-200 cursor-pointer"
-                    onClick={() => onNavigate("challenge-details", challenge)}
+                    onClick={() =>
+                      router.push(`/challenge-details/${challenge.id}`)
+                    }
                   >
                     <div className="space-y-1">
                       <h4 className="font-medium">{challenge.name}</h4>
@@ -437,7 +343,7 @@ export function Dashboard({ user, onNavigate, onLogout }: DashboardProps) {
                         </span>
                       </div>
                     </div>
-                    <Button className='bg-blue-500 hover:bg-blue-700 text-white cursor-pointer' size="sm">
+                    <Button className="bg-[#011677] hover:bg-[#160430] text-white cursor-pointer" size="sm">
                       Ver Detalhes
                     </Button>
                   </div>
@@ -448,5 +354,5 @@ export function Dashboard({ user, onNavigate, onLogout }: DashboardProps) {
         </div>
       </div>
     </div>
-  );
+  )
 }
