@@ -172,9 +172,9 @@ export function ChallengeDetails({ user, challenge, onNavigate }: ChallengeDetai
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen " >
       {/* Header */}
-      <div className="bg-card border-b border-border">
+      <div className="bg-card border-b border-border bg-[#011677] text-white">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center gap-4">
             <Button 
@@ -196,7 +196,7 @@ export function ChallengeDetails({ user, challenge, onNavigate }: ChallengeDetai
       </div>
 
       {/* Content */}
-      <div className="container mx-auto px-6 py-8">
+      <div className="container-fluid mx-auto px-6 py-8 bg-gray-100">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column - Challenge Details */}
           <div className="lg:col-span-2 space-y-6">
