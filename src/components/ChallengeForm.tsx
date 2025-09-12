@@ -59,12 +59,12 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
       {/* Header */}
       <div className="bg-card bg-[#011677] text-white">
         <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 ">
             <Button 
               variant="ghost" 
               size="sm"
               onClick={() => onNavigate('dashboard')}
-              className='cursor-pointer'
+              className='hover:bg-[#001a90] cursor-pointer '
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Voltar ao Dashboard

@@ -69,7 +69,12 @@ export function InnovationFunnel({ user, onNavigate }: InnovationFunnelProps) {
       <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="sm" onClick={() => onNavigate('dashboard')}>
+            <Button 
+              variant="ghost" 
+              size="sm"
+              className='hover:bg-gray-300 cursor-pointer'
+              onClick={() => onNavigate('dashboard')}
+            >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Voltar ao Dashboard
             </Button>

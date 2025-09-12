@@ -130,14 +130,14 @@ export function Dashboard({ user, onNavigate, onLogout }: DashboardProps) {
           <nav className="space-y-2 w-full">
             <Button
               variant="secondary"
-              className="w-full justify-start cursor-pointer hover:bg-[#160430]"
+              className="w-full justify-start cursor-pointer hover:bg-[#001a90]"
             >
               <TrendingUp className="w-4 h-4 mr-2" />
               {sidebarOpen && "Dashboard"}
             </Button>
             <Button
               variant="ghost"
-              className="w-full justify-start cursor-pointer hover:bg-[#160430]"
+              className="w-full justify-start cursor-pointer hover:bg-[#001a90]"
               onClick={() => onNavigate('funnel' as any)}
             >
               <Target className="w-4 h-4 mr-2" />
@@ -145,7 +145,7 @@ export function Dashboard({ user, onNavigate, onLogout }: DashboardProps) {
             </Button>
             <Button
               variant="ghost"
-              className="w-full justify-start cursor-pointer hover:bg-[#160430]"
+              className="w-full justify-start cursor-pointer hover:bg-[#001a90]"
               onClick={() => onNavigate("challenge-form")}
             >
               <Plus className="w-4 h-4 mr-2 " />
@@ -153,7 +153,7 @@ export function Dashboard({ user, onNavigate, onLogout }: DashboardProps) {
             </Button>
             <Button
               variant="ghost"
-              className="w-full justify-start cursor-pointer hover:bg-[#160430]"
+              className="w-full justify-start cursor-pointer hover:bg-[#001a90]"
               onClick={() => onNavigate("startup-database")}
             >
               <Database className="w-4 h-4 mr-2" />
@@ -161,7 +161,7 @@ export function Dashboard({ user, onNavigate, onLogout }: DashboardProps) {
             </Button>
             <Button
               variant="ghost"
-              className="w-full justify-start cursor-pointer hover:bg-[#160430]"
+              className="w-full justify-start cursor-pointer hover:bg-[#001a90]"
             >
               <FileText className="w-4 h-4 mr-2" />
               {sidebarOpen && "Relatórios"}
@@ -170,11 +170,11 @@ export function Dashboard({ user, onNavigate, onLogout }: DashboardProps) {
             {user.role === 'gestor' && (
               <Button
                 variant="ghost"
-                className="w-full justify-start cursor-pointer  hover:bg-[#160430]"
+                className="w-full justify-start cursor-pointer hover:bg-[#001a90]"
                 onClick={() => onNavigate('collaborators' as any)}
               >
                 <Users className="w-4 h-4 mr-2" />
-                {sidebarOpen && 'Colaboradores'}
+                {sidebarOpen && 'Colaboradores  '}
               </Button>
             )}
           </nav>
@@ -200,7 +200,7 @@ export function Dashboard({ user, onNavigate, onLogout }: DashboardProps) {
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-4">
               <div>
-                <h1 className="font-bold text-2xl">Dashboard de Inovação</h1>
+                <h1 className="font-bold text-2xl">Dashboard</h1>
                 <p className="text-gray-500">
                   Visão geral dos indicadores e atividades
                 </p>
@@ -398,7 +398,7 @@ export function Dashboard({ user, onNavigate, onLogout }: DashboardProps) {
                 </CardDescription>
               </div>
               <Button
-                className="bg-[#160430] cursor-pointer text-white"
+                className="bg-[#160430] cursor-pointer text-white hover:bg-[#1f0977]"
                 onClick={() => onNavigate("challenge-form")}
               >
                 <Plus className="w-4 h-4 mr-2" />
@@ -437,7 +437,7 @@ export function Dashboard({ user, onNavigate, onLogout }: DashboardProps) {
                         </span>
                       </div>
                     </div>
-                    <Button className='bg-blue-500 text-white' size="sm">
+                    <Button className='bg-blue-500 hover:bg-blue-700 text-white cursor-pointer' size="sm">
                       Ver Detalhes
                     </Button>
                   </div>

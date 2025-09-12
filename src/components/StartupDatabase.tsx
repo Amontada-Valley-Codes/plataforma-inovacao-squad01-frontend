@@ -308,6 +308,7 @@ export function StartupDatabase({ user, onNavigate }: StartupDatabaseProps) {
                   <Button
                     variant="outline"
                     size="sm"
+                    className='cursor-pointer hover:bg-gray-200'
                     onClick={() => {
                       setSearchQuery('');
                       setFilters({ segment: '', stage: '', technology: '', location: '' });

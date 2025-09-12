@@ -44,6 +44,7 @@ export function Collaborators({ user, onNavigate }: CollaboratorsProps) {
             <Button
               variant="ghost"
               size="sm"
+              className='hover:bg-gray-300 cursor-pointer'
               onClick={() => onNavigate('dashboard')}
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
@@ -70,7 +71,7 @@ export function Collaborators({ user, onNavigate }: CollaboratorsProps) {
             </div>
             <Dialog>
               <DialogTrigger asChild>
-                <Button>
+                <Button className='cursor-pointer bg-blue-600 hover:bg-blue-700 text-white'>
                   <UserPlus className="w-4 h-4 mr-2" />
                   Adicionar Colaborador
                 </Button>
@@ -148,7 +149,7 @@ export function Collaborators({ user, onNavigate }: CollaboratorsProps) {
                       </Select>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button variant="ghost" size="sm" disabled={user.id === collab.id} className="text-red-600 hover:bg-red-50">
+                      <Button variant="ghost" size="sm" disabled={user.id === collab.id} className="text-red-600 hover:bg-red-100 cursor-pointer">
                         Remover
                       </Button>
                     </TableCell>
