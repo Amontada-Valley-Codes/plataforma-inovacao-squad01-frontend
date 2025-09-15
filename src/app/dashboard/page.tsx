@@ -4,15 +4,14 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser } from '../context/UserContext';
 import dynamic from 'next/dynamic';
-import Loading from '../loading'; // Vamos usar o seu componente de loading
+import Loading from '../loading'; 
 
-// --- MUDANÇA PRINCIPAL AQUI ---
-// Importamos o Dashboard de forma dinâmica
+
 const Dashboard = dynamic(
   () => import('../../components/Dashboard').then((mod) => mod.Dashboard),
   { 
-    ssr: false, // O Dashboard não precisa de ser pré-renderizado no servidor
-    loading: () => <Loading />, // Mostra o seu ecrã de loading enquanto o Dashboard carrega
+    ssr: false, 
+    loading: () => <Loading />, 
   }
 );
 
@@ -63,7 +62,7 @@ export default function DashboardPage() {
   return (
     <Dashboard 
       user={user} 
-      onNavigate={handleNavigate} 
+      // onNavigate={handleNavigate} 
       onLogout={handleLogout}
     />
   );
