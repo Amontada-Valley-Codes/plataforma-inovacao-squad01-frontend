@@ -164,6 +164,7 @@ export function InnovationFunnel({ user, onNavigate }: InnovationFunnelProps) {
                                         </div>
                                         <Button 
                                           size="sm" 
+                                          className='hover:bg-blue-100 cursor-pointer'
                                           variant="outline" 
                                           onClick={(e) => {
                                             e.stopPropagation(); // Evita que o modal abra ao clicar no botão
@@ -193,7 +194,7 @@ export function InnovationFunnel({ user, onNavigate }: InnovationFunnelProps) {
                     <div className="p-4 mt-auto">
                       <Dialog>
                         <DialogTrigger asChild>
-                          <Button variant="ghost" className="w-full text-gray-600">
+                          <Button variant="ghost" className="w-full text-gray-600 cursor-pointer hover:bg-gray-200">
                             <Plus className="w-4 h-4 mr-2" />
                             Adicionar Ideia
                           </Button>
