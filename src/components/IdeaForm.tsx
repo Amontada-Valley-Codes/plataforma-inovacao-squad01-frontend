@@ -13,39 +13,56 @@ interface IdeaFormProps {
 export function IdeaForm({ stageTitle }: IdeaFormProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Lógica para salvar a nova ideia seria adicionada aqui
     console.log('Nova ideia submetida!');
   };
 
   return (
     <div>
       <DialogHeader>
-        <DialogTitle className="flex items-center gap-2">
-          <Lightbulb className="w-5 h-5" />
+        <DialogTitle className="flex items-center gap-2 text-[#001f61] font-bold">
+          <Lightbulb className="w-5 h-5 text-[#7eb526]" />
           Submeter Nova Ideia
         </DialogTitle>
         <DialogDescription>
-          Descreva a sua ideia ou oportunidade. Ela será adicionada à coluna "{stageTitle}".
+          Descreva a sua ideia ou oportunidade. Ela será adicionada à coluna 
+          <span className="font-semibold text-[#001f61]"> "{stageTitle}"</span>.
         </DialogDescription>
       </DialogHeader>
+      
       <form onSubmit={handleSubmit}>
         <div className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label htmlFor="idea-title">Título da Ideia</Label>
-            <Input id="idea-title" placeholder="Ex: App de Recomendações com IA" />
+            <Label htmlFor="idea-title" className="text-gray-800">Título da Ideia</Label>
+            <Input 
+              id="idea-title" 
+              placeholder="Ex: App de Recomendações com IA" 
+              className="border-[#001f61] focus:ring-[#7eb526] focus:border-[#7eb526] rounded-lg"
+            />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="idea-description">Descrição</Label>
-            <Textarea id="idea-description" placeholder="Descreva a sua ideia em detalhe..." />
+            <Label htmlFor="idea-description" className="text-gray-800">Descrição</Label>
+            <Textarea 
+              id="idea-description" 
+              placeholder="Descreva a sua ideia em detalhe..." 
+              className="border-[#001f61] focus:ring-[#7eb526] focus:border-[#7eb526] rounded-lg"
+            />
           </div>
         </div>
+        
         <DialogFooter>
           <DialogClose asChild>
-            <Button type="button" variant="secondary">
+            <Button 
+              type="button" 
+              variant="secondary" 
+              className="bg-gray-200 text-[#001f61] hover:bg-gray-300"
+            >
               Cancelar
             </Button>
           </DialogClose>
-          <Button type="submit">
+          <Button 
+            type="submit"
+            className="bg-[#7eb526] hover:bg-[#6aa21e] text-white"
+          >
             Submeter Ideia
           </Button>
         </DialogFooter>
