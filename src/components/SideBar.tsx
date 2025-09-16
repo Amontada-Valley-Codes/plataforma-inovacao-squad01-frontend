@@ -14,7 +14,7 @@ import {
 } from "lucide-react"
 import { User } from "../app/context/UserContext"
 import { useRouter } from "next/navigation"
-
+import { Building2 } from "lucide-react"
 interface SidebarProps {
   user: User
 }
@@ -92,7 +92,21 @@ export function Sidebar({ user }: SidebarProps) {
             {sidebarOpen && "Relatórios"}
           </Button>
 
-          {user.role === "gestor" && (
+          {user.role === 'admin' && (
+            <>
+              <Button
+                variant="ghost"
+                className="w-full justify-start cursor-pointer hover:bg-[#001a90]"
+                onClick={() => router.push("/companies/new")}
+              >
+                <Building2 className="w-4 h-4 mr-2" />
+                {sidebarOpen && 'Cadastrar Empresa'}
+              </Button>
+              {/* Botão para cadastrar startup seria adicionado aqui de forma similar */}
+            </>
+          )}
+
+          {(user.role === "gestor" || user.role === "admin") && (
             <Button
               variant="ghost"
               className="w-full justify-start cursor-pointer hover:bg-[#001a90]"

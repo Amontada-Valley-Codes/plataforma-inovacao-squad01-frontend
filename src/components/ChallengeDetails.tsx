@@ -215,18 +215,18 @@ export function ChallengeDetails({ user, challenge, onNavigate }: ChallengeDetai
 								<CardTitle>Ações Rápidas</CardTitle>
 							</CardHeader>
 							<CardContent className="space-y-3">
-								<Button className="w-full justify-start" variant='outline'>
+								<Button className="w-full justify-start cursor-pointer hover:bg-gray-100" variant='outline'>
 									<Users className="w-4 h-4 mr-2" />
 									Gerenciar Participantes
 								</Button>
-								{/* O botão "Ver Submissões" foi removido daqui */}
-								<Button variant="outline" className="w-full justify-start">
+								
+								<Button variant="outline" className="w-full justify-start cursor-pointer hover:bg-gray-100">
 									<TrendingUp className="w-4 h-4 mr-2" />
 									Relatório Detalhado
 								</Button>
 								<Button
 									variant="outline"
-									className="w-full justify-start"
+									className="w-full justify-start cursor-pointer hover:bg-gray-100"
 									onClick={() => onNavigate('startup-database')}
 								>
 									<Building2 className="w-4 h-4 mr-2" />

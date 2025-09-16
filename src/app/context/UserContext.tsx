@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-export type UserRole = 'comum' | 'avaliador' | 'gestor';
+export type UserRole = 'comum' | 'avaliador' | 'gestor' | 'admin';
 
 export interface User {
   id: string;

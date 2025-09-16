@@ -109,9 +109,18 @@ export function Login({ onLogin }: LoginProps) {
               </div>
               <hr className='text-[#93889d] my-7'/>
 
+              <Button 
+                variant="outline" 
+                className="w-full justify-start"
+                onClick={() => quickLogin('admin', 'Admin', 'Ninna Hub')}
+              >
+                ⚙️ Admin - Super Usuário (Hub)
+              </Button>
+
               <Button type="submit" className="w-full bg-gradient-to-l to-[#5ff604] from-[#01733e] text-white cursor-pointer py-6">
                 Entrar na Plataforma
               </Button>
+              
             </form>
           </CardContent>
         </div>

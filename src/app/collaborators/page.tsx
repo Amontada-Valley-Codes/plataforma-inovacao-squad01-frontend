@@ -27,7 +27,7 @@ export default function CollaboratorsPage() {
   }
 
   // Apenas gestores podem aceder a esta página
-  if (user.role !== 'gestor') {
+  if (user.role !== 'gestor' && user.role !== 'admin') {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
@@ -42,7 +42,7 @@ export default function CollaboratorsPage() {
   return (
     <Collaborators 
       user={user} 
-      onNavigate={handleNavigate}
+      // onNavigate={handleNavigate}
     />
   );
 }
