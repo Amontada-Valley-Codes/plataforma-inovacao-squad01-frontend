@@ -17,10 +17,10 @@ export function CompanyForm({ user, onNavigate }: CompanyFormProps) {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-[#001f61] text-white shadow-lg">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="sm" onClick={() => onNavigate('dashboard')}>
+            <Button className='hover:bg-[#002a7a] transition-colors duration-200 text-white' variant="ghost" size="sm" onClick={() => onNavigate('dashboard')}>
               <ArrowLeft className="w-4 h-4 mr-2" />
               Voltar ao Dashboard
             </Button>
@@ -42,17 +42,28 @@ export function CompanyForm({ user, onNavigate }: CompanyFormProps) {
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="company-name">Nome da Empresa</Label>
-              <Input id="company-name" placeholder="Ex: Inova Corp" />
+              <Input 
+              id="company-name" 
+              placeholder="Ex: Inova Corp"
+              className='focus:border-[#001f61] focus:ring focus:ring-[#001f61]/30 transition-colors' />
             </div>
             <div className="space-y-2">
               <Label htmlFor="company-cnpj">CNPJ</Label>
-              <Input id="company-cnpj" placeholder="00.000.000/0001-00" />
+              <Input 
+              id="company-cnpj" 
+              placeholder="00.000.000/0001-00"
+              className='focus:border-[#001f61] focus:ring focus:ring-[#001f61]/30 transition-colors' />
             </div>
+
              <div className="space-y-2">
               <Label htmlFor="company-description">Descrição Breve</Label>
-              <Textarea id="company-description" placeholder="Uma breve descrição sobre a empresa..." />
+              <Textarea 
+              id="company-description" 
+              placeholder="Uma breve descrição sobre a empresa..."
+              className='focus:border-[#001f61] focus:ring focus:ring-[#001f61]/30 transition-colors' />
+
             </div>
-            <Button className="w-full">
+            <Button className="w-full bg-[#001f61] hover:bg-[#002a7a] transition-colors text-white">
               <Save className="w-4 h-4 mr-2" />
               Salvar Empresa
             </Button>
