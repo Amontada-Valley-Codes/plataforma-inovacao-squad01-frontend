@@ -1,5 +1,5 @@
 {
-      "name": "Wireframes for Innovation Platform",
+      "name": "Inovate Platform",
       "version": "0.1.0",
       "private": true,
       "dependencies": {
@@ -62,7 +62,7 @@
             "typescript": "5.9.2"
       },
       "scripts": {
-            "dev": "next dev",
+            "dev": "next dev --turbopack",
             "build": "next build",
             "start": "next start",
             "lint": "next lint"
