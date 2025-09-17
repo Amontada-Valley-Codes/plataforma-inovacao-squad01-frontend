@@ -42,7 +42,7 @@ export function Login({ onLogin }: LoginProps) {
   };
 
   return (
-    <div className="h-screen flex flex-col w-auto md:flex-row items-center justify-center bg-[url(/img/ninnafundo.jpeg)] bg-center bg-cover">
+    <div className="h-screen flex flex-col w-auto md:flex-row items-center justify-center bg-[url(/img/ninnafundo.jpeg)] bg-center bg-cover ">
       <div className='absolute top-0 bottom-0 left-0 right-0 bg-[#011677]/40 '></div>
       <div className="w-full space-y-6 flex justify-between z-10">
         <div className="md:text- justify-center flex-col md:ml-24 hidden md:flex">
@@ -68,13 +68,13 @@ export function Login({ onLogin }: LoginProps) {
               Entre com suas credenciais para acessar a plataforma
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className='mb-20'>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">E-mail</Label>
                 <Input
                   className='bg-[#261046] border-none py-6'
-                  id="email"
+                  id="email"  
                   type="email"
                   placeholder="seu@email.com"
                   value={email}
