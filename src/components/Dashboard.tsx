@@ -302,7 +302,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                 </CardDescription>
               </div>
               <Button
-                className="bg-[#011677] cursor-pointer text-white hover:bg-[#160430]"
+                className="bg-[#011677] cursor-pointer text-white hover:bg-[#0121af]"
                 onClick={() => router.push("/challenges/new")}
               >
                 <Plus className="w-4 h-4 mr-2" />
@@ -343,7 +343,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                         </span>
                       </div>
                     </div>
-                    <Button className="bg-[#011677] hover:bg-[#160430] text-white cursor-pointer" size="sm">
+                    <Button className="bg-[#011677] hover:bg-[#0121af] text-white cursor-pointer" size="sm">
                       Ver Detalhes
                     </Button>
                   </div>

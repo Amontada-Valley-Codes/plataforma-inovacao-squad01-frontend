@@ -1,4 +1,3 @@
-
 @tailwind utilities;
 @import "tailwindcss";
 
@@ -46,5 +45,26 @@
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
+  }
+}
+
+@layer utilities {
+  .hovers-exit-dash {
+    @apply relative inline-block cursor-pointer transition-all duration-300 hover:bg-[#001a90];
+  }
+
+  .hovers-exit-dash::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0%;
+    height: 2px;
+    background-color: currentColor;
+    transition: width 0.3s ease-in-out;
+  }
+
+  .hovers-exit-dash:hover::after {
+    width: 100%;
   }
 }

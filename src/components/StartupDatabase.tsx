@@ -192,7 +192,7 @@ export function StartupDatabase({ user, onNavigate }: StartupDatabaseProps) {
                 variant="ghost"
                 size="sm"
                 onClick={() => onNavigate("dashboard")}
-                className="hover:bg-[#002a7a] transition-colors duration-200"
+                className="hovers-exit-dash"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Voltar ao Dashboard
