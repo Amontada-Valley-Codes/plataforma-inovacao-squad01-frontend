@@ -1,0 +1,156 @@
+import React from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
+import { Button } from './ui/button';
+import { Separator } from './ui/separator';
+import { ArrowLeft, FileText, Download, Filter } from 'lucide-react';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
+import { User } from '../app/context/UserContext';
+import { Badge } from './ui/badge';
+
+interface ReportsProps {
+  user: User;
+  onNavigate: (page: 'dashboard') => void;
+}
+
+const ideasData = [
+    { id: 'idea-1', title: 'App de Recomendações com IA', stage: 'Ideação', area: 'FinTech', author: 'Ana Silva', submissions: 12, status: 'Ativo' },
+    { id: 'idea-2', title: 'Otimização de Rotas', stage: 'Captura', area: 'Logística', author: 'Carlos Santos', submissions: 5, status: 'Ativo' },
+    { id: 'idea-3', title: 'Plataforma Gamificada', stage: 'Pré-Triagem', area: 'EdTech', author: 'Maria Costa', submissions: 25, status: 'Ativo' },
+    { id: 'idea-7', title: 'Pagamentos com Reconhecimento Facial', stage: 'POC', area: 'FinTech', author: 'Ana Silva', submissions: 89, status: 'Em POC' },
+    { id: 'idea-6', title: 'Análise Preditiva de Churn', stage: 'Triagem Detalhada', area: 'Analytics', author: 'Carlos Santos', submissions: 55, status: 'Em Análise' },
+];
+
+const funnelChartData = [
+    { name: 'Captura', ideas: 45 },
+    { name: 'Pré-Triagem', ideas: 28 },
+    { name: 'Ideação', ideas: 18 },
+    { name: 'Triagem', ideas: 12 },
+    { name: 'POC', ideas: 7 },
+];
+
+const evolutionChartData = [
+    { month: 'Jan', ideas: 65, pocs: 3 },
+    { month: 'Fev', ideas: 78, pocs: 5 },
+    { month: 'Mar', ideas: 92, pocs: 8 },
+    { month: 'Abr', ideas: 88, pocs: 12 },
+    { month: 'Mai', ideas: 104, pocs: 15 },
+];
+
+const pieChartData = [
+    { name: 'FinTech', value: 35, color: '#3B82F6' },
+    { name: 'HealthTech', value: 25, color: '#10B981' },
+    { name: 'EdTech', value: 20, color: '#F59E0B' },
+    { name: 'Logística', value: 20, color: '#8B5CF6' }
+];
+
+export function Reports({ user, onNavigate }: ReportsProps) {
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-[#011677] text-white border-b border-gray-200 sticky top-0 z-10">
+        <div className="container mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Button variant="ghost" size="sm" onClick={() => onNavigate('dashboard')}>
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Voltar ao Dashboard
+              </Button>
+              <Separator orientation="vertical" className="h-6" />
+              <div className="flex items-center gap-2">
+                <FileText className="w-5 h-5" />
+                <h1 className="text-lg font-semibold">Relatórios de Inovação</h1>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+                <Button variant="outline">
+                    <Filter className="w-4 h-4 mr-2" />
+                    Filtrar por Período
+                </Button>
+                <Button>
+                    <Download className="w-4 h-4 mr-2" />
+                    Exportar Relatório
+                </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="container mx-auto px-6 py-8 space-y-8">
+        {/* Gráficos */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <Card>
+            <CardHeader>
+              <CardTitle>Ideias por Etapa do Funil</CardTitle>
+              <CardDescription>Distribuição atual das ideias no funil de inovação.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={funnelChartData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="ideas" fill="#011677" />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Evolução Mensal</CardTitle>
+              <CardDescription>Novas ideias e POCs iniciadas por mês.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={evolutionChartData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="month" />
+                    <YAxis />
+                    <Tooltip />
+                    <Line type="monotone" dataKey="ideas" stroke="#011677" name="Novas Ideias" />
+                    <Line type="monotone" dataKey="pocs" stroke="#5ff604" name="POCs Iniciadas" />
+                </LineChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Tabela de Dados */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Relatório Geral de Ideias</CardTitle>
+            <CardDescription>Lista completa de todas as ideias submetidas na sua empresa.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Título da Ideia</TableHead>
+                  <TableHead>Autor</TableHead>
+                  <TableHead>Área</TableHead>
+                  <TableHead>Etapa Atual</TableHead>
+                  <TableHead>Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {ideasData.map((idea) => (
+                  <TableRow key={idea.id}>
+                    <TableCell className="font-medium">{idea.title}</TableCell>
+                    <TableCell>{idea.author}</TableCell>
+                    <TableCell>{idea.area}</TableCell>
+                    <TableCell>
+                        <Badge variant='outline'>{idea.stage}</Badge>
+                    </TableCell>
+                    <TableCell>{idea.status}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
