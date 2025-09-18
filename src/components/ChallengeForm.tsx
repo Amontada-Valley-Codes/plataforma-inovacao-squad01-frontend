@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
@@ -71,7 +71,7 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
             </Button>
             <Separator orientation="vertical" className="h-6 bg-white/30" />
             <div className="flex items-center gap-2">
-              <Target className="w-5 h-5 text-black" />
+              <Target className="w-5 h-5 text-white" />
               <h1 className="text-xl font-semibold">Novo Desafio de Inovação</h1>
             </div>
           </div>
@@ -92,9 +92,6 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
             <Card className='shadow-xl shadow-gray-200/80 rounded-2xl bg-white/90 backdrop-blur-sm border-2 border-gray-100'>
               <CardHeader>
                 <CardTitle className="text-[#001f61]">Informações Básicas:</CardTitle>
-                <CardDescription className="text-gray-500">
-                  Detalhes essenciais sobre o seu desafio.
-                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="space-y-2">
@@ -234,7 +231,7 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
                           type="button"
                           variant="outline"
                           size="sm"
-                          className='border-black text-black hover:bg-[#eaf4d5] transition-colors'
+                          className='border-black text-black hover:bg-blue-100 transition-colors'
                           onClick={() => {
                             if (!tags.includes(tag)) {
                               setTags([...tags, tag]);
@@ -253,10 +250,7 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
 
             <Card className='shadow-xl shadow-gray-200/80 rounded-2xl bg-white/90 backdrop-blur-sm border-2 border-gray-100'>
               <CardHeader>
-                <CardTitle className="text-[#001f61]">Descrição do Problema</CardTitle>
-                <CardDescription className="text-gray-500">
-                  Explique em detalhes o contexto e os objetivos do desafio.
-                </CardDescription>
+                <CardTitle className="text-[#001f61]">Descrição do Problema : </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
@@ -275,10 +269,7 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
 
             <Card className='shadow-xl shadow-gray-200/80 rounded-2xl bg-white/90 backdrop-blur-sm border-2 border-gray-100'>
               <CardHeader>
-                <CardTitle className="text-[#001f61]">Configurações de Publicação</CardTitle>
-                <CardDescription className="text-gray-500">
-                  Defina quem pode ver e participar deste desafio.
-                </CardDescription>
+                <CardTitle className="text-[#001f61]">Configurações de Publicação : </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
