@@ -48,7 +48,7 @@ export function Sidebar({ user }: SidebarProps) {
 				<nav className="space-y-2 w-full">
 					<Button
 						variant="secondary"
-						className="w-full justify-start cursor-pointer hover:bg-[#001a90]"
+						className="w-full justify-start hovers-exit-dash"
 						onClick={() => router.push("/dashboard")}
 					>
 						<TrendingUp className="w-4 h-4 mr-2" />
@@ -57,7 +57,7 @@ export function Sidebar({ user }: SidebarProps) {
 
 					<Button
 						variant="ghost"
-						className="w-full justify-start cursor-pointer hover:bg-[#001a90]"
+						className="w-full justify-start hovers-exit-dash"
 						onClick={() => router.push("/funnel")}
 					>
 						<Target className="w-4 h-4 mr-2" />
@@ -66,7 +66,7 @@ export function Sidebar({ user }: SidebarProps) {
 
 					<Button
 						variant="ghost"
-						className="w-full justify-start cursor-pointer hover:bg-[#001a90]"
+						className="w-full justify-start hovers-exit-dash"
 						onClick={() => router.push("/challenges/new")}
 					>
 						<Plus className="w-4 h-4 mr-2 " />
@@ -75,7 +75,7 @@ export function Sidebar({ user }: SidebarProps) {
 
 					<Button
 						variant="ghost"
-						className="w-full justify-start cursor-pointer hover:bg-[#001a90]"
+						className="w-full justify-start hovers-exit-dash"
 						onClick={() => router.push("/startups")}
 					>
 						<Database className="w-4 h-4 mr-2" />
@@ -84,7 +84,7 @@ export function Sidebar({ user }: SidebarProps) {
 
 					<Button
 						variant="ghost"
-						className="w-full justify-start cursor-pointer hover:bg-[#001a90]"
+						className="w-full justify-start hovers-exit-dash"
 						onClick={() => router.push("/reports")}
 					>
 						<FileText className="w-4 h-4 mr-2" />
@@ -95,7 +95,7 @@ export function Sidebar({ user }: SidebarProps) {
 						<>
 							<Button
 								variant="ghost"
-								className="w-full justify-start cursor-pointer hover:bg-[#001a90]"
+								className="w-full justify-start hovers-exit-dash"
 								onClick={() => router.push("/companies/new")}
 							>
 								<Building2 className="w-4 h-4 mr-2" />
@@ -108,7 +108,7 @@ export function Sidebar({ user }: SidebarProps) {
 					{(user.role === "gestor" || user.role === "admin") && (
 						<Button
 							variant="ghost"
-							className="w-full justify-start cursor-pointer hover:bg-[#001a90]"
+							className="w-full justify-start hovers-exit-dash"
 							onClick={() => router.push("/collaborators")}
 						>
 							<Users className="w-4 h-4 mr-2" />
@@ -124,7 +124,7 @@ export function Sidebar({ user }: SidebarProps) {
 					variant="ghost"
 					size="lg"
 					onClick={() => setSidebarOpen(!sidebarOpen)}
-					className="flex items-center justify-center gap-2 w-full cursor-pointer hover:bg-[#001a90]"
+					className="flex items-center justify-center gap-2 w-full hovers-exit-dash"
 				>
 					{sidebarOpen && <span>Recolher</span>}
 					<Menu className="w-5 h-5 mt-1" />

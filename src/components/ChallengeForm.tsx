@@ -57,7 +57,7 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
   return (
     <div className="min-h-screen bg-background h-screen w-full bg-[url('/ninnafundo.jpg')] bg-cover bg-center">
       {/* Header */}
-      <div className="bg-[#001f61] text-white shadow-lg">
+      <div className="bg-[#011677] text-white shadow-lg">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center gap-4">
             <Button

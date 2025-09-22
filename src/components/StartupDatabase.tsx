@@ -184,7 +184,7 @@ export function StartupDatabase({ user, onNavigate }: StartupDatabaseProps) {
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
-      <div className="bg-[#001f61] text-white shadow-lg">
+      <div className="bg-[#011677] text-white shadow-lg">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">

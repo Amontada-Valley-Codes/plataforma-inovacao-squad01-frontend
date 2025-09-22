@@ -100,12 +100,12 @@ export function Collaborators({ user }: CollaboratorsProps) {
       {/* Conteúdo principal */}
       <div className="flex-1">
         {/* Header */}
-        <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
+        <div className="bg-[#011677] border-b border-gray-200 sticky top-0 z-10">
           <div className="container mx-auto px-6 py-4">
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
-                <Users className="w-5 h-5 text-gray-700" />
-                <h1 className="text-lg font-semibold text-gray-800">
+                <Users className="w-5 h-5 text-white" />
+                <h1 className="text-lg font-semibold text-white">
                   Gestão de Colaboradores
                 </h1>
               </div>

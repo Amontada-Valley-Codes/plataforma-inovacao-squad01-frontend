@@ -77,13 +77,13 @@ export function InnovationFunnel({ user, onNavigate }: InnovationFunnelProps) {
 	return (
 		<div className="min-h-screen bg-[#f8f9fa] flex flex-col">
 			{/* Topbar */}
-			<div className="bg-white border-b border-gray-200 sticky top-0 z-10">
+			<div className="bg-[#011677] border-b border-gray-200 sticky top-0 z-10">
 				<div className="container mx-auto px-6 py-4">
 					<div className="flex items-center gap-4">
 						<Button
 							variant="ghost"
 							size="sm"
-							className="hover:bg-gray-300 cursor-pointer"
+							className="hovers-exit-dash text-white"
 							onClick={() => onNavigate('dashboard')}
 						>
 							<ArrowLeft className="w-4 h-4 mr-2" />
@@ -111,7 +111,7 @@ export function InnovationFunnel({ user, onNavigate }: InnovationFunnelProps) {
 										className="w-80 bg-white rounded-lg flex flex-col shadow-md border border-gray-200"
 									>
 										{/* Coluna Header */}
-										<div className="p-4 bg-[#001f61] rounded-t-lg">
+										<div className="p-4 bg-[#011677] rounded-t-lg">
 											<div className="flex items-center justify-between">
 												<div className="flex items-center gap-2 text-white">
 													<span className="w-3 h-3 rounded-full bg-[#7eb526]"></span>
@@ -136,7 +136,7 @@ export function InnovationFunnel({ user, onNavigate }: InnovationFunnelProps) {
 																	{...provided.dragHandleProps}
 																	className={`shadow-md ${snapshot.isDragging ? 'opacity-80 shadow-lg' : ''}`}
 																>
-																	<Card className="cursor-pointer active:cursor-grabbing bg-white hover:bg-gray-50 border-l-4 border-[#001f61] hover:border-[#7eb526] transition-all">
+																	<Card className="cursor-pointer active:cursor-grabbing bg-white hover:bg-gray-50 border-l-4 border-[#011677] hover:border-[#7eb526] transition-all">
 																		<CardHeader className="p-4">
 																			<div className="flex justify-between items-start">
 																				{getPriorityBadge(idea.priority)}
