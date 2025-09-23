@@ -20,9 +20,9 @@ export default function InitialPage() {
           className="ml-7"
         />
         <ul className="flex items-center mr-7 text-white space-x-10 text-[17px]">
-          <li><Link className="hover:underline" href="#Inicio">Inicio</Link></li>
-          <li><Link className="hover:underline" href="#Desafios">Desafios</Link></li>
-          <li><Link className="hover:underline" href="#Contato">Contato</Link></li>
+          <li><Link className="hovers-exit-dash rounded p-1" href="#Inicio">Inicio</Link></li>
+          <li><Link className="hovers-exit-dash rounded p-1" href="#Desafios">Desafios</Link></li>
+          <li><Link className="hovers-exit-dash rounded p-1" href="#Contato">Contato</Link></li>
           <li className="py-1 px-6 cursor-pointer bg-white hover:bg-[#eae8e8] text-[#011677] font-semibold rounded">
             <Link href="/login">Login</Link>
           </li>
@@ -41,7 +41,7 @@ export default function InitialPage() {
               Conectando startups e empresas para criar soluções transformadoras.
             </p>
             <Link
-              href="/desafios"
+              href="/login"
               className="bg-[#011677] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#160430] transition"
             >
               Contato
