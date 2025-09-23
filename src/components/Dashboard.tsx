@@ -112,17 +112,21 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
               </div>
             </div>
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-lg">
-                <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
-                  <span className="text-xs text-primary-foreground">
-                    {user.name[0]}
-                  </span>
-                </div>
-                <div className="text-sm">
-                  <p className="font-medium">{user.name}</p>
-                  <p className="text-xs text-gray-500">{user.role}</p>
-                </div>
+            <div
+              className="flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-lg cursor-pointer hover:bg-gray-200"
+              onClick={() => router.push("/profile")}
+            >
+              <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+                <span className="text-xs text-primary-foreground">
+                  {user.name[0]}
+                </span>
               </div>
+              <div className="text-sm">
+                <p className="font-medium">{user.name}</p>
+                <p className="text-xs text-gray-500">{user.role}</p>
+              </div>
+            </div>
+
               <Button
                 variant="ghost"
                 size="lg"
