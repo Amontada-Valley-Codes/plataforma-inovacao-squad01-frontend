@@ -17,8 +17,8 @@ export default function ProfilePage() {
   const user: UserType = userFromContext ?? {
     id: "1",
     company: "Ninna Hub",
-    name: "Tinho",
-    email: "agostinho@ninna.com",
+    name: "teste",
+    email: "teste@teste.com",
     role: "admin" as UserType["role"],
   };
 
@@ -59,10 +59,10 @@ export default function ProfilePage() {
           <Card className="p-6 flex flex-col items-center shadow-lg rounded-2xl flex-1">
             <h2 className="text-2xl font-semibold mb-2">{profile.name}</h2>
             <p className="text-gray-600 mb-2">{profile.email}</p>
-            
+
             {/* Exibe a ROLE do usuário */}
             <p className="flex items-center gap-2 text-gray-600 mb-4">
-              <User size={18} /> **Cargo:** {user.role}
+              <User size={18} /> Cargo: {user.role}
             </p>
 
             <div className="space-y-2 text-gray-600">
@@ -76,7 +76,7 @@ export default function ProfilePage() {
                 <Phone size={18} /> Telefone: {profile.phone}
               </p>
             </div>
-            <Button className="mt-6 w-full bg-[#002366] hover:bg-[#001844]">
+            <Button className="mt-6 w-full bg-[#001f61] hover:bg-[#002a7a] text-white transition-colors duration-200">
               Upload de imagem
             </Button>
           </Card>
@@ -89,12 +89,14 @@ export default function ProfilePage() {
             </p>
             <form onSubmit={handleSubmit} className="space-y-4">
               <Input
+              className="focus:border-[#001f61] focus:ring focus:ring-[#001f61]/30 transition-colors"
                 name="name"
                 value={profile.name}
                 onChange={handleChange}
                 placeholder="Nome"
               />
               <Input
+              className="focus:border-[#001f61] focus:ring focus:ring-[#001f61]/30 transition-colors"
                 name="email"
                 value={profile.email}
                 onChange={handleChange}
@@ -102,12 +104,14 @@ export default function ProfilePage() {
               />
               <div className="grid grid-cols-2 gap-4">
                 <Input
+                className="focus:border-[#001f61] focus:ring focus:ring-[#001f61]/30 transition-colors"
                   name="matricula"
                   value={profile.matricula}
                   onChange={handleChange}
                   placeholder="Matrícula"
                 />
                 <Input
+                className="focus:border-[#001f61] focus:ring focus:ring-[#001f61]/30 transition-colors"
                   name="phone"
                   value={profile.phone}
                   onChange={handleChange}
@@ -115,6 +119,7 @@ export default function ProfilePage() {
                 />
               </div>
               <Input
+                className="focus:border-[#001f61] focus:ring focus:ring-[#001f61]/30 transition-colors"
                 name="department"
                 value={profile.department}
                 onChange={handleChange}
@@ -122,7 +127,7 @@ export default function ProfilePage() {
               />
               <Button
                 type="submit"
-                className="w-full bg-[#002366] hover:bg-[#001844]"
+                className="w-full bg-[#001f61] hover:bg-[#002a7a] text-white transition-colors duration-200"
               >
                 Atualizar
               </Button>
