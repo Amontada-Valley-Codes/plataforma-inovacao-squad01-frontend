@@ -56,30 +56,30 @@ export default function ProfilePage() {
       <main className="flex-1 p-8 flex justify-center items-center">
         <div className="flex flex-col md:flex-row gap-8 w-full max-w-6xl">
           {/* Card da esquerda - Informações do Perfil */}
-          <Card className="p-6 flex flex-col items-center shadow-lg rounded-2xl flex-1">
-            <h2 className="text-2xl font-semibold mb-2">{profile.name}</h2>
-            <p className="text-gray-600 mb-2">{profile.email}</p>
+            <Card className="p-6 flex flex-col shadow-lg rounded-2xl flex-1">
+            <h2 className="text-2xl font-semibold mb-2 text-left">{profile.name}</h2>
 
             {/* Exibe a ROLE do usuário */}
-            <p className="flex items-center gap-2 text-gray-600 mb-4">
-              <User size={18} /> Cargo: {user.role}
-            </p>
 
             <div className="space-y-2 text-gray-600">
-              <p className="flex items-center gap-2">
+            <p className="text-gray-600 text-left mb-5">{profile.email}</p>
+                <p className="flex items-center gap-2 text-gray-600 mb-4">
+                    <User size={18} /> Cargo: {user.role}
+                </p>
+                <p className="flex items-center gap-2 mb-4">
                 <Briefcase size={18} /> {profile.department}
-              </p>
-              <p className="flex items-center gap-2">
+                </p>
+                <p className="flex items-center gap-2 mb-4">
                 <Hash size={18} /> Matrícula: {profile.matricula}
-              </p>
-              <p className="flex items-center gap-2">
+                </p>
+                <p className="flex items-center gap-2 mb-4">
                 <Phone size={18} /> Telefone: {profile.phone}
-              </p>
+                </p>
             </div>
-            <Button className="mt-6 w-full bg-[#001f61] hover:bg-[#002a7a] text-white transition-colors duration-200">
-              Upload de imagem
+            <Button className="mt-14 w-full bg-[#001f61] hover:bg-[#002a7a] text-white transition-colors duration-200">
+                Upload de imagem
             </Button>
-          </Card>
+            </Card>
 
           {/* Card da direita - Formulário de Edição */}
           <Card className="p-6 shadow-lg rounded-2xl flex-1">
