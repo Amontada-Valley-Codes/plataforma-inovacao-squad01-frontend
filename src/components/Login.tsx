@@ -42,25 +42,25 @@ export function Login({ onLogin }: LoginProps) {
   };
 
   return (
-    <div className="h-screen flex flex-col w-auto md:flex-row items-center justify-center bg-[url(/img/ninnafundo.jpeg)] bg-center bg-cover ">
+    <div className="h-screen flex flex-col w-auto md:flex-row items-center justify-center bg-[url(/img/fundo-login.jpg)] bg-center bg-cover ">
       <div className='absolute top-0 bottom-0 left-0 right-0 bg-[#011677]/40 '></div>
       <div className="w-full space-y-6 flex justify-between z-10">
         <div className="md:text- justify-center flex-col md:ml-24 hidden md:flex">
           <div className="mx-auto w-12 h-12 bg-primary rounded-xl flex items-center justify-center mb-4">
           </div>
-          <h1 className="text-6xl  w-1/2 font-bold text-white">Plataforma de <span className='text-[#5ff604]'>Inovação Aberta</span></h1>
+          <h1 className="text-6xl  w-1/2 font-bold text-white">Plataforma de Inovação Aberta</h1>
           <p className="text-white mt-4">Conectando corporações e startups para acelerar a inovação</p>
         </div>
 
-        <div className='h-screen md:w-1/3 w-full flex space-y-2.5 md:px-4 flex-col justify-center  bg-[#011677] text-white shadow'>
+        <div className='h-screen md:w-1/3 w-full pt-10 flex space-y-2.5 md:px-4 flex-col justify-center  bg-[#011677] text-white shadow'>
           <CardHeader>
             <div className='flex justify-center'>
               <Image
               width={100}
-              height={100}
-              src='/img/ninna_logo.png'
-              alt="Ninna Logo"
-              className='w-[270px]'
+              height={10}
+              src='/img/logo.png'
+              alt="logo co.inova"
+              className='w-[250px]'
               />
             </div>
             <CardTitle className='font-medium'>Fazer Login</CardTitle>
@@ -117,7 +117,7 @@ export function Login({ onLogin }: LoginProps) {
                 ⚙️ Admin - Super Usuário (Hub)
               </Button>
 
-              <Button type="submit" className="w-full bg-gradient-to-l to-[#5ff604] from-[#01733e] text-white cursor-pointer py-6">
+              <Button type="submit" className="w-full bg-white text-[#011677] hover:bg-[#261046] hover:text-white cursor-pointer py-6">
                 Entrar na Plataforma
               </Button>
               

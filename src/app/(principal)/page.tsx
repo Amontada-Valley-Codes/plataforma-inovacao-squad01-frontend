@@ -2,8 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import CarroselHome from "../components/InitialPage/CarroselHome";
-import Contact from "../components/InitialPage/Contact";
+import CarroselHome from "../../components/InitialPage/CarroselHome";
+import Contact from "../../components/InitialPage/Contact";
 import { FaGithub, FaInstagram, FaLinkedin } from "react-icons/fa6";
 
 
@@ -11,12 +11,12 @@ export default function InitialPage() {
   return (
     <div id="Inicio" className="bg-white min-h-screen flex flex-col">
       {/* 🔹 Navbar */}
-      <nav className="bg-[#011677] flex justify-between p-2 items-center w-full">
+      <nav className="bg-[#011677] flex justify-between items-center w-full">
         <Image
-          src="/img/logo.png"
+          src="/img/Ninna_logo.png"
           alt="Ninna-Logo"
           height={80}
-          width={120}
+          width={80}
           className="ml-7"
         />
         <ul className="flex items-center mr-7 text-white space-x-10 text-[17px]">
@@ -42,7 +42,7 @@ export default function InitialPage() {
             </p>
             <Link
               href="/login"
-              className="bg-[#011677] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#0121af] transition"
+              className="bg-[#011677] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#160430] transition"
             >
               Contato
             </Link>
