@@ -127,7 +127,7 @@ export function Collaborators({ user }: CollaboratorsProps) {
               </div>
               <Dialog>
                 <DialogTrigger asChild>
-                  <Button className="cursor-pointer bg-[#001f61] text-white hover:bg-[#002a7a] transition-colors duration-200">
+                  <Button className="cursor-pointer bg-[#011677] text-white hover:bg-[#0121af] transition-colors duration-200">
                     <UserPlus className="w-4 h-4 mr-2" />
                     Adicionar Colaborador
                   </Button>
