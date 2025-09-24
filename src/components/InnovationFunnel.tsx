@@ -90,7 +90,7 @@ export function InnovationFunnel({ user, onNavigate }: InnovationFunnelProps) {
 							Voltar ao Dashboard
 						</Button>
 						<Separator orientation="vertical" className="h-6" />
-						<div className="flex items-center gap-2 text-[#001f61]">
+						<div className="flex items-center gap-2 text-white">
 							<Target className="w-5 h-5" />
 							<h1 className="text-lg font-semibold">Funil de Inovação</h1>
 						</div>
