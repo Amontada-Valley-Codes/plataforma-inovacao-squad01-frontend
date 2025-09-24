@@ -101,7 +101,7 @@ export default function CarroselHome() {
             <button
               onClick={prevSlide}
               disabled={currentIndex === 0}
-              className="absolute left-[-45px] top-1/2 -translate-y-1/2 bg-white text-[#011677] p-3 rounded-full shadow-md disabled:opacity-40"
+              className="absolute cursor-pointer left-[-50px] top-1/2 -translate-y-1/2 bg-white text-[#011677] p-3 rounded-full shadow-md disabled:opacity-40"
             >
               <ChevronLeft size={20} />
             </button>
@@ -117,7 +117,7 @@ export default function CarroselHome() {
               >
                 {filteredCards.map((item) => (
                   <div key={item.id} className="px-3" style={{ width: `${100 / visibleCards}%` }}>
-                    <Card className="h-full flex flex-col gap-2">
+                    <Card className="h-full flex flex-col gap-2 transition-transform duration-300 hover:scale-105">
                       <div className="relative w-full h-40">
                         <Image
                           src={item.img}
@@ -141,7 +141,7 @@ export default function CarroselHome() {
                       <CardFooter>
                         <Link
                           href={`/desafios-publicos/${item.id}`}
-                          className="bg-[#011677] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#160430] transition"
+                          className="bg-[#011677] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#0121af] transition"
                         >
                           Ver Detalhes
                         </Link>
@@ -156,7 +156,7 @@ export default function CarroselHome() {
             <button
               onClick={nextSlide}
               disabled={currentIndex >= filteredCards.length - visibleCards}
-              className="absolute right-[-40px] top-1/2 -translate-y-1/2 bg-white text-[#011677] p-3 rounded-full shadow-md disabled:opacity-40"
+              className="absolute cursor-pointer right-[-50px] top-1/2 -translate-y-1/2 bg-white text-[#011677] p-3 rounded-full shadow-md disabled:opacity-40"
             >
               <ChevronRight size={20} />
             </button>

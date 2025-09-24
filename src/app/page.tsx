@@ -42,7 +42,7 @@ export default function InitialPage() {
             </p>
             <Link
               href="/login"
-              className="bg-[#011677] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#160430] transition"
+              className="bg-[#011677] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#0121af] transition"
             >
               Contato
             </Link>
