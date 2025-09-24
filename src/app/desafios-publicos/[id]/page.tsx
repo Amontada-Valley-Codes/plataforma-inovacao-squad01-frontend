@@ -12,8 +12,6 @@ type DetalhesPageProps = {
 // Next.js passa os 'params' da URL para a sua página
 export default function PaginaDetalhesDesafio({ params }: DetalhesPageProps) {
   const { id } = params;
-
-  // Encontra o desafio específico usando o ID da URL
   const desafio = desafios.find((d) => d.id === id);
 
   // Caso alguém acesse uma URL com um ID que não existe (ex: /desafios-publicos/99)

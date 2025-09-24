@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "../ui/card";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import CardList from "./CardList"; // 👈 Importe o novo componente
+import CardList from "./CardList";
 import React from "react";
 
 interface CardItem {
@@ -22,13 +22,62 @@ export default function CarroselHome() {
   const [searchTerm, setSearchTerm] = useState<string>("");
 
   const cards: CardItem[] = [
-    { id: 1, title: "Desafio 1", venc: "Resumo do desafio 1", empresa: "Empresa", area: "Área", img: "/img/ninnafundo.jpeg" },
-    { id: 2, title: "Desafio 2", venc: "Resumo do desafio 2", empresa: "Empresa", area: "Área", img: "/img/Ninna_com_fundo.png" },
-    { id: 3, title: "Desafio 3", venc: "Resumo do desafio 3", empresa: "Empresa", area: "Área", img: "/img/startups-empresas.png" },
-    { id: 4, title: "Desafio 4", venc: "Resumo do desafio 4", empresa: "Empresa", area: "Área", img: "/img/startups-empresas.png" },
-    { id: 5, title: "Desafio 5", venc: "Resumo do desafio 5", empresa: "Empresa", area: "Área", img: "/img/startups-empresas.png" },
-    { id: 6, title: "Desafio 6", venc: "Resumo do desafio 6", empresa: "Empresa", area: "Área", img: "/img/startups-empresas.png" },
-    { id: 7, title: "Desafio 7", venc: "Resumo do desafio 7", empresa: "Empresa", area: "Área", img: "/img/startups-empresas.png" },
+    {
+      id: 1,
+      title: "Desafio de Energia Sustentável",
+      venc: "Buscar soluções para reduzir o consumo energético em ambientes corporativos utilizando IoT e análise de dados.",
+      empresa: "Enel Brasil",
+      area: "Energia e Sustentabilidade",
+      img: "/img/desafio1.jpg",
+    },
+    {
+      id: 2,
+      title: "Saúde Digital Preventiva",
+      venc: "Desenvolver tecnologias para monitoramento remoto de pacientes crônicos com uso de wearables.",
+      empresa: "Hapvida NotreDame",
+      area: "Saúde e Tecnologia",
+      img: "/img/desafio2.png",
+    },
+    {
+      id: 3,
+      title: "Mobilidade Inteligente",
+      venc: "Criar soluções de transporte urbano com foco em eficiência e redução de emissão de carbono.",
+      empresa: "Volvo Cars Brasil",
+      area: "Mobilidade e Cidades Inteligentes",
+      img: "/img/desafio3.jpg",
+    },
+    {
+      id: 4,
+      title: "Agronegócio 4.0",
+      venc: "Inovações para monitoramento de solo e cultivo utilizando inteligência artificial e sensores conectados.",
+      empresa: "Ambev Agro",
+      area: "Agronegócio e Tecnologia",
+      img: "/img/desafio4.jpg",
+    },
+    {
+      id: 5,
+      title: "Inclusão Financeira",
+      venc: "Soluções digitais para ampliar o acesso a serviços financeiros em comunidades desbancarizadas.",
+      empresa: "Banco do Brasil",
+      area: "Finanças e Impacto Social",
+      img: "/img/desafio5.jpeg",
+    },
+    {
+      id: 6,
+      title: "Indústria 4.0",
+      venc: "Automatização de linhas de produção com uso de robótica colaborativa e visão computacional.",
+      empresa: "WEG",
+      area: "Indústria e Automação",
+      img: "/img/desafio6.jpg",
+    },
+    {
+      id: 7,
+      title: "Educação Personalizada",
+      venc: "Plataformas que usem IA para adaptar o aprendizado às necessidades individuais de cada aluno.",
+      empresa: "Google for Education",
+      area: "Educação e Tecnologia",
+      img: "/img/desafio7.webp",
+    },
   ];
 
   const filteredCards = cards.filter(card =>
@@ -91,7 +140,7 @@ export default function CarroselHome() {
           />
         </div>
       </div>
-      <hr className="mb-5 text-gray-200"/>
+      <hr className="mb-5 text-gray-200" />
 
       <div className="relative max-w-6xl mx-auto">
         {/* Renderização condicional: Carrossel ou Lista Estática */}
