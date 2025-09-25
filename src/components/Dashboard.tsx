@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from "react"
+import React, { useState, useRef, useEffect } from "react" // Importe useRef e useEffect
 import {
   Card,
   CardContent,
@@ -29,10 +29,13 @@ import {
   Clock,
   Plus,
   LogOut,
+  User as UserIcon, // Renomeado para evitar conflito com a interface User
 } from "lucide-react"
-import { User, Challenge } from "../app/context/UserContext"
+// Certifique-se de que User e Challenge são importados corretamente do seu UserContext
+import { User, Challenge } from "../app/context/UserContext" 
 import { Sidebar } from "./SideBar"
 import { useRouter } from "next/navigation"
+import Image from "next/image"
 
 interface DashboardProps {
   user: User
@@ -41,8 +44,26 @@ interface DashboardProps {
 
 export function Dashboard({ user, onLogout }: DashboardProps) {
   const [selectedCompany] = useState(user.company)
+  const [isMenuOpen, setIsMenuOpen] = useState(false); // NOVO ESTADO para controlar o pop-up
+  const menuRef = useRef<HTMLDivElement>(null); // Referência para detectar cliques fora
+
   const router = useRouter()
 
+  // Função para fechar o menu ao clicar fora
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [menuRef]);
+
+  // ... (dados do gráfico mantidos)
   const funnelData = [
     { stage: "Geração/Captura", count: 45, color: "#3B82F6" },
     { stage: "Pré-Triagem", count: 28, color: "#8B5CF6" },
@@ -111,34 +132,67 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-4">
-            <div
-              className="flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-lg cursor-pointer hover:bg-gray-200"
-              onClick={() => router.push("/profile")}
-            >
-              <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
-                <span className="text-xs text-primary-foreground">
-                  {user.name[0]}
-                </span>
-              </div>
-              <div className="text-sm">
-                <p className="font-medium">{user.name}</p>
-                <p className="text-xs text-gray-500">{user.role}</p>
-              </div>
-            </div>
+            
+            {/* INÍCIO DO NOVO BLOCO DE PERFIL COM POP-UP CUSTOMIZADO */}
+            <div className="relative" ref={menuRef}>
+                {/* O círculo de imagem de perfil (Botão que abre o menu) */}
+                <div 
+                    className="w-10 h-10 bg-[#011677] rounded-full flex items-center justify-center cursor-pointer shadow-lg hover:ring-2 ring-offset-2 ring-[#011677] transition-all"
+                    onClick={() => setIsMenuOpen(!isMenuOpen)} // Alterna o estado do menu
+                >
+                    {/* Renderiza a imagem real ou a inicial */}
+                    {user.image_url ? (
+                        <Image
+                            src={user.image_url}
+                            alt="Perfil"
+                            width={40}
+                            height={40}
+                            className="rounded-full object-cover"
+                        />
+                    ) : (
+                        <span className="text-lg font-bold text-white">
+                            {user.name[0].toUpperCase()}
+                        </span>
+                    )}
+                </div>
 
-              <Button
-                variant="ghost"
-                size="lg"
-                onClick={onLogout}
-                className="cursor-pointer bg-gray-100 hover:bg-gray-300 "
-              >
-                <LogOut className="w-7 h-7 mr-1" />
-                Sair
-              </Button>
+                {/* Pop-up de Ações (Menu) */}
+                {isMenuOpen && (
+                    <Card className="absolute gap-1 right-0 mt-3 w-64 shadow-2xl z-20">
+                        <CardHeader className="p-3 border-b text-center">
+                            <p className="text-sm font-medium leading-none">{user.name}</p>
+                            <p className="text-xs leading-none text-gray-500">
+                                {user.email}
+                            </p>
+                        </CardHeader>
+                        <CardContent className="p-0">
+                            {/* Opção Ver Perfil */}
+                            <div
+                                className="flex items-center p-1   cursor-pointer hover:bg-gray-100 transition"
+                                onClick={() => {
+                                    router.push("/profile");
+                                    setIsMenuOpen(false);
+                                }}
+                            >
+                                <UserIcon className="mr-2 h-4 w-4 text-[#011677]" />
+                                <span className="text-sm">Ver Perfil</span>
+                            </div>
+                            
+                            {/* Opção Sair */}
+                            <div
+                                className="flex items-center p-2 pb-1 cursor-pointer hover:bg-red-50 transition border-t"
+                                onClick={onLogout}
+                            >
+                                <LogOut className="mr-2 h-4 w-4 text-red-600" />
+                                <span className="text-sm text-red-600 font-medium">Sair</span>
+                            </div>
+                        </CardContent>
+                    </Card>
+                )}
             </div>
+            {/* FIM DO NOVO BLOCO */}
+            
           </div>
-
           {/* KPI Cards */}
           {user.role === "gestor" && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
@@ -156,7 +210,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                   </p>
                 </CardContent>
               </Card>
-
+              {/* ... (Demais KPI Cards) */}
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">
