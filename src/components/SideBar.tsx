@@ -15,7 +15,7 @@ import {
 } from "lucide-react"
 import { User } from "../app/context/UserContext"
 import { useRouter, usePathname } from "next/navigation"
-
+import { ClipboardCheck } from "lucide-react"
 interface SidebarProps {
   user: User
 }
@@ -116,6 +116,17 @@ export function Sidebar({ user }: SidebarProps) {
               <Users className="w-4 h-4 mr-2" />
               {sidebarOpen && "Colaboradores"}
             </Button>
+          )}
+
+          {(user.role === 'gestor' || user.role === 'avaliador' || user.role === 'admin') && (
+              <Button
+                  variant="ghost"
+                  className="w-full justify-start hovers-exit-dash"
+                  onClick={() => router.push('/committee-review')}
+              >
+                  <ClipboardCheck className="w-4 h-4 mr-2" />
+                  {sidebarOpen && "Revisão do Comitê"}
+              </Button>
           )}
         </nav>
       </div>
