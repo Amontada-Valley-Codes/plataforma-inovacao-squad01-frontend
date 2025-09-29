@@ -121,7 +121,7 @@ export function Sidebar({ user }: SidebarProps) {
           {(user.role === 'gestor' || user.role === 'avaliador' || user.role === 'admin') && (
               <Button
                   variant="ghost"
-                  className="w-full justify-start hovers-exit-dash"
+                  className={`w-full justify-start hovers-exit-dash ${isActive("/committee-review") ? "bg-[#001a90] active-exit-dash" : ""}`}
                   onClick={() => router.push('/committee-review')}
               >
                   <ClipboardCheck className="w-4 h-4 mr-2" />
