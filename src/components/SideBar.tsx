@@ -60,6 +60,7 @@ export function Sidebar({ user }: SidebarProps) {
 			{sidebarOpen && "Dashboard"}
 		  </Button>
 
+		  {(user.role === "gestor" || user.role === "avaliador" ||  user.role === "comum") && (
           <Button
             variant="ghost"
             className={`w-full justify-start hovers-exit-dash ${isActive("/funnel") ? "bg-[#001a90] active-exit-dash" : ""}`}
@@ -68,7 +69,9 @@ export function Sidebar({ user }: SidebarProps) {
             <Target className="w-4 h-4 mr-2" />
             {sidebarOpen && "Funil de Inovação"}
           </Button>
+		  )}
 
+		  {(user.role === "gestor" || user.role === "avaliador" ||  user.role === "comum") && (
           <Button
             variant="ghost"
             className={`w-full justify-start hovers-exit-dash ${isActive("/challenges/new") ? "bg-[#001a90] active-exit-dash" : ""}`}
@@ -77,6 +80,7 @@ export function Sidebar({ user }: SidebarProps) {
             <Plus className="w-4 h-4 mr-2" />
             {sidebarOpen && "Desafios"}
           </Button>
+		  )}
 
           <Button
             variant="ghost"
@@ -87,6 +91,7 @@ export function Sidebar({ user }: SidebarProps) {
             {sidebarOpen && "Base de Startups"}
           </Button>
 
+		  {(user.role === "gestor") && (
           <Button
             variant="ghost"
             className={`w-full justify-start hovers-exit-dash ${isActive("/reports") ? "bg-[#001a90] active-exit-dash" : ""}`}
@@ -95,8 +100,9 @@ export function Sidebar({ user }: SidebarProps) {
             <FileText className="w-4 h-4 mr-2" />
             {sidebarOpen && "Relatórios"}
           </Button>
+		  )}
 
-          {user.role === "admin" && (
+          {(user.role === "admin") && (
             <Button
               variant="ghost"
               className={`w-full justify-start hovers-exit-dash ${isActive("/companies/new") ? "bg-[#001a90] active-exit-dash" : ""}`}
@@ -118,7 +124,7 @@ export function Sidebar({ user }: SidebarProps) {
             </Button>
           )}
 
-          {(user.role === 'gestor' || user.role === 'avaliador' || user.role === 'admin') && (
+          {(user.role === 'gestor' || user.role === 'avaliador') && (
               <Button
                   variant="ghost"
                   className="w-full justify-start hovers-exit-dash"
