@@ -10,9 +10,11 @@ export interface User {
   email: string;
   role: UserRole;
   company: string;
+  image_url?: string; // ✨ NOVO CAMPO ADICIONADO AQUI
 }
 
 export interface Challenge {
+// ... (restante da interface Challenge)
   id: string;
   name: string;
   startDate: string;
@@ -25,6 +27,7 @@ export interface Challenge {
 }
 
 export interface Startup {
+// ... (restante da interface Startup)
   id: string;
   name: string;
   segment: string;
@@ -36,6 +39,7 @@ export interface Startup {
 }
 
 interface UserContextType {
+// ... (restante do UserContextType)
   user: User | null;
   setUser: (user: User | null) => void;
   isAuthenticated: boolean;
@@ -44,6 +48,7 @@ interface UserContextType {
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
+// ... (restante do UserProvider)
   const [user, setUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
