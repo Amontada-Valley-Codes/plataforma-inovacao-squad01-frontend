@@ -36,12 +36,12 @@ export function Sidebar({ user }: SidebarProps) {
     >
       {/* Topo da sidebar */}
       <div className="p-4 w-full flex flex-col">
-        <div className="flex items-center gap-2 mb-8 w-full">
-          <div className="w-8 h-8 bg-[#160430] rounded-lg flex items-center justify-center">
-            <Image alt="logo" src="/img/logo.png" width={60} height={60} />
+        <div className="flex items-center justify-center gap-2 mb-8 w-full">
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center">
+            <Image alt="logo" src="/img/4.png" width={60} height={60} />
           </div>
           {sidebarOpen && (
-            <span className="font-semibold">Plataforma de Inovação</span>
+            <span className="font-semibold">CO.INOVA</span>
           )}
         </div>
 
