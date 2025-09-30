@@ -118,36 +118,43 @@ export function Reports({ user, onNavigate }: ReportsProps) {
         </div>
 
         {/* Tabela de Dados */}
-        <Card>
+        <Card className="shadow-lg">
           <CardHeader>
-            <CardTitle>Relatório Geral de Ideias</CardTitle>
+            <CardTitle className="text-2xl text-[#001f61]">Relatório Geral de Ideias</CardTitle>
             <CardDescription>Lista completa de todas as ideias submetidas na sua empresa.</CardDescription>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Título da Ideia</TableHead>
-                  <TableHead>Autor</TableHead>
-                  <TableHead>Área</TableHead>
-                  <TableHead>Etapa Atual</TableHead>
-                  <TableHead>Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {ideasData.map((idea) => (
-                  <TableRow key={idea.id}>
-                    <TableCell className="font-medium">{idea.title}</TableCell>
-                    <TableCell>{idea.author}</TableCell>
-                    <TableCell>{idea.area}</TableCell>
-                    <TableCell>
-                        <Badge variant='outline'>{idea.stage}</Badge>
-                    </TableCell>
-                    <TableCell>{idea.status}</TableCell>
+            <div className="overflow-x-auto"> {/* Garante que a tabela é responsiva */}
+              <Table className="min-w-full divide-y divide-gray-200">
+                <TableHeader className="bg-gray-50">
+                  <TableRow>
+                    <TableHead className="text-[#001f61] font-bold">Título da Ideia</TableHead>
+                    <TableHead className="text-[#001f61] font-bold">Autor</TableHead>
+                    <TableHead className="text-[#001f61] font-bold">Área</TableHead>
+                    <TableHead className="text-[#001f61] font-bold">Etapa Atual</TableHead>
+                    <TableHead className="text-[#001f61] font-bold">Status</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {ideasData.map((idea) => (
+                    <TableRow key={idea.id} className="hover:bg-blue-50/50 transition-colors duration-200">
+                      <TableCell className="font-medium text-gray-800">{idea.title}</TableCell>
+                      <TableCell className="text-gray-600">{idea.author}</TableCell>
+                      <TableCell className="text-gray-600">{idea.area}</TableCell>
+                      <TableCell>
+                        {/* Estilização da Badge baseada no padrão de cores azul/índigo */}
+                        <Badge 
+                          className="bg-indigo-100 text-indigo-800 hover:bg-indigo-200 text-xs font-medium px-2 py-0.5"
+                        >
+                          {idea.stage}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-gray-600">{idea.status}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           </CardContent>
         </Card>
       </div>

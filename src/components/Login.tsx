@@ -60,20 +60,16 @@ export function Login({ onLogin }: LoginProps) {
               height={10}
               src='/img/logo.png'
               alt="logo co.inova"
-              className='w-[250px]'
+              className='w-[250px] pb-10'
               />
             </div>
-            <CardTitle className='font-medium'>Fazer Login</CardTitle>
-            <CardDescription className='text-white'>
-              Entre com suas credenciais para acessar a plataforma
-            </CardDescription>
           </CardHeader>
           <CardContent className='mb-20'>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">E-mail</Label>
                 <Input
-                  className='bg-[#261046] border-none py-6'
+                  className='bg-white border-none py-6 text-gray-700'
                   id="email"  
                   type="email"
                   placeholder="seu@email.com"
@@ -86,7 +82,7 @@ export function Login({ onLogin }: LoginProps) {
               <div className="space-y-2">
                 <Label htmlFor="company">Empresa</Label>
                 <Input
-                  className='bg-[#261046] border-none py-6'
+                  className='bg-white border-none py-6 text-gray-700'
                   id="company"
                   placeholder="Nome da sua empresa"
                   value={company}
@@ -97,10 +93,10 @@ export function Login({ onLogin }: LoginProps) {
               <div className="space-y-2">
                 <Label htmlFor="role">Nível de Acesso</Label>
                 <Select value={role} onValueChange={(value: UserRole) => setRole(value)}>
-                  <SelectTrigger className='bg-[#261046] border-none text-[#93889d] py-6'>
+                  <SelectTrigger className='bg-white border-none text-[#686a6e] py-6'>
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className='bg-[#261046] text-[#93889d] border-none'>
+                  <SelectContent className='bg-gray-300 text-[#686a6e] border-none'>
                     <SelectItem value="comum">Usuário Comum - Submete ideias</SelectItem>
                     <SelectItem value="avaliador">Avaliador - Analisa ideias</SelectItem>
                     <SelectItem value="gestor">Gestor de Inovação - Visão completa</SelectItem>
@@ -111,13 +107,13 @@ export function Login({ onLogin }: LoginProps) {
 
               <Button 
                 variant="outline" 
-                className="w-full justify-start"
+                className="w-full justify-center cursor-pointer py-4 hover:bg-white hover:text-[#011677] text-white"
                 onClick={() => quickLogin('admin', 'Admin', 'Ninna Hub')}
               >
                 ⚙️ Admin - Super Usuário (Hub)
               </Button>
 
-              <Button type="submit" className="w-full bg-white text-[#011677] hover:bg-[#261046] hover:text-white cursor-pointer py-6">
+              <Button type="submit" className="w-full bg-white text-[#011677] hover:bg-[#011677] hover:border-white hover:border   hover:text-white cursor-pointer py-6">
                 Entrar na Plataforma
               </Button>
               
