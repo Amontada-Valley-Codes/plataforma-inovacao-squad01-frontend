@@ -73,8 +73,8 @@ export default function InitialPage() {
         {/* Logo e Descrição */}
         <div className="col-span-1 md:col-span-2 flex flex-col items-start">
           <img
-            src="/img/Ninna_logo.png"
-            alt="Ninna Logo"
+            src="/img/logo.png"
+            alt="Logo co.inova"
             width={80}
             height={80}
             className="mb-4"
@@ -106,7 +106,7 @@ export default function InitialPage() {
           </ul>
         </div>
 
-        {/* Contato e Redes Sociais */}
+        {/* Redes Sociais */}
         <div>
           <h3 className="font-bold text-lg mb-4">Redes</h3>
           <div className="flex space-x-4 mt-6 text-2xl">

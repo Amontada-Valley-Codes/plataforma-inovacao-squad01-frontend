@@ -58,6 +58,7 @@ export function Sidebar({ user }: SidebarProps) {
             {sidebarOpen && "Dashboard"}
           </Button>
 
+		  {(user.role === "gestor" || user.role === "avaliador" ||  user.role === "comum") && (
           <Button
             variant="ghost"
             className={`w-full justify-start hovers-exit-dash ${
@@ -68,7 +69,9 @@ export function Sidebar({ user }: SidebarProps) {
             <Target className={`w-5 h-5 ${sidebarOpen ? "mr-2" : ""}`} />
             {sidebarOpen && "Funil de Inovação"}
           </Button>
+		  )}
 
+		  {(user.role === "gestor" || user.role === "avaliador" ||  user.role === "comum") && (
           <Button
             variant="ghost"
             className={`w-full justify-start hovers-exit-dash ${
@@ -79,6 +82,7 @@ export function Sidebar({ user }: SidebarProps) {
             <Plus className={`w-5 h-5 ${sidebarOpen ? "mr-2" : ""}`} />
             {sidebarOpen && "Desafios"}
           </Button>
+		  )}
 
           <Button
             variant="ghost"
@@ -91,6 +95,7 @@ export function Sidebar({ user }: SidebarProps) {
             {sidebarOpen && "Base de Startups"}
           </Button>
 
+		  {(user.role === "gestor") && (
           <Button
             variant="ghost"
             className={`w-full justify-start hovers-exit-dash ${
@@ -101,8 +106,9 @@ export function Sidebar({ user }: SidebarProps) {
             <FileText className={`w-5 h-5 ${sidebarOpen ? "mr-2" : ""}`} />
             {sidebarOpen && "Relatórios"}
           </Button>
+		  )}
 
-          {user.role === "admin" && (
+          {(user.role === "admin") && (
             <Button
               variant="ghost"
               className={`w-full justify-start hovers-exit-dash ${
@@ -133,8 +139,7 @@ export function Sidebar({ user }: SidebarProps) {
           )}
 
           {(user.role === "gestor" ||
-            user.role === "avaliador" ||
-            user.role === "admin") && (
+            user.role === "avaliador") && (
             <Button
               variant="ghost"
               className={`w-full hovers-exit-dash ${
