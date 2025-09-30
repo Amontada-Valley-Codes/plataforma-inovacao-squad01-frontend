@@ -126,8 +126,8 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-4">
               <div>
-                <h1 className="font-bold text-2xl">Dashboard</h1>
-                <p className="text-gray-500">
+                <h1 className="font-bold md:text-2xl text-[20px]">Dashboard</h1>
+                <p className="text-gray-500 md:text-[17px] text-[13px]">
                   Visão geral dos indicadores e atividades
                 </p>
               </div>
@@ -159,7 +159,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                 {/* Pop-up de Ações (Menu) */}
                 {isMenuOpen && (
                     <Card className="absolute gap-1 right-0 mt-3 w-64 shadow-2xl z-20">
-                        <CardHeader className="p-3 border-b text-center">
+                        <CardHeader className="p-3 text-center">
                             <p className="text-sm font-medium leading-none">{user.name}</p>
                             <p className="text-xs leading-none text-gray-500">
                                 {user.email}
@@ -167,6 +167,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                         </CardHeader>
                         <CardContent className="p-0">
                             {/* Opção Ver Perfil */}
+                            <hr className="text-gray-400" />
                             <div
                                 className="flex items-center p-1   cursor-pointer hover:bg-gray-100 transition"
                                 onClick={() => {
@@ -177,15 +178,17 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                                 <UserIcon className="mr-2 h-4 w-4 text-[#011677]" />
                                 <span className="text-sm">Ver Perfil</span>
                             </div>
+                            <hr className="text-gray-400" />
                             
                             {/* Opção Sair */}
                             <div
-                                className="flex items-center p-2 pb-1 cursor-pointer hover:bg-red-50 transition border-t"
+                                className="flex items-center p-2 pb-1 cursor-pointer hover:bg-red-50 transition"
                                 onClick={onLogout}
                             >
                                 <LogOut className="mr-2 h-4 w-4 text-red-600" />
                                 <span className="text-sm text-red-600 font-medium">Sair</span>
                             </div>
+                            <hr className="text-gray-400" />
                         </CardContent>
                     </Card>
                 )}
@@ -352,7 +355,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
 
           {/* Desafios Recentes */}
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
+            <CardHeader className="flex md:flex-row flex-col md:items-center justify-between">
               <div>
                 <CardTitle>Desafios Ativos</CardTitle>
                 <CardDescription>
@@ -368,11 +371,11 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
               </Button>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4 ">
+              <div className="space-y-4">
                 {recentChallenges.map((challenge) => (
                   <div
                     key={challenge.id}
-                    className="flex items-center justify-between p-4 shadow-lg rounded-lg hover:bg-gray-200 cursor-pointer"
+                    className="flex md:items-center md:flex-row flex-col justify-between p-4 shadow-lg rounded-lg hover:bg-gray-200 cursor-pointer"
                     onClick={() =>
                       router.push(`/challenges/${challenge.id}`)
                     }
@@ -401,7 +404,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                         </span>
                       </div>
                     </div>
-                    <Button className="bg-[#011677] hover:bg-[#0121af] text-white cursor-pointer" size="sm">
+                    <Button className="bg-[#011677] mt-2 md:mt-0 hover:bg-[#0121af] text-white cursor-pointer" size="sm">
                       Ver Detalhes
                     </Button>
                   </div>
