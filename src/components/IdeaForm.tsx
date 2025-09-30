@@ -1,19 +1,52 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Textarea } from './ui/textarea';
 import { DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from './ui/dialog';
 import { Lightbulb } from 'lucide-react';
+import { useUser } from '../app/context/UserContext';
+import { api } from '../service/Api';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 
 interface IdeaFormProps {
   stageTitle: string;
+  onIdeaCreated: () => void; // Função para notificar o componente pai que uma nova ideia foi criada
+  challengeId: string; // ID do desafio ao qual a ideia pertence
+  closeDialog: () => void; // Função para fechar o modal
 }
 
-export function IdeaForm({ stageTitle }: IdeaFormProps) {
-  const handleSubmit = (e: React.FormEvent) => {
+export function IdeaForm({ stageTitle, onIdeaCreated, challengeId, closeDialog }: IdeaFormProps) {
+  const { user } = useUser(); // Obter o utilizador logado
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [priority, setPriority] = useState('Média');
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Nova ideia submetida!');
+    if (!title || !description || !user) {
+        alert('Por favor, preencha todos os campos.');
+        return;
+    }
+
+    try {
+      await api.post('/ideas', {
+        title,
+        description,
+        priority,
+        authorId: user.id,
+        companyId: user.companyId,
+        challengeId: challengeId,
+      });
+
+      alert('Ideia submetida com sucesso!');
+      onIdeaCreated(); // Atualiza a lista no funil
+      closeDialog(); // Fecha o modal
+
+    } catch (error) {
+      console.error("Erro ao submeter ideia:", error);
+      alert("Não foi possível submeter a ideia.");
+    }
   };
 
   return (
@@ -24,7 +57,7 @@ export function IdeaForm({ stageTitle }: IdeaFormProps) {
           Submeter Nova Ideia
         </DialogTitle>
         <DialogDescription>
-          Descreva a sua ideia ou oportunidade. Ela será adicionada à coluna 
+          Descreva a sua ideia. Ela será adicionada à coluna 
           <span className="font-semibold text-[#001f61]"> "{stageTitle}"</span>.
         </DialogDescription>
       </DialogHeader>
@@ -37,6 +70,8 @@ export function IdeaForm({ stageTitle }: IdeaFormProps) {
               id="idea-title" 
               placeholder="Ex: App de Recomendações com IA" 
               className="border-[#001f61] focus:ring-[#7eb526] focus:border-[#7eb526] rounded-lg"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
             />
           </div>
           <div className="space-y-2">
@@ -45,7 +80,23 @@ export function IdeaForm({ stageTitle }: IdeaFormProps) {
               id="idea-description" 
               placeholder="Descreva a sua ideia em detalhe..." 
               className="border-[#001f61] focus:ring-[#7eb526] focus:border-[#7eb526] rounded-lg"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
             />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="priority" className="text-gray-800">Prioridade</Label>
+             <Select onValueChange={setPriority} defaultValue={priority}>
+                <SelectTrigger className="focus:ring-[#001f61]/30">
+                    <SelectValue placeholder="Selecione a prioridade" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="Baixa">Baixa</SelectItem>
+                    <SelectItem value="Média">Média</SelectItem>
+                    <SelectItem value="Alta">Alta</SelectItem>
+                    <SelectItem value="Crítica">Crítica</SelectItem>
+                </SelectContent>
+            </Select>
           </div>
         </div>
         

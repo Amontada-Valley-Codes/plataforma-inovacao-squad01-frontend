@@ -60,7 +60,7 @@ export function Sidebar({ user }: SidebarProps) {
 			{sidebarOpen && "Dashboard"}
 		  </Button>
 
-		  {(user.role === "gestor" || user.role === "avaliador" ||  user.role === "comum") && (
+		  {(user.role === "GESTOR" || user.role === "AVALIADOR" ||  user.role === "COMUM") && (
           <Button
             variant="ghost"
             className={`w-full justify-start hovers-exit-dash ${isActive("/funnel") ? "bg-[#001a90] active-exit-dash" : ""}`}
@@ -71,7 +71,7 @@ export function Sidebar({ user }: SidebarProps) {
           </Button>
 		  )}
 
-		  {(user.role === "gestor" || user.role === "avaliador" ||  user.role === "comum") && (
+		  {(user.role === "GESTOR" || user.role === "AVALIADOR" ||  user.role === "COMUM") && (
           <Button
             variant="ghost"
             className={`w-full justify-start hovers-exit-dash ${isActive("/challenges/new") ? "bg-[#001a90] active-exit-dash" : ""}`}
@@ -91,7 +91,7 @@ export function Sidebar({ user }: SidebarProps) {
             {sidebarOpen && "Base de Startups"}
           </Button>
 
-		  {(user.role === "gestor") && (
+		  {(user.role === "GESTOR") && (
           <Button
             variant="ghost"
             className={`w-full justify-start hovers-exit-dash ${isActive("/reports") ? "bg-[#001a90] active-exit-dash" : ""}`}
@@ -102,7 +102,7 @@ export function Sidebar({ user }: SidebarProps) {
           </Button>
 		  )}
 
-          {(user.role === "admin") && (
+          {(user.role === "ADMIN") && (
             <Button
               variant="ghost"
               className={`w-full justify-start hovers-exit-dash ${isActive("/companies/new") ? "bg-[#001a90] active-exit-dash" : ""}`}
@@ -113,7 +113,7 @@ export function Sidebar({ user }: SidebarProps) {
             </Button>
           )}
 
-          {(user.role === "gestor" || user.role === "admin") && (
+          {(user.role === "GESTOR" || user.role === "ADMIN") && (
             <Button
               variant="ghost"
               className={`w-full justify-start hovers-exit-dash ${isActive("/collaborators") ? "bg-[#001a90] active-exit-dash" : ""}`}
@@ -124,7 +124,7 @@ export function Sidebar({ user }: SidebarProps) {
             </Button>
           )}
 
-          {(user.role === 'gestor' || user.role === 'avaliador') && (
+          {(user.role === 'GESTOR' || user.role === 'AVALIADOR') && (
               <Button
                   variant="ghost"
                   className={`w-full justify-start hovers-exit-dash ${isActive("/committee-review") ? "bg-[#001a90] active-exit-dash" : ""}`}

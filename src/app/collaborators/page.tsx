@@ -27,7 +27,7 @@ export default function CollaboratorsPage() {
   }
 
   // Apenas gestores podem aceder a esta página
-  if (user.role !== 'gestor' && user.role !== 'admin') {
+  if (user.role !== 'GESTOR' && user.role !== 'ADMIN') {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">

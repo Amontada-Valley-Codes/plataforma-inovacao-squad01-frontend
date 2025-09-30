@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useRef, useEffect } from "react" // Importe useRef e useEffect
+import React, { useState, useRef, useEffect } from "react"
 import {
   Card,
   CardContent,
@@ -29,118 +29,121 @@ import {
   Clock,
   Plus,
   LogOut,
-  User as UserIcon, // Renomeado para evitar conflito com a interface User
+  User as UserIcon,
 } from "lucide-react"
-// Certifique-se de que User e Challenge são importados corretamente do seu UserContext
 import { User, Challenge } from "../app/context/UserContext" 
 import { Sidebar } from "./SideBar"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
+import { api } from "../service/Api" // Corrigindo o caminho da importação
 
 interface DashboardProps {
   user: User
   onLogout: () => void
 }
 
-export function Dashboard({ user, onLogout }: DashboardProps) {
-  const [selectedCompany] = useState(user.company)
-  const [isMenuOpen, setIsMenuOpen] = useState(false); // NOVO ESTADO para controlar o pop-up
-  const menuRef = useRef<HTMLDivElement>(null); // Referência para detectar cliques fora
+interface KPI {
+  ideasCount: number;
+  connectionsCount: number;
+  pocsCount: number;
+}
 
+// Dados mock para os gráficos, pois a lógica de agregação no back-end é mais complexa
+const funnelData = [
+  { stage: "Geração/Captura", count: 45, color: "#3B82F6" },
+  { stage: "Pré-Triagem", count: 28, color: "#8B5CF6" },
+  { stage: "Ideação", count: 18, color: "#06B6D4" },
+  { stage: "Triagem Detalhada", count: 12, color: "#10B981" },
+  { stage: "Experimentação (POC)", count: 7, color: "#F59E0B" },
+];
+const kpiData = [
+  { name: "Jan", ideias: 65, startups: 12, pocs: 3, tempo: 28 },
+  { name: "Fev", ideias: 78, startups: 18, pocs: 5, tempo: 25 },
+  { name: "Mar", ideias: 92, startups: 25, pocs: 8, tempo: 22 },
+];
+const pieData = [
+  { name: "FinTech", value: 35, color: "#3B82F6" },
+  { name: "HealthTech", value: 25, color: "#10B981" },
+  { name: "EdTech", value: 20, color: "#F59E0B" },
+  { name: "Outros", value: 20, color: "#8B5CF6" },
+];
+
+
+export function Dashboard({ user, onLogout }: DashboardProps) {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
   const router = useRouter()
 
-  // Função para fechar o menu ao clicar fora
+  const [kpis, setKpis] = useState<KPI>({ ideasCount: 0, connectionsCount: 0, pocsCount: 0 });
+  const [recentChallenges, setRecentChallenges] = useState<Challenge[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Lógica para buscar dados da API
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setIsMenuOpen(false);
+    const fetchData = async () => {
+      // No seu UserContext, a companyId está em 'user.company'. Ajustei para corresponder.
+      if (!user?.companyId) return;
+      
+      setIsLoading(true);
+      try {
+        const [challengesRes, ideasRes, connectionsRes] = await Promise.all([
+          api.get('/challenges'),
+          api.get('/ideas'),
+          api.get('/connections'),
+        ]);
+
+        const companyChallenges = challengesRes.data.filter((c: any) => c.companyId === user.companyId);
+        const companyIdeas = ideasRes.data.filter((i: any) => i.companyId === user.companyId);
+        const companyConnections = connectionsRes.data.filter((c: any) => c.companyId === user.companyId);
+
+        setKpis({
+          ideasCount: companyIdeas.length,
+          connectionsCount: companyConnections.length,
+          pocsCount: companyConnections.filter((c: any) => c.status === 'POC').length,
+        });
+
+        setRecentChallenges(companyChallenges.slice(0, 3)); // Mostra os 3 mais recentes
+
+      } catch (error) {
+        console.error("Erro ao buscar dados para o dashboard:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
+    fetchData();
+  }, [user]);
+
+  // Função para fechar o menu ao clicar fora
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsMenuOpen(false);
+      }
+    }
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [menuRef]);
 
-  // ... (dados do gráfico mantidos)
-  const funnelData = [
-    { stage: "Geração/Captura", count: 45, color: "#3B82F6" },
-    { stage: "Pré-Triagem", count: 28, color: "#8B5CF6" },
-    { stage: "Ideação", count: 18, color: "#06B6D4" },
-    { stage: "Triagem Detalhada", count: 12, color: "#10B981" },
-    { stage: "Experimentação (POC)", count: 7, color: "#F59E0B" },
-  ]
-
-  const kpiData = [
-    { name: "Jan", ideias: 65, startups: 12, pocs: 3, tempo: 28 },
-    { name: "Fev", ideias: 78, startups: 18, pocs: 5, tempo: 25 },
-    { name: "Mar", ideias: 92, startups: 25, pocs: 8, tempo: 22 },
-    { name: "Abr", ideias: 88, startups: 31, pocs: 12, tempo: 20 },
-    { name: "Mai", ideias: 104, startups: 28, pocs: 15, tempo: 18 },
-  ]
-
-  const pieData = [
-    { name: "FinTech", value: 35, color: "#3B82F6" },
-    { name: "HealthTech", value: 25, color: "#10B981" },
-    { name: "EdTech", value: 20, color: "#F59E0B" },
-    { name: "Outros", value: 20, color: "#8B5CF6" },
-  ]
-
-  const recentChallenges: Challenge[] = [
-    {
-      id: "1",
-      name: "Automação de Processos Financeiros",
-      startDate: "2024-01-15",
-      endDate: "2024-03-15",
-      area: "FinTech",
-      description:
-        "Buscar soluções inovadoras para automatizar processos financeiros internos",
-      type: "interno",
-      company: selectedCompany,
-      status: "ativo",
-    },
-    {
-      id: "2",
-      name: "Sustentabilidade na Cadeia de Suprimentos",
-      startDate: "2024-02-01",
-      endDate: "2024-04-01",
-      area: "GreenTech",
-      description:
-        "Desenvolver soluções sustentáveis para otimizar nossa cadeia de suprimentos",
-      type: "publico",
-      company: selectedCompany,
-      status: "ativo",
-    },
-  ]
-
   return (
-    <div className="flex h-screen bg-background bg-[#011677] text-white">
-      {/* Sidebar */}
+    <div className="flex h-screen bg-[#011677] text-white">
       <Sidebar user={user} />
 
-      {/* Main Content */}
       <div className="flex-1 overflow-auto bg-[#f9fafb] text-black">
         <div className="p-6">
-          {/* Header */}
           <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-4">
-              <div>
-                <h1 className="font-bold text-2xl">Dashboard</h1>
-                <p className="text-gray-500">
-                  Visão geral dos indicadores e atividades
-                </p>
-              </div>
+            <div>
+              <h1 className="font-bold text-2xl">Dashboard</h1>
+              <p className="text-gray-500">
+                Visão geral dos indicadores e atividades
+              </p>
             </div>
             
-            {/* INÍCIO DO NOVO BLOCO DE PERFIL COM POP-UP CUSTOMIZADO */}
             <div className="relative" ref={menuRef}>
-                {/* O círculo de imagem de perfil (Botão que abre o menu) */}
                 <div 
                     className="w-10 h-10 bg-[#011677] rounded-full flex items-center justify-center cursor-pointer shadow-lg hover:ring-2 ring-offset-2 ring-[#011677] transition-all"
-                    onClick={() => setIsMenuOpen(!isMenuOpen)} // Alterna o estado do menu
+                    onClick={() => setIsMenuOpen(!isMenuOpen)}
                 >
-                    {/* Renderiza a imagem real ou a inicial */}
                     {user.image_url ? (
                         <Image
                             src={user.image_url}
@@ -151,34 +154,25 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                         />
                     ) : (
                         <span className="text-lg font-bold text-white">
-                            {user.name[0].toUpperCase()}
+                            {user.email.charAt(0).toUpperCase()}
                         </span>
                     )}
                 </div>
 
-                {/* Pop-up de Ações (Menu) */}
                 {isMenuOpen && (
                     <Card className="absolute gap-1 right-0 mt-3 w-64 shadow-2xl z-20">
                         <CardHeader className="p-3 border-b text-center">
                             <p className="text-sm font-medium leading-none">{user.name}</p>
-                            <p className="text-xs leading-none text-gray-500">
-                                {user.email}
-                            </p>
+                            <p className="text-xs leading-none text-gray-500">{user.email}</p>
                         </CardHeader>
                         <CardContent className="p-0">
-                            {/* Opção Ver Perfil */}
                             <div
-                                className="flex items-center p-1   cursor-pointer hover:bg-gray-100 transition"
-                                onClick={() => {
-                                    router.push("/profile");
-                                    setIsMenuOpen(false);
-                                }}
+                                className="flex items-center p-2 cursor-pointer hover:bg-gray-100 transition"
+                                onClick={() => { router.push("/profile"); setIsMenuOpen(false); }}
                             >
                                 <UserIcon className="mr-2 h-4 w-4 text-[#011677]" />
                                 <span className="text-sm">Ver Perfil</span>
                             </div>
-                            
-                            {/* Opção Sair */}
                             <div
                                 className="flex items-center p-2 pb-1 cursor-pointer hover:bg-red-50 transition border-t"
                                 onClick={onLogout}
@@ -190,174 +184,112 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                     </Card>
                 )}
             </div>
-            {/* FIM DO NOVO BLOCO */}
-            
           </div>
-          {/* KPI Cards */}
-          {user.role === "gestor" && (
+
+          {/* KPI Cards - Apenas para GESTOR e ADMIN */}
+          {(user.role === "GESTOR" || user.role === "ADMIN") && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">
-                    Ideias Submetidas
-                  </CardTitle>
+                  <CardTitle className="text-sm font-medium">Ideias Submetidas</CardTitle>
                   <Lightbulb className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">427</div>
-                  <p className="text-xs text-muted-foreground">
-                    +12% em relação ao mês anterior
-                  </p>
+                  <div className="text-2xl font-bold">{isLoading ? '...' : kpis.ideasCount}</div>
+                  <p className="text-xs text-muted-foreground">Total de ideias na empresa</p>
                 </CardContent>
               </Card>
-              {/* ... (Demais KPI Cards) */}
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">
-                    Startups Conectadas
-                  </CardTitle>
+                  <CardTitle className="text-sm font-medium">Startups Conectadas</CardTitle>
                   <Users className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">114</div>
-                  <p className="text-xs text-muted-foreground">
-                    +8% em relação ao mês anterior
-                  </p>
+                  <div className="text-2xl font-bold">{isLoading ? '...' : kpis.connectionsCount}</div>
+                  <p className="text-xs text-muted-foreground">Matches e interesses</p>
                 </CardContent>
               </Card>
-
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">
-                    POCs Realizadas
-                  </CardTitle>
+                  <CardTitle className="text-sm font-medium">POCs Realizadas</CardTitle>
                   <Rocket className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">43</div>
-                  <p className="text-xs text-muted-foreground">
-                    +25% em relação ao mês anterior
-                  </p>
+                  <div className="text-2xl font-bold">{isLoading ? '...' : kpis.pocsCount}</div>
+                  <p className="text-xs text-muted-foreground">Provas de conceito em andamento</p>
                 </CardContent>
               </Card>
-
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">
-                    Tempo Médio por Etapa
-                  </CardTitle>
+                  <CardTitle className="text-sm font-medium">Tempo Médio por Etapa</CardTitle>
                   <Clock className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">18 dias</div>
-                  <p className="text-xs text-muted-foreground">
-                    -15% em relação ao mês anterior
-                  </p>
+                  <p className="text-xs text-muted-foreground">(Cálculo pendente)</p>
                 </CardContent>
               </Card>
             </div>
           )}
 
-          {/* Funil de Inovação */}
-          {user.role === "avaliador" || user.role === "gestor" ? (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-              <Card className="lg:col-span-2">
-                <CardHeader>
-                  <CardTitle>Funil de Inovação</CardTitle>
-                  <CardDescription>
-                    Distribuição de projetos por etapa do processo de inovação
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-                    {funnelData.map((stage) => (
-                      <div key={stage.stage} className="text-center">
-                        <div
-                          className="h-20 rounded-lg mb-2 flex items-center justify-center text-white font-bold text-lg"
-                          style={{ backgroundColor: stage.color }}
-                        >
-                          {stage.count}
+          {/* Gráficos e Funil - Para GESTOR, AVALIADOR e ADMIN */}
+          {(user.role === "GESTOR" || user.role === "AVALIADOR" || user.role === "ADMIN") && (
+            <>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <Card className="lg:col-span-2">
+                  <CardHeader>
+                    <CardTitle>Funil de Inovação</CardTitle>
+                    <CardDescription>Distribuição de projetos por etapa do processo</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                      {funnelData.map((stage) => (
+                        <div key={stage.stage} className="text-center">
+                          <div
+                            className="h-20 rounded-lg mb-2 flex items-center justify-center text-white font-bold text-lg"
+                            style={{ backgroundColor: stage.color }}
+                          >
+                            {stage.count}
+                          </div>
+                          <h4 className="text-sm font-medium mb-1">{stage.stage}</h4>
                         </div>
-                        <h4 className="text-sm font-medium mb-1">
-                          {stage.stage}
-                        </h4>
-                        <p className="text-xs text-muted-foreground">
-                          projetos
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          ) : null}
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
 
-          {/* Gráficos */}
-          {user.role === "avaliador" || user.role === "gestor" ? (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Tendência de Ideias</CardTitle>
-                  <CardDescription>
-                    Evolução mensal de submissões
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={250}>
-                    <LineChart data={kpiData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis />
-                      <Tooltip />
-                      <Line
-                        type="monotone"
-                        dataKey="ideias"
-                        stroke="#011677"
-                        strokeWidth={2}
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Tendência de Ideias</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ResponsiveContainer width="100%" height={250}>
+                      <LineChart data={kpiData}><CartesianGrid strokeDasharray="3 3" /><XAxis dataKey="name" /><YAxis /><Tooltip /><Line type="monotone" dataKey="ideias" stroke="#011677" strokeWidth={2} /></LineChart>
+                    </ResponsiveContainer>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Distribuição por Segmento</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ResponsiveContainer width="100%" height={250}>
+                      <PieChart><Pie data={pieData} cx="50%" cy="50%" outerRadius={80} dataKey="value" label={({ name, value }) => `${name} ${value}%`}>{pieData.map((entry, index) => (<Cell key={`cell-${index}`} fill={entry.color} />))}</Pie><Tooltip /></PieChart>
+                    </ResponsiveContainer>
+                  </CardContent>
+                </Card>
+              </div>
+            </>
+          )}
 
-              <Card>
-                <CardHeader>
-                  <CardTitle>Distribuição por Segmento</CardTitle>
-                  <CardDescription>
-                    Startups por área de atuação
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={250}>
-                    <PieChart>
-                      <Pie
-                        data={pieData}
-                        cx="50%"
-                        cy="50%"
-                        outerRadius={80}
-                        dataKey="value"
-                        label={({ name, value }) => `${name} ${value}%`}
-                      >
-                        {pieData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color} />
-                        ))}
-                      </Pie>
-                      <Tooltip />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
-            </div>
-          ) : null}
-
-          {/* Desafios Recentes */}
+          {/* Desafios Recentes - Visível para todos */}
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
                 <CardTitle>Desafios Ativos</CardTitle>
-                <CardDescription>
-                  Desafios em andamento na plataforma
-                </CardDescription>
+                <CardDescription>Desafios em andamento na plataforma</CardDescription>
               </div>
               <Button
                 className="bg-[#011677] cursor-pointer text-white hover:bg-[#0121af]"
@@ -369,43 +301,38 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
             </CardHeader>
             <CardContent>
               <div className="space-y-4 ">
-                {recentChallenges.map((challenge) => (
-                  <div
-                    key={challenge.id}
-                    className="flex items-center justify-between p-4 shadow-lg rounded-lg hover:bg-gray-200 cursor-pointer"
-                    onClick={() =>
-                      router.push(`/challenges/${challenge.id}`)
-                    }
-                  >
-                    <div className="space-y-1">
-                      <h4 className="font-medium">{challenge.name}</h4>
-                      <div className="flex items-center gap-2">
-                        <Badge variant="outline">{challenge.area}</Badge>
-                        <Badge
-                          variant={
-                            challenge.type === "publico"
-                              ? "default"
-                              : "secondary"
-                          }
-                        >
-                          {challenge.type === "publico" ? "Público" : "Interno"}
-                        </Badge>
-                        <span className="text-sm text-muted-foreground">
-                          {new Date(challenge.startDate).toLocaleDateString(
-                            "pt-BR"
-                          )}{" "}
-                          -
-                          {new Date(challenge.endDate).toLocaleDateString(
-                            "pt-BR"
-                          )}
-                        </span>
+                 {isLoading ? (
+                  <p>A carregar desafios...</p>
+                ) : recentChallenges.length > 0 ? (
+                  recentChallenges.map((challenge) => (
+                    <div
+                      key={challenge.id}
+                      className="flex items-center justify-between p-4 shadow-lg rounded-lg hover:bg-gray-200 cursor-pointer"
+                      onClick={() => {
+                        sessionStorage.setItem('selectedChallenge', JSON.stringify(challenge));
+                        router.push(`/challenges/${challenge.id}`);
+                      }}
+                    >
+                      <div className="space-y-1">
+                        <h4 className="font-medium">{challenge.name}</h4>
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline">{challenge.area}</Badge>
+                          <Badge variant={challenge.type === "PUBLICO" ? "default" : "secondary"}>
+                            {challenge.type === "PUBLICO" ? "Público" : "Interno"}
+                          </Badge>
+                          <span className="text-sm text-muted-foreground">
+                            Encerra em: {new Date(challenge.endDate).toLocaleDateString("pt-BR")}
+                          </span>
+                        </div>
                       </div>
+                      <Button className="bg-[#011677] hover:bg-[#0121af] text-white cursor-pointer" size="sm">
+                        Ver Detalhes
+                      </Button>
                     </div>
-                    <Button className="bg-[#011677] hover:bg-[#0121af] text-white cursor-pointer" size="sm">
-                      Ver Detalhes
-                    </Button>
-                  </div>
-                ))}
+                  ))
+                ) : (
+                  <p className="text-center text-gray-500 py-4">Nenhum desafio ativo encontrado para a sua empresa.</p>
+                )}
               </div>
             </CardContent>
           </Card>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Separator } from './ui/separator';
@@ -9,6 +9,7 @@ import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea
 import { Dialog, DialogContent, DialogTrigger } from './ui/dialog';
 import { IdeaForm } from './IdeaForm';
 import { EvaluationForm } from './EvaluationForm';
+import { api } from '../service/Api';
 
 interface InnovationFunnelProps {
 	user: UserType;
@@ -36,7 +37,27 @@ const initialIdeas = [
 
 export function InnovationFunnel({ user, onNavigate }: InnovationFunnelProps) {
 	const [ideas, setIdeas] = useState(initialIdeas);
-	const [votedIdeas, setVotedIdeas] = useState<string[]>([]); // Estado para controlar votos
+	const [votedIdeas, setVotedIdeas] = useState<string[]>([]); 
+	const [isLoading, setIsLoading] = useState(true);
+	const [isIdeaFormOpen, setIsIdeaFormOpen] = useState(false);
+
+	 // Função para buscar as ideias da API
+	const fetchIdeas = async () => {
+		setIsLoading(true);
+		try {
+		const response = await api.get('/ideas');
+		setIdeas(response.data);
+		} catch (error) {
+		console.error("Erro ao buscar ideias:", error);
+		} finally {
+		setIsLoading(false);
+		}
+	};
+
+  useEffect(() => {
+    fetchIdeas();
+  }, []);
+
 
 	const getPriorityBadge = (priority: string) => {
 		switch (priority) {
@@ -48,18 +69,28 @@ export function InnovationFunnel({ user, onNavigate }: InnovationFunnelProps) {
 		}
 	};
 
-	const handleOnDragEnd = (result: DropResult) => {
-		const { source, destination } = result;
+	const handleOnDragEnd = async (result: DropResult) => {
+		const { source, destination, draggableId } = result;
 		if (!destination) return;
 
+		// Se o card foi movido para uma coluna diferente
 		if (source.droppableId !== destination.droppableId) {
-			const draggedIdea = ideas.find(idea => idea.id === result.draggableId);
-			if (draggedIdea) {
-				const updatedIdeas = ideas.map(idea =>
-					idea.id === draggedIdea.id ? { ...idea, stage: destination.droppableId } : idea
-				);
-				setIdeas(updatedIdeas);
-			}
+		const originalIdeas = ideas;
+		
+		// Atualização otimista na interface
+		const updatedIdeas = ideas.map(idea => 
+			idea.id === draggableId ? { ...idea, stage: destination.droppableId } : idea
+		);
+		setIdeas(updatedIdeas);
+
+		// Chamada à API para persistir a mudança
+		try {
+			await api.patch(`/ideas/${draggableId}/stage`, { stage: destination.droppableId });
+		} catch (error) {
+			console.error("Erro ao atualizar a etapa da ideia:", error);
+			setIdeas(originalIdeas); // Reverte a mudança na interface em caso de erro
+			alert("Não foi possível mover a ideia. Tente novamente.");
+		}
 		}
 	};
 
@@ -73,6 +104,10 @@ export function InnovationFunnel({ user, onNavigate }: InnovationFunnelProps) {
 	const isEvaluationStage = (stageId: string) => {
 		return stageId === 'pre-screening' || stageId === 'detailed-screening';
 	};
+
+	if (isLoading) {
+    	return <div className="flex h-screen items-center justify-center">Carregando funil...</div>;
+  	}
 
 	return (
 		<div className="min-h-screen bg-[#f8f9fa] flex flex-col">
@@ -204,7 +239,12 @@ export function InnovationFunnel({ user, onNavigate }: InnovationFunnelProps) {
 													</Button>
 												</DialogTrigger>
 												<DialogContent className="bg-white">
-													<IdeaForm stageTitle={stage.title} />
+													<IdeaForm 
+														stageTitle={stage.title} 
+														onIdeaCreated={fetchIdeas}
+														challengeId="challenge-01" // IMPORTANTE: Este ID é estático. Numa app real, viria do desafio que está a ser visualizado.
+														closeDialog={() => setIsIdeaFormOpen(false)}
+													/>
 												</DialogContent>
 											</Dialog>
 										</div>
