@@ -81,10 +81,6 @@ export default function ProfilePage() {
                 <span className="font-medium">{profile.department}</span>
               </div>
               <div className="flex items-center gap-2 pt-2 text-gray-700">
-                <Hash size={18} className="text-gray-500" /> Matrícula:{" "}
-                <span className="font-medium">{profile.matricula}</span>
-              </div>
-              <div className="flex items-center gap-2 pt-2 text-gray-700">
                 <Phone size={18} className="text-gray-500" />{" "}
                 <span className="font-medium">{profile.phone}</span>
               </div>
@@ -118,10 +114,10 @@ export default function ProfilePage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Input
                   className="focus:border-[#001f61] focus:ring focus:ring-[#001f61]/30 transition-colors rounded-lg"
-                  name="matricula"
-                  value={profile.matricula}
+                  name="department"
+                  value={profile.department}
                   onChange={handleChange}
-                  placeholder="Matrícula"
+                  placeholder="Departamento"
                 />
                 <Input
                   className="focus:border-[#001f61] focus:ring focus:ring-[#001f61]/30 transition-colors rounded-lg"
@@ -131,13 +127,6 @@ export default function ProfilePage() {
                   placeholder="Telefone"
                 />
               </div>
-              <Input
-                className="focus:border-[#001f61] focus:ring focus:ring-[#001f61]/30 transition-colors rounded-lg"
-                name="department"
-                value={profile.department}
-                onChange={handleChange}
-                placeholder="Departamento"
-              />
 
               <Button
                 type="submit"

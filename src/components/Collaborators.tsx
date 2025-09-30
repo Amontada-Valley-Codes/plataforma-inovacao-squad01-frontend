@@ -257,24 +257,24 @@ export function Collaborators({ user }: CollaboratorsProps) {
                             user.id === collab.id || user.role !== "gestor"
                           }
                         >
-                          <SelectTrigger className="w-48 border-gray-400">
+                          <SelectTrigger className="w-48 border-gray-400 cursor-pointer">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent className="bg-white border-gray-200 shadow">
                             <SelectItem
-                              className="hover:bg-gray-200"
+                              className="hover:bg-gray-200 cursor-pointer"
                               value="comum"
                             >
                               Usuário Comum
                             </SelectItem>
                             <SelectItem
-                              className="hover:bg-gray-200"
+                              className="hover:bg-gray-200 cursor-pointer"
                               value="avaliador"
                             >
                               Avaliador
                             </SelectItem>
                             <SelectItem
-                              className="hover:bg-gray-200"
+                              className="hover:bg-gray-200 cursor-pointer"
                               value="gestor"
                             >
                               Gestor de Inovação
