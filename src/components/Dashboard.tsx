@@ -376,9 +376,10 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                   <div
                     key={challenge.id}
                     className="flex md:items-center md:flex-row flex-col justify-between p-4 shadow-lg rounded-lg hover:bg-gray-200 cursor-pointer"
-                    onClick={() =>
-                      router.push(`/challenges/${challenge.id}`)
-                    }
+                    onClick={() => {
+                        sessionStorage.setItem('selectedChallenge', JSON.stringify(challenge));
+                        router.push(`/challenges/${challenge.id}`);
+                      }}
                   >
                     <div className="space-y-1">
                       <h4 className="font-medium">{challenge.name}</h4>
@@ -404,7 +405,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                         </span>
                       </div>
                     </div>
-                    <Button className="bg-[#011677] mt-2 md:mt-0 hover:bg-[#0121af] text-white cursor-pointer" size="sm">
+                    <Button className="bg-[#011677] mt-2 md:mt-0 hover:bg-[#0121af] text-white cursor-pointer" size="sm" >
                       Ver Detalhes
                     </Button>
                   </div>

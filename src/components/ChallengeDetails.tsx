@@ -27,6 +27,7 @@ import {
 	ThumbsUp
 } from 'lucide-react';
 import { User, Challenge, Startup } from '../app/context/UserContext';
+import { useRouter } from 'next/navigation';
 
 interface ChallengeDetailsProps {
 	user: User;
@@ -50,6 +51,7 @@ const mockSubmissions = [
 
 export function ChallengeDetails({ user, challenge, onNavigate }: ChallengeDetailsProps) {
 	const [newComment, setNewComment] = useState('');
+	const router = useRouter();
 
 	const handlePostComment = () => {
 		if (newComment.trim()) {
@@ -231,6 +233,13 @@ export function ChallengeDetails({ user, challenge, onNavigate }: ChallengeDetai
 								>
 									<Building2 className="w-4 h-4 mr-2" />
 									Buscar Mais Startups
+								</Button>
+								<Button 
+									className="w-full justify-start bg-[#011677] text-white hover:bg-[#0121af]"
+									onClick={() => router.push(`/funnel/${challenge.id}`)}
+									>
+									<Target className="w-4 h-4 mr-2" />
+									Aceder ao Funil de Ideias
 								</Button>
 							</CardContent>
 						</Card>

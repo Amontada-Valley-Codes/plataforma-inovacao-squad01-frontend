@@ -58,18 +58,7 @@ export function Sidebar({ user }: SidebarProps) {
             {sidebarOpen && "Dashboard"}
           </Button>
 
-		  {(user.role === "gestor" || user.role === "avaliador" ||  user.role === "comum") && (
-          <Button
-            variant="ghost"
-            className={`w-full justify-start hovers-exit-dash ${
-              isActive("/funnel") ? "bg-[#001a90] active-exit-dash" : ""
-            } ${sidebarOpen ? "justify-start" : "justify-center"}`}
-            onClick={() => router.push("/funnel")}
-          >
-            <Target className={`w-5 h-5 ${sidebarOpen ? "mr-2" : ""}`} />
-            {sidebarOpen && "Funil de Inovação"}
-          </Button>
-		  )}
+		  
 
 		  {(user.role === "gestor" || user.role === "avaliador" ||  user.role === "comum") && (
           <Button

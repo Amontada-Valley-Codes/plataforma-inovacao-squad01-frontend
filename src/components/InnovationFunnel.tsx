@@ -1,20 +1,24 @@
+'use client';
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Separator } from './ui/separator';
 import { ArrowLeft, GripVertical, Plus, User, Clock, MessageSquare, Target, ThumbsUp } from 'lucide-react';
 import { Badge } from './ui/badge';
-import { User as UserType } from '../app/context/UserContext';
+import { User as UserType, Challenge } from '../app/context/UserContext'; // Importe Challenge
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { Dialog, DialogContent, DialogTrigger } from './ui/dialog';
 import { IdeaForm } from './IdeaForm';
 import { EvaluationForm } from './EvaluationForm';
+import { useRouter } from 'next/navigation';
 
 interface InnovationFunnelProps {
-	user: UserType;
-	onNavigate: (page: 'dashboard') => void;
+  user: UserType;
+  challenge: Challenge; // Agora recebe o desafio inteiro
 }
 
+// ... (mocks e funções auxiliares como antes)
 const funnelStages = [
 	{ id: 'capture', title: 'Geração/Captura' },
 	{ id: 'pre-screening', title: 'Pré-Triagem' },
@@ -34,11 +38,16 @@ const initialIdeas = [
 	{ id: 'idea-7', stage: 'poc', title: 'POC - Pagamentos com Reconhecimento Facial', priority: 'Crítica', author: 'Ana Silva', comments: 31, days: 40, votes: 89 },
 ];
 
-export function InnovationFunnel({ user, onNavigate }: InnovationFunnelProps) {
-	const [ideas, setIdeas] = useState(initialIdeas);
-	const [votedIdeas, setVotedIdeas] = useState<string[]>([]); // Estado para controlar votos
 
-	const getPriorityBadge = (priority: string) => {
+export function InnovationFunnel({ user, challenge }: InnovationFunnelProps) {
+  const router = useRouter();
+  const [ideas, setIdeas] = useState(initialIdeas);
+  const [isIdeaFormOpen, setIsIdeaFormOpen] = useState(false);
+  const [votedIdeas, setVotedIdeas] = useState<string[]>([]);
+  const [isEvaluationFormOpen, setIsEvaluationFormOpen] = useState(false);
+
+
+  const getPriorityBadge = (priority: string) => {
 		switch (priority) {
 			case 'Alta': return <Badge className="bg-orange-500 text-white">Alta</Badge>;
 			case 'Média': return <Badge className="bg-[#001f61] text-white">Média</Badge>;
@@ -74,35 +83,34 @@ export function InnovationFunnel({ user, onNavigate }: InnovationFunnelProps) {
 		return stageId === 'pre-screening' || stageId === 'detailed-screening';
 	};
 
-	return (
-		<div className="min-h-screen bg-[#f8f9fa] flex flex-col">
-			{/* Topbar */}
-			<div className="bg-[#011677] border-b border-gray-200 sticky top-0 z-10">
-				<div className="container mx-auto px-6 py-4">
-					<div className="flex items-center gap-4">
-						<Button
-							variant="ghost"
-							size="sm"
-							className="hovers-exit-dash text-white"
-							onClick={() => onNavigate('dashboard')}
-						>
-							<ArrowLeft className="w-4 h-4 mr-2" />
-							Voltar ao Dashboard
-						</Button>
-						<Separator orientation="vertical" className="h-6" />
-						<div className="flex items-center gap-2 text-white">
-							<Target className="w-5 h-5" />
-							<h1 className="text-lg font-semibold">Funil de Inovação</h1>
-						</div>
-					</div>
-				</div>
-			</div>
 
-			{/* Board */}
-			<DragDropContext onDragEnd={handleOnDragEnd}>
-				<div className="flex-1 overflow-x-auto p-6">
-					<div className="flex gap-6 min-w-max h-full">
-						{funnelStages.map(stage => (
+  return (
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      <div className="bg-[#011677] border-b border-gray-200 sticky top-0 z-10 text-white">
+        <div className="container mx-auto px-6 py-4">
+          <div className="flex items-center gap-4">
+            <Button variant="ghost"
+							size="sm"
+							className="hovers-exit-dash text-white" onClick={() => router.push(`/challenges/${challenge.id}`)}>
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Voltar aos Detalhes do Desafio
+            </Button>
+            <Separator orientation="vertical" className="h-6" />
+            <div className="flex items-center gap-2">
+              <Target className="w-5 h-5" />
+              <div>
+                <h1 className="text-lg font-semibold">Funil de Ideias</h1>
+                <p className="text-sm text-gray-300">{challenge.name}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <DragDropContext onDragEnd={handleOnDragEnd}>
+        <div className="flex-1 overflow-x-auto p-6">
+          <div className="flex gap-6 min-w-max h-full">
+            {funnelStages.map(stage => (
 							<Droppable key={stage.id} droppableId={stage.id}>
 								{(provided, snapshot) => (
 									<div
@@ -212,9 +220,9 @@ export function InnovationFunnel({ user, onNavigate }: InnovationFunnelProps) {
 								)}
 							</Droppable>
 						))}
-					</div>
-				</div>
-			</DragDropContext>
-		</div>
-	);
+          </div>
+        </div>
+      </DragDropContext>
+    </div>
+  );
 }
