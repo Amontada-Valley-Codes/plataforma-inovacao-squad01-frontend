@@ -6,18 +6,18 @@ import { Textarea } from './ui/textarea';
 import { DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from './ui/dialog';
 import { Lightbulb } from 'lucide-react';
 import { useUser } from '../app/context/UserContext';
-import { api } from '../service/Api';
+import { api } from '../service/Api';// Certifique-se que o caminho para sua api está correto
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 
 interface IdeaFormProps {
   stageTitle: string;
-  onIdeaCreated: () => void; // Função para notificar o componente pai que uma nova ideia foi criada
-  challengeId: string; // ID do desafio ao qual a ideia pertence
-  closeDialog: () => void; // Função para fechar o modal
+  onIdeaCreated: () => void; 
+  challengeId: string; 
+  closeDialog: () => void;
 }
 
 export function IdeaForm({ stageTitle, onIdeaCreated, challengeId, closeDialog }: IdeaFormProps) {
-  const { user } = useUser(); // Obter o utilizador logado
+  const { user } = useUser();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [priority, setPriority] = useState('Média');
@@ -28,24 +28,24 @@ export function IdeaForm({ stageTitle, onIdeaCreated, challengeId, closeDialog }
         alert('Por favor, preencha todos os campos.');
         return;
     }
-
+    console.log({ title, description, priority, authorId: user.sub, companyId: user.companyId, challengeId });
     try {
       await api.post('/ideas', {
         title,
         description,
         priority,
-        authorId: user.id,
-        companyId: user.companyId,
-        challengeId: challengeId,
+        authorId: user.sub,         // ID do utilizador que está a criar
+        companyId: user.companyId, // ID da empresa do utilizador
+        challengeId: challengeId,  // ID do desafio a que a ideia pertence
       });
 
       alert('Ideia submetida com sucesso!');
       onIdeaCreated(); // Atualiza a lista no funil
-      closeDialog(); // Fecha o modal
+      closeDialog();   // Fecha o modal
 
     } catch (error) {
       console.error("Erro ao submeter ideia:", error);
-      alert("Não foi possível submeter a ideia.");
+      alert("Não foi possível submeter a ideia. Verifique a consola para mais detalhes.");
     }
   };
 
@@ -57,7 +57,7 @@ export function IdeaForm({ stageTitle, onIdeaCreated, challengeId, closeDialog }
           Submeter Nova Ideia
         </DialogTitle>
         <DialogDescription>
-          Descreva a sua ideia. Ela será adicionada à coluna 
+          Descreva a sua ideia ou oportunidade. Ela será adicionada à coluna 
           <span className="font-semibold text-[#001f61]"> "{stageTitle}"</span>.
         </DialogDescription>
       </DialogHeader>

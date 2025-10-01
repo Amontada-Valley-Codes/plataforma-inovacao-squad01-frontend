@@ -13,9 +13,11 @@ interface Idea {
   stage: string;
   title: string;
   priority: string;
-  author: string;
-  comments: number;
-  days: number;
+  author: { name: string };
+  comments: any[]; // Futuramente, para contagem de comentários
+  createdAt: string;
+  votes: number;
+  evaluation?: { score: number; comments: string }; // Avaliação, se aplicável
 }
 
 interface EvaluationFormProps {
@@ -31,7 +33,7 @@ export function EvaluationForm({ idea }: EvaluationFormProps) {
       <DialogHeader>
         <DialogTitle className="text-[#001f61] font-bold">{idea.title}</DialogTitle>
         <DialogDescription>
-          Avaliação da ideia submetida por <span className="font-semibold text-[#001f61]">{idea.author}</span>.
+          Avaliação da ideia submetida por <span className="font-semibold text-[#001f61]">{idea.author.name}</span>.
         </DialogDescription>
         <div className="flex gap-2 pt-2">
           <Badge className="bg-[#001f61] text-white">Prioridade: {idea.priority}</Badge>

@@ -1,143 +1,140 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Separator } from './ui/separator';
-import { ArrowLeft, GripVertical, Plus, User, Clock, MessageSquare, Target, ThumbsUp } from 'lucide-react';
+import { ArrowLeft, GripVertical, Plus, User, Clock, MessageSquare, Target, ThumbsUp, MessageCircle } from 'lucide-react';
 import { Badge } from './ui/badge';
-import { User as UserType } from '../app/context/UserContext';
+import { User as UserType, Challenge } from '../app/context/UserContext';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { Dialog, DialogContent, DialogTrigger } from './ui/dialog';
 import { IdeaForm } from './IdeaForm';
 import { EvaluationForm } from './EvaluationForm';
+import { useRouter } from 'next/navigation';
 import { api } from '../service/Api';
 
+
 interface InnovationFunnelProps {
-	user: UserType;
-	onNavigate: (page: 'dashboard') => void;
+  user: UserType;
+  challenge: Challenge;
+}
+
+// Interface para corresponder ao que a API retorna (incluindo o autor)
+interface Idea {
+  id: string;
+  stage: string;
+  title: string;
+  priority: string;
+  author: string;
+  comments: any[]; // Futuramente, para contagem de comentários
+  createdAt: string;
+  votes: number;
+  evaluation?: { score: number; comments: string }; // Avaliação, se aplicável
+  days: string;
 }
 
 const funnelStages = [
-	{ id: 'capture', title: 'Geração/Captura' },
-	{ id: 'pre-screening', title: 'Pré-Triagem' },
-	{ id: 'ideation', title: 'Ideação' },
-	{ id: 'detailed-screening', title: 'Triagem Detalhada' },
-	{ id: 'poc', title: 'Experimentação (POC)' },
+    { id: 'CAPTURE', title: 'Geração/Captura', color: 'bg-blue-500' },
+    { id: 'PRE_SCREENING', title: 'Pré-Triagem', color: 'bg-purple-500' },
+    { id: 'IDEATION', title: 'Ideação', color: 'bg-cyan-500' },
+    { id: 'DETAILED_SCREENING', title: 'Triagem Detalhada', color: 'bg-yellow-500' },
+    { id: 'POC', title: 'Experimentação (POC)', color: 'bg-green-500' },
 ];
 
-// Adicionado o campo "votes" aos dados
-const initialIdeas = [
-	{ id: 'idea-1', stage: 'capture', title: 'App de Recomendações com IA', priority: 'Alta', author: 'Ana Silva', comments: 3, days: 1, votes: 12 },
-	{ id: 'idea-2', stage: 'capture', title: 'Otimização de Rotas de Entrega', priority: 'Média', author: 'Carlos Santos', comments: 1, days: 2, votes: 5 },
-	{ id: 'idea-3', stage: 'pre-screening', title: 'Plataforma de Treinamento Gamificada', priority: 'Alta', author: 'Maria Costa', comments: 8, days: 5, votes: 25 },
-	{ id: 'idea-4', stage: 'ideation', title: 'Uso de Blockchain para Rastreabilidade', priority: 'Alta', author: 'Ana Silva', comments: 15, days: 12, votes: 42 },
-	{ id: 'idea-5', stage: 'ideation', title: 'Assistente Virtual para Clientes', priority: 'Baixa', author: 'João Pereira', comments: 5, days: 18, votes: 18 },
-	{ id: 'idea-6', stage: 'detailed-screening', title: 'Análise Preditiva de Churn', priority: 'Crítica', author: 'Carlos Santos', comments: 22, days: 25, votes: 55 },
-	{ id: 'idea-7', stage: 'poc', title: 'POC - Pagamentos com Reconhecimento Facial', priority: 'Crítica', author: 'Ana Silva', comments: 31, days: 40, votes: 89 },
-];
+export function InnovationFunnel({ user, challenge }: InnovationFunnelProps) {
+  const router = useRouter();
+  const [ideas, setIdeas] = useState<Idea[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isIdeaFormOpen, setIsIdeaFormOpen] = useState(false);
+  const [votedIdeas, setVotedIdeas] = useState<string[]>([]); // IDs das ideias que o utilizador já votou
 
-export function InnovationFunnel({ user, onNavigate }: InnovationFunnelProps) {
-	const [ideas, setIdeas] = useState(initialIdeas);
-	const [votedIdeas, setVotedIdeas] = useState<string[]>([]); 
-	const [isLoading, setIsLoading] = useState(true);
-	const [isIdeaFormOpen, setIsIdeaFormOpen] = useState(false);
-
-	 // Função para buscar as ideias da API
-	const fetchIdeas = async () => {
-		setIsLoading(true);
-		try {
-		const response = await api.get('/ideas');
-		setIdeas(response.data);
-		} catch (error) {
-		console.error("Erro ao buscar ideias:", error);
-		} finally {
-		setIsLoading(false);
-		}
-	};
+  const fetchIdeas = async () => {
+    if (!challenge?.id) return;
+    setIsLoading(true);
+    try {
+      const response = await api.get(`/ideas/challenge/${challenge.id}`);
+      setIdeas(response.data);
+    } catch (error) {
+      console.error("Erro ao buscar ideias:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
     fetchIdeas();
-  }, []);
+  }, [challenge]);
 
+  const handleOnDragEnd = async (result: DropResult) => {
+    const { source, destination, draggableId } = result;
+    if (!destination || (source.droppableId === destination.droppableId)) return;
 
-	const getPriorityBadge = (priority: string) => {
-		switch (priority) {
-			case 'Alta': return <Badge className="bg-orange-500 text-white">Alta</Badge>;
-			case 'Média': return <Badge className="bg-[#001f61] text-white">Média</Badge>;
-			case 'Baixa': return <Badge className="bg-[#7eb526] text-white">Baixa</Badge>;
-			case 'Crítica': return <Badge className="bg-red-600 text-white">Crítica</Badge>;
-			default: return <Badge>{priority}</Badge>;
-		}
-	};
+    const originalIdeas = [...ideas];
+    const updatedIdeas = ideas.map(idea => 
+      idea.id === draggableId ? { ...idea, stage: destination.droppableId } : idea
+    );
+    setIdeas(updatedIdeas);
 
-	const handleOnDragEnd = async (result: DropResult) => {
-		const { source, destination, draggableId } = result;
-		if (!destination) return;
+    try {
+      await api.patch(`/ideas/${draggableId}/stage`, { stage: destination.droppableId });
+    } catch (error) {
+      console.error("Erro ao atualizar a etapa da ideia:", error);
+      setIdeas(originalIdeas); // Reverte em caso de erro
+      alert("Não foi possível mover a ideia.");
+    }
+  };
 
-		// Se o card foi movido para uma coluna diferente
-		if (source.droppableId !== destination.droppableId) {
-		const originalIdeas = ideas;
-		
-		// Atualização otimista na interface
-		const updatedIdeas = ideas.map(idea => 
-			idea.id === draggableId ? { ...idea, stage: destination.droppableId } : idea
-		);
-		setIdeas(updatedIdeas);
+  const getPriorityBadge = (priority: string) => {
+    switch (priority) {
+      case 'Alta': return <Badge className="bg-orange-500">Alta</Badge>;
+      case 'Média': return <Badge variant="secondary">Média</Badge>;
+      case 'Baixa': return <Badge variant="outline">Baixa</Badge>;
+      case 'Crítica': return <Badge variant="destructive">Crítica</Badge>;
+      default: return <Badge>{priority}</Badge>;
+    }
+  };
+  
+  const isEvaluationStage = (stageId: string) => stageId === 'PRE_SCREENING' || stageId === 'DETAILED_SCREENING';
 
-		// Chamada à API para persistir a mudança
-		try {
-			await api.patch(`/ideas/${draggableId}/stage`, { stage: destination.droppableId });
-		} catch (error) {
-			console.error("Erro ao atualizar a etapa da ideia:", error);
-			setIdeas(originalIdeas); // Reverte a mudança na interface em caso de erro
-			alert("Não foi possível mover a ideia. Tente novamente.");
-		}
-		}
-	};
-
-	const handleVote = (ideaId: string) => {
+  const handleVote = (ideaId: string) => {
 		setIdeas(ideas.map(idea =>
 			idea.id === ideaId ? { ...idea, votes: idea.votes + 1 } : idea
 		));
 		setVotedIdeas([...votedIdeas, ideaId]);
 	};
 
-	const isEvaluationStage = (stageId: string) => {
-		return stageId === 'pre-screening' || stageId === 'detailed-screening';
-	};
+  if (isLoading) {
+    return <div className="flex h-screen items-center justify-center">Carregando funil...</div>;
+  }
 
-	if (isLoading) {
-    	return <div className="flex h-screen items-center justify-center">Carregando funil...</div>;
-  	}
-
-	return (
-		<div className="min-h-screen bg-[#f8f9fa] flex flex-col">
-			{/* Topbar */}
-			<div className="bg-[#011677] border-b border-gray-200 sticky top-0 z-10">
-				<div className="container mx-auto px-6 py-4">
-					<div className="flex items-center gap-4">
-						<Button
-							variant="ghost"
+ return (
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      <div className="bg-[#011677] border-b border-gray-200 sticky top-0 z-10 text-white">
+        <div className="container mx-auto px-6 py-4">
+          <div className="flex items-center gap-4">
+            <Button variant="ghost"
 							size="sm"
-							className="hovers-exit-dash text-white"
-							onClick={() => onNavigate('dashboard')}
-						>
-							<ArrowLeft className="w-4 h-4 mr-2" />
-							Voltar ao Dashboard
-						</Button>
-						<Separator orientation="vertical" className="h-6" />
-						<div className="flex items-center gap-2 text-white">
-							<Target className="w-5 h-5" />
-							<h1 className="text-lg font-semibold">Funil de Inovação</h1>
-						</div>
-					</div>
-				</div>
-			</div>
+							className="hovers-exit-dash text-white" onClick={() => router.push(`/challenges/${challenge.id}`)}>
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Voltar aos Detalhes do Desafio
+            </Button>
+            <Separator orientation="vertical" className="h-6" />
+            <div className="flex items-center gap-2">
+              <Target className="w-5 h-5" />
+              <div>
+                <h1 className="text-lg font-semibold">Funil de Ideias</h1>
+                <p className="text-sm text-gray-300">{challenge.name}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-			{/* Board */}
-			<DragDropContext onDragEnd={handleOnDragEnd}>
-				<div className="flex-1 overflow-x-auto p-6">
-					<div className="flex gap-6 min-w-max h-full">
-						{funnelStages.map(stage => (
+      <DragDropContext onDragEnd={handleOnDragEnd}>
+        <div className="flex-1 overflow-x-auto p-6">
+          <div className="flex gap-6 min-w-max h-full">
+            {funnelStages.map(stage => (
 							<Droppable key={stage.id} droppableId={stage.id}>
 								{(provided, snapshot) => (
 									<div
@@ -219,7 +216,12 @@ export function InnovationFunnel({ user, onNavigate }: InnovationFunnelProps) {
 															</DialogTrigger>
 															{isEvaluationStage(idea.stage) && (
 																<DialogContent className="bg-white">
-																	<EvaluationForm idea={idea} />
+																	<IdeaForm 
+																		stageTitle={stage.title} 
+																		challengeId={challenge.id}
+																		onIdeaCreated={fetchIdeas} 
+																		closeDialog={() => setIsIdeaFormOpen(false)}
+																	/>
 																</DialogContent>
 															)}
 														</Dialog>
@@ -241,8 +243,8 @@ export function InnovationFunnel({ user, onNavigate }: InnovationFunnelProps) {
 												<DialogContent className="bg-white">
 													<IdeaForm 
 														stageTitle={stage.title} 
-														onIdeaCreated={fetchIdeas}
-														challengeId="challenge-01" // IMPORTANTE: Este ID é estático. Numa app real, viria do desafio que está a ser visualizado.
+														challengeId={challenge.id}
+														onIdeaCreated={fetchIdeas} 
 														closeDialog={() => setIsIdeaFormOpen(false)}
 													/>
 												</DialogContent>
@@ -252,9 +254,9 @@ export function InnovationFunnel({ user, onNavigate }: InnovationFunnelProps) {
 								)}
 							</Droppable>
 						))}
-					</div>
-				</div>
-			</DragDropContext>
-		</div>
-	);
+          </div>
+        </div>
+      </DragDropContext>
+    </div>
+  );
 }

@@ -250,7 +250,7 @@ export function Collaborators({ user }: CollaboratorsProps) {
                 </TableHeader>
                 <TableBody>
                   {collaborators.map((collab) => (
-                    <TableRow key={collab.id}>
+                    <TableRow key={collab.sub}>
                       <TableCell>
                         <div className="flex items-center gap-3">
                           <Avatar>
@@ -265,7 +265,7 @@ export function Collaborators({ user }: CollaboratorsProps) {
                       <TableCell>
                         <Select
                           defaultValue={collab.role.toLowerCase()}
-                          disabled={user.id === collab.id || (user.role !== "GESTOR" && user.role !== "ADMIN")}
+                          disabled={user.sub === collab.sub || (user.role !== "GESTOR" && user.role !== "ADMIN")}
                         >
                           <SelectTrigger className="w-48 border-gray-400">
                             <SelectValue />
@@ -282,7 +282,7 @@ export function Collaborators({ user }: CollaboratorsProps) {
                         <Button
                           variant="ghost"
                           size="sm"
-                          disabled={user.id === collab.id}
+                          disabled={user.sub === collab.sub}
                           className="text-white bg-red-600 cursor-pointer hover:bg-red-700"
                         >
                           Remover

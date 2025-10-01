@@ -6,7 +6,7 @@ import { setAuthHeader } from '../../service/Api';
 export type UserRole = 'COMUM' | 'AVALIADOR' | 'GESTOR' | 'ADMIN';
 
 export interface User {
-  id: string;
+  sub: string;
   name: string;
   email: string;
   role: UserRole;
