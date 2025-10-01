@@ -158,38 +158,36 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
 
                 {/* Pop-up de Ações (Menu) */}
                 {isMenuOpen && (
-                    <Card className="absolute gap-1 right-0 mt-3 w-64 shadow-2xl z-20">
-                        <CardHeader className="p-3 text-center">
-                            <p className="text-sm font-medium leading-none">{user.name}</p>
-                            <p className="text-xs leading-none text-gray-500">
-                                {user.email}
-                            </p>
-                        </CardHeader>
-                        <CardContent className="p-0">
-                            {/* Opção Ver Perfil */}
-                            <hr className="text-gray-400" />
-                            <div
-                                className="flex items-center p-1   cursor-pointer hover:bg-gray-100 transition"
-                                onClick={() => {
-                                    router.push("/profile");
-                                    setIsMenuOpen(false);
-                                }}
-                            >
-                                <UserIcon className="mr-2 h-4 w-4 text-[#011677]" />
-                                <span className="text-sm">Ver Perfil</span>
-                            </div>
-                            <hr className="text-gray-400" />
-                            
-                            {/* Opção Sair */}
-                            <div
-                                className="flex items-center p-2 pb-1 cursor-pointer hover:bg-red-50 transition"
-                                onClick={onLogout}
-                            >
-                                <LogOut className="mr-2 h-4 w-4 text-red-600" />
-                                <span className="text-sm text-red-600 font-medium">Sair</span>
-                            </div>
-                            <hr className="text-gray-400" />
-                        </CardContent>
+                    <Card className="absolute right-0 mt-3 w-72 rounded-2xl border border-gray-200 shadow-xl z-20 bg-white p-0 gap-0">
+                      {/* Header */}
+                      <CardHeader className="p-4 text-center border-b border-gray-100 !px-4 !pt-4 !gap-0">
+                        <p className="text-sm font-semibold text-gray-800">{user.name}</p>
+                        <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                      </CardHeader>
+
+                      {/* Conteúdo */}
+                      <CardContent className="p-2 !px-2">
+                        <div
+                          className="flex items-center p-2 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
+                          onClick={() => {
+                            router.push("/profile");
+                            setIsMenuOpen(false);
+                          }}
+                        >
+                          <UserIcon className="mr-2 h-4 w-4 text-[#011677]" />
+                          <span className="text-sm text-gray-700">Ver Perfil</span>
+                        </div>
+
+                        <hr className="my-2 border-gray-200" />
+
+                        <div
+                          className="flex items-center p-2 rounded-lg cursor-pointer hover:bg-red-50 transition-colors"
+                          onClick={onLogout}
+                        >
+                          <LogOut className="mr-2 h-4 w-4 text-red-600" />
+                          <span className="text-sm text-red-600 font-semibold">Sair</span>
+                        </div>
+                      </CardContent>
                     </Card>
                 )}
             </div>
