@@ -37,6 +37,22 @@ export interface Startup {
   matchScore?: number;
 }
 
+export interface Idea {
+// ... (restante da interface Idea)
+  id: string;
+  title: string;
+  description: string;
+  challengeId: string;
+  authorId: string;
+  stage: string;
+  priority: string;
+  votes: number;
+  comments: number;
+  createdAt: string;
+  updatedAt: string;
+  status: 'submetida' | 'em_avaliacao' | 'aprovada' | 'rejeitada';
+}
+
 interface UserContextType {
 // ... (restante do UserContextType)
   user: User | null;
