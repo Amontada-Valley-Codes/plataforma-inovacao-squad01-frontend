@@ -130,7 +130,7 @@ export default function CadastroStartupPage() {
 
           <button
             type="submit"
-            className="w-full bg-[#011677] text-white py-2 px-4 rounded-md hover:bg-[#160430] transition"
+            className="w-full bg-[#011778] text-white py-2 px-4 rounded-md hover:bg-[#001a90] transition cursor-pointer"
           >
             Enviar Inscrição
           </button>

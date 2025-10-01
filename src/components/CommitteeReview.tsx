@@ -75,7 +75,7 @@ export function CommitteeReview({ user }: CommitteeReviewProps) {
                       </div>
                       <div className="flex justify-center items-center">
                         <Badge
-                          className={`px-3 py-1 rounded-full text-sm font-medium shadow-sm transition-all duration-300 cursor-pointer ${
+                          className={`px-5 py-1 rounded-full text-sm font-medium shadow-sm transition-all duration-300 cursor-pointer ${
                             idea.stage === 'pre-screening'
                               ? 'bg-yellow-100 text-yellow-700 border border-yellow-300 hover:bg-yellow-200'
                               : 'bg-green-100 text-green-700 border border-green-300 hover:bg-green-200'
@@ -113,7 +113,7 @@ export function CommitteeReview({ user }: CommitteeReviewProps) {
                           <div className="w-full space-y-2">
                             <Textarea className='focus:border-[#001f61] focus:ring focus:ring-[#001f61]/30 transition-colors' placeholder="Adicione seu parecer..." />
                             <div className="text-right">
-                              <Button size="sm" className="bg-[#011677] hover:bg-[#001f61] text-white transition-all">
+                              <Button size="sm" className="bg-[#011677] hover:bg-[#001f61] text-white transition-all cursor-pointer">
                                 <Send className="w-4 h-4 mr-2" />Publicar
                               </Button>
                             </div>
@@ -124,11 +124,11 @@ export function CommitteeReview({ user }: CommitteeReviewProps) {
 
                         {/* Botões de decisão */}
                         <div className="flex justify-end gap-4">
-                          <Button variant="destructive" className="bg-red-600 hover:bg-red-700 transition-all">
+                          <Button variant="destructive" className="bg-red-600 hover:bg-red-700 transition-all cursor-pointer">
                             <X className="w-4 h-4 mr-2" />
                             Rejeitar Ideia
                           </Button>
-                          <Button className="bg-green-600 hover:bg-green-700 text-white transition-all">
+                          <Button className="bg-green-600 hover:bg-green-700 text-white transition-all cursor-pointer">
                             <Check className="w-4 h-4 mr-2" />
                             Aprovar para Próxima Fase
                           </Button>

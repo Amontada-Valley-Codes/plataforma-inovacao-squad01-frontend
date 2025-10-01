@@ -64,7 +64,7 @@ export default function PaginaDetalhesDesafio({ params }: DetalhesPageProps) {
             <div className="mt-8 text-center">
               <Link
                 href="/cadastro-startups"
-               className="bg-[#011677] text-white px-8 py-3 rounded-lg font-medium hover:bg-[#160430] transition">
+               className="bg-[#011677] text-white px-8 py-3 rounded-lg font-medium hover:bg-[#001a90] transition">
                 Participar do Desafio
               </Link>
             </div>
