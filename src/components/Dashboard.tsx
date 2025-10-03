@@ -380,7 +380,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
 								{recentChallenges.map((challenge) => (
 									<div
 										key={challenge.id}
-										className="flex md:items-center md:flex-row flex-col justify-between p-4 shadow-lg rounded-lg hover:bg-gray-200 cursor-pointer"
+										className="flex md:items-center md:flex-row flex-col justify-between p-4 shadow-lg rounded-lg hover:bg-gray-200 cursor-pointer transition-colors"
 
 									>
 										<div className="space-y-1">
@@ -416,7 +416,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
 												Ver Detalhes
 											</Button>
 											<Button
-												className="w-50 justify-start bg-[#011677] text-white hover:bg-[#0121af]"
+												className="w-50 justify-start bg-[#011677] text-white hover:bg-[#0121af] cursor-pointer mt-2 md:mt-0 h-9"
 												onClick={() => handleChallengeClick(challenge)}
 											>
 												<Target className="w-4 h-2 mr-2" />

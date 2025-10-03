@@ -284,7 +284,7 @@ export function StartupDatabase({ user, onNavigate }: StartupDatabaseProps) {
                         })
                       }
                     >
-                      <SelectTrigger className="focus:ring-[#001f61]/30">
+                      <SelectTrigger className="focus:ring-[#001f61]/30 cursor-pointer">
                         <SelectValue placeholder="Todos os segmentos" />
                       </SelectTrigger>
                       <SelectContent>
@@ -314,7 +314,7 @@ export function StartupDatabase({ user, onNavigate }: StartupDatabaseProps) {
                         })
                       }
                     >
-                      <SelectTrigger className="focus:ring-[#001f61]/30">
+                      <SelectTrigger className="focus:ring-[#001f61]/30 cursor-pointer">
                         <SelectValue placeholder="Todos os estágios" />
                       </SelectTrigger>
                       <SelectContent>

@@ -235,7 +235,7 @@ export function ChallengeDetails({ user, challenge, onNavigate }: ChallengeDetai
 									Buscar Mais Startups
 								</Button>
 								<Button 
-									className="w-full justify-start bg-[#011677] text-white hover:bg-[#0121af]"
+									className="w-full justify-start bg-[#011677] text-white hover:bg-[#0121af] cursor-pointer"
 									onClick={() => router.push(`/funnel/${challenge.id}`)}
 									>
 									<Target className="w-4 h-4 mr-2" />
@@ -250,15 +250,15 @@ export function ChallengeDetails({ user, challenge, onNavigate }: ChallengeDetai
 				<div className="mt-8">
 					<Tabs defaultValue="submissions">
 						<TabsList className="mb-4 ">
-							<TabsTrigger value="submissions" className='border-r-gray-400 border-b-gray-400 '>
+							<TabsTrigger value="submissions" className='border-r-gray-400 border-b-gray-400 cursor-pointer hover:bg-gray-200'>
 								<Lightbulb className="w-4 h-4 mr-2" />
 								Submissões de Ideias ({mockSubmissions.length})
 							</TabsTrigger>
-							<TabsTrigger value="startups" className='border-r-gray-400 border-b-gray-400 '>
+							<TabsTrigger value="startups" className='border-r-gray-400 border-b-gray-400 cursor-pointer hover:bg-gray-200'>
 								<Star className="w-4 h-4 mr-2" />
 								Startups Recomendadas
 							</TabsTrigger>
-							<TabsTrigger value="discussion" className='border-r-gray-400 border-b-gray-400'>
+							<TabsTrigger value="discussion" className='border-r-gray-400 border-b-gray-400 cursor-pointer hover:bg-gray-200'>
 								<MessageCircle className="w-4 h-4 mr-2" />
 								Discussão Interna
 							</TabsTrigger>

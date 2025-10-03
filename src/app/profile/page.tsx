@@ -86,7 +86,7 @@ export default function ProfilePage() {
               </div>
             </div>
 
-            <Button className="mt-12 w-full rounded-lg bg-[#001f61] hover:bg-[#002a7a] text-white transition-colors duration-200">
+            <Button className="mt-12 w-full rounded-lg bg-[#001f61] hover:bg-[#002a7a] text-white transition-colors duration-200 cursor-pointer">
               Upload de imagem
             </Button>
           </Card>
@@ -130,7 +130,7 @@ export default function ProfilePage() {
 
               <Button
                 type="submit"
-                className="w-full bg-[#001f61] hover:bg-[#002a7a] text-white transition-colors duration-200 rounded-lg font-medium"
+                className="w-full bg-[#001f61] mt-2 hover:bg-[#002a7a] text-white transition-colors duration-200 rounded-lg font-medium cursor-pointer"
               >
                 Atualizar
               </Button>
