@@ -39,6 +39,7 @@ interface StartupDatabaseProps {
 
 export function StartupDatabase({ user, onNavigate }: StartupDatabaseProps) {
   const [searchQuery, setSearchQuery] = useState("");
+  const [theme, setTheme] = useState<string>(typeof window !== 'undefined' ? (sessionStorage.getItem('theme') || 'light') : 'light');
   const [filters, setFilters] = useState({
     segment: "",
     stage: "",
@@ -182,9 +183,9 @@ export function StartupDatabase({ user, onNavigate }: StartupDatabaseProps) {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-white text-black'}`}>
       {/* Header */}
-      <div className="bg-[#011677] text-white shadow-lg">
+      <div className={`bg-[#011677] text-white shadow-lg ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-[#011677] text-white'}`}>
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -211,8 +212,8 @@ export function StartupDatabase({ user, onNavigate }: StartupDatabaseProps) {
                 onClick={() => setViewMode("grid")}
                 className={
                   viewMode === "grid"
-                    ? "bg-[#001f61] text-white hover:bg-[#002a7a] border-white"
-                    : "border-white text-white hover:bg-white hover:text-[#001f61] cursor-pointer"
+                    ? `bg-[#001f61] text-white hover:bg-[#002a7a] border-white ${theme === 'dark' ? 'bg-gray-700 text-white hover:bg-gray-600 border-gray-600' : 'bg-[#001f61] text-white hover:bg-[#002a7a] border-white'}`
+                    : `border-white text-white hover:bg-white hover:text-[#001f61] cursor-pointer ${theme === 'dark' ? 'border-gray-600 text-white hover:bg-gray-700 hover:text-white' : 'border-white text-white hover:bg-white hover:text-[#001f61] cursor-pointer'}`
                 }
               >
                 Grade
@@ -223,8 +224,8 @@ export function StartupDatabase({ user, onNavigate }: StartupDatabaseProps) {
                 onClick={() => setViewMode("list")}
                 className={
                   viewMode === "list"
-                    ? "bg-[#001f61] text-white hover:bg-[#002a7a] border-white"
-                    : "border-white text-white hover:bg-white hover:text-[#001f61] cursor-pointer"
+                    ? `bg-[#001f61] text-white hover:bg-[#002a7a] border-white ${theme === 'dark' ? 'bg-gray-700 text-white hover:bg-gray-600 border-gray-600' : 'bg-[#001f61] text-white hover:bg-[#002a7a] border-white'}`
+                    : `border-white text-white hover:bg-white hover:text-[#001f61] cursor-pointer ${theme === 'dark' ? 'border-gray-600 text-white hover:bg-gray-700 hover:text-white' : 'border-white text-white hover:bg-white hover:text-[#001f61] cursor-pointer'}`
                 }
               >
                 Lista
@@ -239,17 +240,17 @@ export function StartupDatabase({ user, onNavigate }: StartupDatabaseProps) {
         {/* Search and Filters */}
         <div className="mb-8">
           <div className="mb-6">
-            <h2 className="text-3xl font-bold text-[#001f61]">
+            <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-gray-200' : 'text-[#001f61]'}`}>
               Explore Startups Inovadoras
             </h2>
-            <p className="text-gray-600">
+            <p className={`text-gray-600 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
               Encontre as startups perfeitas para seus desafios de inovação.
             </p>
           </div>
 
-          <Card className="shadow-lg rounded-xl">
+          <Card className={`shadow-lg rounded-xl ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-black'}`}>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-[#001f61]">
+              <CardTitle className={`flex items-center gap-2 text-[#001f61] ${theme === 'dark' ? 'text-white' : 'text-[#001f61]'}`}>
                 <Filter className="w-5 h-5" />
                 Busca e Filtros
               </CardTitle>
@@ -348,7 +349,7 @@ export function StartupDatabase({ user, onNavigate }: StartupDatabaseProps) {
                   <Button
                     variant="link"
                     size="sm"
-                    className="text-[#001f61] hover:underline"
+                    className={`text-[#001f61] hover:underline ${theme === 'dark' ? 'text-white hover:text-gray-400' : 'text-[#001f61] hover:text-white'}`}
                     onClick={() => {
                       setSearchQuery("");
                       setFilters({
@@ -378,19 +379,19 @@ export function StartupDatabase({ user, onNavigate }: StartupDatabaseProps) {
           {filteredStartups.map((startup) => (
             <Card
               key={startup.id}
-              className="hover:shadow-xl transition-shadow cursor-pointer rounded-xl"
+              className={`hover:shadow-xl transition-shadow cursor-pointer rounded-xl ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-black'}`}
             >
               <CardHeader>
                 <div className="flex justify-between items-start">
                   <div className="space-y-2">
-                    <CardTitle className="flex items-center gap-2 text-[#001f61]">
-                      <Building2 className="w-5 h-5 text-[#001f61]" />
+                    <CardTitle className={`flex items-center gap-2 ${theme === 'dark' ? 'text-white' : 'text-[#001f61]'}`}>
+                      <Building2 className={`w-5 h-5 ${theme === 'dark' ? 'text-white' : 'text-[#001f61]'}`} />
                       {startup.name}
                     </CardTitle>
                     <div className="flex items-center gap-2">
                       <Badge
                         variant="outline"
-                        className="border-[#001f61] text-[#001f61]"
+                        className={`border-[#001f61] text-[#001f61] ${theme === 'dark' ? 'border-gray-700 text-gray-300' : 'border-[#001f61] text-[#001f61]'}`}
                       >
                         {startup.segment}
                       </Badge>
@@ -402,7 +403,7 @@ export function StartupDatabase({ user, onNavigate }: StartupDatabaseProps) {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="text-[#001f61] hover:bg-gray-100"
+                    className={`text-[#001f61] hover:bg-gray-100 ${theme === 'dark' ? 'text-white hover:bg-gray-700' : 'text-[#001f61] hover:bg-gray-100'}`}
                   >
                     <Eye className="w-4 h-4" />
                   </Button>
@@ -410,19 +411,19 @@ export function StartupDatabase({ user, onNavigate }: StartupDatabaseProps) {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <h4 className="font-medium mb-1 text-gray-700">
+                  <h4 className={`font-medium mb-1 ${theme === 'dark' ? 'text-gray-200' : 'text-gray-700'}`}>
                     Problema que Resolve
                   </h4>
-                  <p className="text-sm text-gray-500">{startup.problem}</p>
+                  <p className={`text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-500'}`}>{startup.problem}</p>
                 </div>
 
                 <div>
-                  <p className="text-sm text-gray-500">{startup.description}</p>
+                  <p className={`text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-500'}`}>{startup.description}</p>
                 </div>
 
                 <div className="space-y-2 text-sm text-gray-500">
                   <div className="flex items-center gap-2">
-                    <MapPin className="w-4 h-4 text-[#001f61]" />
+                    <MapPin className={`w-4 h-4 ${theme === 'dark' ? 'text-white' : 'text-[#001f61]'}`} />
                     {startup.location}
                   </div>
                   <div className="flex items-center gap-2">

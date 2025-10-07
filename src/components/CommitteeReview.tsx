@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Separator } from './ui/separator';
@@ -39,14 +39,15 @@ const mockIdeasForReview = [
 ];
 
 export function CommitteeReview({ user }: CommitteeReviewProps) {
+   const [theme, setTheme] = useState<string>(typeof window !== 'undefined' ? (sessionStorage.getItem('theme') || 'light') : 'light');
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-gray-50 text-black'} flex`}>
       {/* Sidebar sempre fixa e aberta */}
-      <Sidebar user={user} />
+      <Sidebar theme={theme} user={user} />
       
       <div className="flex-1 flex flex-col">
         {/* Header */}
-        <div className="bg-[#011677] border-b border-gray-200">
+        <div className={`bg-[#011677] border-b border-gray-200 ${theme === 'dark' ? 'bg-gray-800 text-white border-gray-700' : 'bg-[#011677] text-white border-gray-200'}`}>
           <div className="container mx-auto px-6 py-4">
             <div className="flex items-center gap-2">
               <ClipboardCheck className="w-6 h-6 text-white" />
@@ -57,7 +58,7 @@ export function CommitteeReview({ user }: CommitteeReviewProps) {
 
         {/* Content */}
         <main className="container mx-auto px-6 py-8 flex-1">
-          <Card className="shadow-lg">
+          <Card className={`shadow-lg ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-black'}`}>
             <CardHeader>
               <CardTitle>Ideias em Análise</CardTitle>
               <CardDescription>
@@ -68,10 +69,10 @@ export function CommitteeReview({ user }: CommitteeReviewProps) {
               <Accordion type="single" collapsible className="w-full">
                 {mockIdeasForReview.map((idea) => (
                   <AccordionItem key={idea.id} value={idea.id}>
-                    <AccordionTrigger className="hover:bg-gray-100 px-4 py-2 rounded-md flex justify-between items-center cursor-pointer transition-colors duration-300">
+                    <AccordionTrigger className={`hover:bg-gray-600 px-4 py-2 rounded-md flex justify-between items-center cursor-pointer transition-colors duration-300 ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-black'}`}>
                       <div className="text-left">
-                        <p className="font-semibold text-base text-[#001f61]">{idea.title}</p>
-                        <p className="text-sm text-gray-500">Submetida por: {idea.author}</p>
+                        <p className={`font-semibold text-base ${theme === 'dark' ? 'text-gray-200' : 'text-[#001f61]'}`}>{idea.title}</p>
+                        <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>Submetida por: {idea.author}</p>
                       </div>
                       <div className="flex justify-center items-center">
                         <Badge

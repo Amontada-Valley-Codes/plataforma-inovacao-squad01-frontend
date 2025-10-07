@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Separator } from './ui/separator';
@@ -45,10 +45,11 @@ const pieChartData = [
 ];
 
 export function Reports({ user, onNavigate }: ReportsProps) {
+   const [theme, setTheme] = useState<string>(typeof window !== 'undefined' ? (sessionStorage.getItem('theme') || 'light') : 'light');
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-gray-50 text-black'}`}>
       {/* Header */}
-      <div className="bg-[#011677] text-white border-b border-gray-200 sticky top-0 z-10">
+      <div className={`bg-[#011677] text-white border-b border-gray-200 sticky top-0 z-10 ${theme === 'dark' ? 'bg-gray-800 text-white border-gray-700' : 'bg-[#011677] text-white border-gray-200'}`}>
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -80,7 +81,7 @@ export function Reports({ user, onNavigate }: ReportsProps) {
       <div className="container mx-auto px-6 py-8 space-y-8">
         {/* Gráficos */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <Card>
+          <Card className={`shadow-lg ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-black'}`}>
             <CardHeader>
               <CardTitle>Ideias por Etapa do Funil</CardTitle>
               <CardDescription>Distribuição atual das ideias no funil de inovação.</CardDescription>
@@ -97,7 +98,7 @@ export function Reports({ user, onNavigate }: ReportsProps) {
               </ResponsiveContainer>
             </CardContent>
           </Card>
-          <Card>
+          <Card className={`shadow-lg ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-black'}`}>
             <CardHeader>
               <CardTitle>Evolução Mensal</CardTitle>
               <CardDescription>Novas ideias e POCs iniciadas por mês.</CardDescription>
@@ -118,38 +119,38 @@ export function Reports({ user, onNavigate }: ReportsProps) {
         </div>
 
         {/* Tabela de Dados */}
-        <Card className="shadow-lg">
+        <Card className={`shadow-lg ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-black'}`}>
           <CardHeader>
-            <CardTitle className="text-2xl text-[#001f61]">Relatório Geral de Ideias</CardTitle>
-            <CardDescription>Lista completa de todas as ideias submetidas na sua empresa.</CardDescription>
+            <CardTitle className={`text-2xl ${theme === 'dark' ? 'text-gray-200' : 'text-[#001f61]'}`}>Relatório Geral de Ideias</CardTitle>
+            <CardDescription className={`text-gray-600 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Lista completa de todas as ideias submetidas na sua empresa.</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="overflow-x-auto"> {/* Garante que a tabela é responsiva */}
               <Table className="min-w-full divide-y divide-gray-200">
-                <TableHeader className="bg-gray-50">
+                <TableHeader className={`bg-gray-50 ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-50'}`}>
                   <TableRow>
-                    <TableHead className="text-[#001f61] font-bold">Título da Ideia</TableHead>
-                    <TableHead className="text-[#001f61] font-bold">Autor</TableHead>
-                    <TableHead className="text-[#001f61] font-bold">Área</TableHead>
-                    <TableHead className="text-[#001f61] font-bold">Etapa Atual</TableHead>
-                    <TableHead className="text-[#001f61] font-bold">Status</TableHead>
+                    <TableHead className={`font-bold ${theme === 'dark' ? 'text-gray-200' : 'text-[#001f61]'}`}>Título da Ideia</TableHead>
+                    <TableHead className={`font-bold ${theme === 'dark' ? 'text-gray-200' : 'text-[#001f61]'}`}>Autor</TableHead>
+                    <TableHead className={`font-bold ${theme === 'dark' ? 'text-gray-200' : 'text-[#001f61]'}`}>Área</TableHead>
+                    <TableHead className={`font-bold ${theme === 'dark' ? 'text-gray-200' : 'text-[#001f61]'}`}>Etapa Atual</TableHead>
+                    <TableHead className={`font-bold ${theme === 'dark' ? 'text-gray-200' : 'text-[#001f61]'}`}>Status</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {ideasData.map((idea) => (
-                    <TableRow key={idea.id} className="hover:bg-blue-50/50 transition-colors duration-200">
-                      <TableCell className="font-medium text-gray-800">{idea.title}</TableCell>
-                      <TableCell className="text-gray-600">{idea.author}</TableCell>
-                      <TableCell className="text-gray-600">{idea.area}</TableCell>
+                    <TableRow key={idea.id} className={`hover:bg-blue-50/50 transition-colors duration-200 ${theme === 'dark' ? 'hover:bg-gray-700' : ''}`}>
+                      <TableCell className={`font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-800'}`}>{idea.title}</TableCell>
+                      <TableCell className={`text-gray-600 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>{idea.author}</TableCell>
+                      <TableCell className={`text-gray-600 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>{idea.area}</TableCell>
                       <TableCell>
                         {/* Estilização da Badge baseada no padrão de cores azul/índigo */}
-                        <Badge 
-                          className="bg-indigo-100 text-indigo-800 hover:bg-indigo-200 text-xs font-medium px-2 py-0.5"
+                        <Badge
+                          className={`bg-indigo-100 text-indigo-800 hover:bg-indigo-200 text-xs font-medium px-2 py-0.5 ${theme === 'dark' ? 'bg-indigo-900 text-indigo-300 hover:bg-indigo-800' : ''}`}
                         >
                           {idea.stage}
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-gray-600">{idea.status}</TableCell>
+                      <TableCell className={`text-gray-600 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>{idea.status}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

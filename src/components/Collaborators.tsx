@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import {
   Card,
   CardContent,
@@ -82,6 +82,7 @@ const mockCompanies = [
 
 export function Collaborators({ user }: CollaboratorsProps) {
   const router = useRouter();
+   const [theme, setTheme] = useState<string>(typeof window !== 'undefined' ? (sessionStorage.getItem('theme') || 'light') : 'light');
 
   const getRoleLabel = (role: UserRole) => {
     const labels = {
@@ -93,14 +94,14 @@ export function Collaborators({ user }: CollaboratorsProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-gray-50 text-black'} flex`}>
       {/* Sidebar fixa */}
-      <Sidebar user={user} />
+      <Sidebar theme={theme} user={user} />
 
       {/* Conteúdo principal */}
       <div className="flex-1">
         {/* Header */}
-        <div className="bg-[#011677] border-b border-gray-200 sticky top-0 z-10">
+        <div className={`bg-[#011677] border-b border-gray-200 sticky top-0 z-10 ${theme === 'dark' ? 'bg-gray-800 text-white border-gray-700' : 'bg-[#011677] text-white border-gray-200'}`}>
           <div className="container mx-auto px-6 py-4">
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
@@ -115,24 +116,24 @@ export function Collaborators({ user }: CollaboratorsProps) {
 
         {/* Content */}
         <div className="container mx-auto px-6 py-8">
-          <Card className="bg-white border border-gray-200 shadow-sm">
+          <Card className={`bg-white border border-gray-200 shadow-sm ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-black'}`}>
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
-                <CardTitle className="text-xl text-gray-900">
+                <CardTitle className={`text-xl ${theme === 'dark' ? 'text-gray-200' : 'text-gray-900'}`}>
                   Lista de Colaboradores
                 </CardTitle>
-                <CardDescription className="text-gray-600">
+                <CardDescription className={`text-gray-600 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                   Gerencie os acessos e permissões da sua equipa na plataforma.
                 </CardDescription>
               </div>
               <Dialog>
                 <DialogTrigger asChild>
-                  <Button className="cursor-pointer bg-[#011677] text-white hover:bg-[#0121af] transition-colors duration-200">
+                  <Button className={`cursor-pointer bg-[#011677] text-white hover:bg-[#0121af] transition-colors duration-200`}>
                     <UserPlus className="w-4 h-4 mr-2" />
                     Adicionar Colaborador
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="bg-white p-6 rounded-lg shadow-lg">
+                <DialogContent className={`bg-white p-6 rounded-lg shadow-lg ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-black'}`}>
                   <DialogHeader>
                     <DialogTitle className="text-2xl font-bold text-center text-[#001f61]">
                       Adicionar Novo Colaborador
@@ -217,11 +218,11 @@ export function Collaborators({ user }: CollaboratorsProps) {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="text-gray-600">Colaborador</TableHead>
-                    <TableHead className="text-gray-600">
+                    <TableHead className={`text-gray-600 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Colaborador</TableHead>
+                    <TableHead className={`text-gray-600 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                       Nível de Acesso
                     </TableHead>
-                    <TableHead className="text-right text-gray-600">
+                    <TableHead className={`text-right text-gray-600 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                       Ações
                     </TableHead>
                   </TableRow>
@@ -241,10 +242,10 @@ export function Collaborators({ user }: CollaboratorsProps) {
                             </AvatarFallback>
                           </Avatar>
                           <div>
-                            <p className="font-semibold text-gray-800">
+                            <p className={`font-semibold ${theme === 'dark' ? 'text-gray-200' : 'text-gray-800'}`}>
                               {collab.name}
                             </p>
-                            <p className="text-sm text-gray-500">
+                            <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
                               {collab.email}
                             </p>
                           </div>

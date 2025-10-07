@@ -18,9 +18,10 @@ import { useRouter, usePathname } from "next/navigation";
 import { ClipboardCheck } from "lucide-react";
 interface SidebarProps {
   user: User;
+  theme: string;
 }
 
-export function Sidebar({ user }: SidebarProps) {
+export function Sidebar({ user, theme }: SidebarProps) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
@@ -32,7 +33,7 @@ export function Sidebar({ user }: SidebarProps) {
     <div
       className={`${
         sidebarOpen ? "w-64" : "w-16"
-      } transition-all duration-300 bg-[#011677] text-white bg-card shadow-md flex flex-col justify-between`}
+      } transition-all duration-300 bg-[#011677] text-white bg-card shadow-md flex flex-col justify-between ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-[#011677]'}`}
     >
       {/* Topo da sidebar */}
       <div className="p-4 w-full flex flex-col">

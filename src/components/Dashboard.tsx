@@ -47,6 +47,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
 	const [selectedCompany] = useState(user.company)
 	const [isMenuOpen, setIsMenuOpen] = useState(false); // NOVO ESTADO para controlar o pop-up
 	const menuRef = useRef<HTMLDivElement>(null); // Referência para detectar cliques fora
+	const [theme, setTheme] = useState<string>(typeof window !== 'undefined' ? (sessionStorage.getItem('theme') || 'light') : 'light');
 
 	const router = useRouter()
 
@@ -120,14 +121,20 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
 		router.push(`/funnel/${challenge.id}`); // Navega para a página do funil com o ID do desafio
 	}
 
+	const handleThemeChange = (newTheme: string) => {
+		sessionStorage.setItem('theme', newTheme);
+		setTheme(newTheme);
+		
+	}
+
 
 	return (
 		<div className="flex h-screen bg-background bg-[#011677] text-white">
 			{/* Sidebar */}
-			<Sidebar user={user} />
+			<Sidebar theme={theme} user={user} />
 
 			{/* Main Content */}
-			<div className="flex-1 overflow-auto bg-[#f9fafb] text-black">
+			<div className={`flex-1 overflow-auto bg-gray-900 text-black ${theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-white text-black'}`}>
 				<div className="p-6">
 					{/* Header */}
 					<div className="flex items-center justify-between mb-6">
@@ -140,7 +147,15 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
 							</div>
 						</div>
 
-						{/* INÍCIO DO NOVO BLOCO DE PERFIL COM POP-UP CUSTOMIZADO */}
+						{/* botao para Mudar tema */}
+
+						<button
+							className="px-4 py-2 rounded-lg bg-gray-200 text-gray-800 hover:bg-gray-300 transition-colors"
+							onClick={() => handleThemeChange(theme === 'light' ? 'dark' : 'light')}
+						>
+							Mudar Tema
+						</button>
+
 						<div className="relative" ref={menuRef}>
 							{/* O círculo de imagem de perfil (Botão que abre o menu) */}
 							<div
@@ -204,7 +219,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
 					{/* KPI Cards */}
 					{user.role === "gestor" && (
 						<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-							<Card>
+							<Card className={`${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-black'}`}>
 								<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
 									<CardTitle className="text-sm font-medium">
 										Ideias Submetidas
@@ -218,8 +233,8 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
 									</p>
 								</CardContent>
 							</Card>
-							{/* ... (Demais KPI Cards) */}
-							<Card>
+							
+							<Card className={`${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-black'}`}>
 								<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
 									<CardTitle className="text-sm font-medium">
 										Startups Conectadas
@@ -234,7 +249,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
 								</CardContent>
 							</Card>
 
-							<Card>
+							<Card className={`${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-black'}`}>
 								<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
 									<CardTitle className="text-sm font-medium">
 										POCs Realizadas
@@ -249,7 +264,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
 								</CardContent>
 							</Card>
 
-							<Card>
+							<Card className={`${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-black'}`}>
 								<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
 									<CardTitle className="text-sm font-medium">
 										Tempo Médio por Etapa
@@ -269,7 +284,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
 					{/* Funil de Inovação */}
 					{user.role === "avaliador" || user.role === "gestor" ? (
 						<div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-							<Card className="lg:col-span-2">
+							<Card className={`lg:col-span-2 ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-black'}`}>
 								<CardHeader>
 									<CardTitle>Funil de Inovação</CardTitle>
 									<CardDescription>
@@ -303,7 +318,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
 					{/* Gráficos */}
 					{user.role === "avaliador" || user.role === "gestor" ? (
 						<div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-							<Card>
+							<Card className={`${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-black'}`}>
 								<CardHeader>
 									<CardTitle>Tendência de Ideias</CardTitle>
 									<CardDescription>
@@ -328,7 +343,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
 								</CardContent>
 							</Card>
 
-							<Card>
+							<Card className={`${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-black'}`}>
 								<CardHeader>
 									<CardTitle>Distribuição por Segmento</CardTitle>
 									<CardDescription>
@@ -359,7 +374,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
 					) : null}
 
 					{/* Desafios Recentes */}
-					<Card>
+					<Card className={`${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-black'}`}>
 						<CardHeader className="flex md:flex-row flex-col md:items-center justify-between">
 							<div>
 								<CardTitle>Desafios Ativos</CardTitle>
@@ -380,7 +395,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
 								{recentChallenges.map((challenge) => (
 									<div
 										key={challenge.id}
-										className="flex md:items-center md:flex-row flex-col justify-between p-4 shadow-lg rounded-lg hover:bg-gray-200 cursor-pointer"
+										className={`flex md:items-center md:flex-row flex-col justify-between p-4 shadow-lg rounded-lg hover:bg-gray-200 cursor-pointer ${theme === 'dark' ? 'bg-gray-700 text-white hover:bg-gray-600' : 'bg-white text-black'}`}
 
 									>
 										<div className="space-y-1">
