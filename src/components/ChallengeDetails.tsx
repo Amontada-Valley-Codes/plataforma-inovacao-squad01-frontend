@@ -52,6 +52,7 @@ const mockSubmissions = [
 export function ChallengeDetails({ user, challenge, onNavigate }: ChallengeDetailsProps) {
 	const [newComment, setNewComment] = useState('');
 	const router = useRouter();
+	const [theme, setTheme] = useState<string>(typeof window !== 'undefined' ? (sessionStorage.getItem('theme') || 'light') : 'light');
 
 	const handlePostComment = () => {
 		if (newComment.trim()) {
@@ -116,9 +117,9 @@ export function ChallengeDetails({ user, challenge, onNavigate }: ChallengeDetai
 
 
 	return (
-		<div className="min-h-screen bg-gray-50">
+		<div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'}`}>
 			{/* Header */}
-			<div className="bg-[#011677] text-white border-b border-gray-200">
+			<div className={`bg-[#011677]  ${theme === 'dark' ? 'bg-gray-800 text-white' : ' text-black border-b border-gray-200 '}`}>
 				<div className="container mx-auto px-6 py-4">
 					<div className="flex items-center gap-4">
 						<Button className='hovers-exit-dash' variant="ghost" size="sm" onClick={() => onNavigate('dashboard')}>
@@ -139,7 +140,7 @@ export function ChallengeDetails({ user, challenge, onNavigate }: ChallengeDetai
 				<div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 					{/* Left Column - Challenge Details */}
 					<div className="lg:col-span-2 space-y-6">
-						<Card className="bg-white">
+						<Card className={`bg-white ${theme === 'dark' ? 'bg-gray-800 text-white' : ''}`}>
 							<CardHeader>
 								<div className="flex items-start justify-between">
 									<div className="space-y-2">
@@ -157,16 +158,16 @@ export function ChallengeDetails({ user, challenge, onNavigate }: ChallengeDetai
 							<CardContent className="space-y-6">
 								<div>
 									<h3 className="font-semibold">Descrição do Problema</h3>
-									<p className="text-gray-600 mt-2">{challenge.description}</p>
+									<p className={` mt-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>{challenge.description}</p>
 								</div>
 
 								<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 									<div className="space-y-2">
-										<div className="flex items-center gap-2 text-sm text-gray-600">
+										<div className={`flex items-center gap-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
 											<Calendar className="w-4 h-4" />
 											Data de Início: {new Date(challenge.startDate).toLocaleDateString('pt-BR')}
 										</div>
-										<div className="flex items-center gap-2 text-sm text-gray-600">
+										<div className={`flex items-center gap-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
 											<Calendar className="w-4 h-4" />
 											Data de Fim: {new Date(challenge.endDate).toLocaleDateString('pt-BR')}
 										</div>
@@ -183,27 +184,27 @@ export function ChallengeDetails({ user, challenge, onNavigate }: ChallengeDetai
 							</CardContent>
 						</Card>
 
-						<Card className="bg-white">
+						<Card className={`bg-white ${theme === 'dark' ? 'bg-gray-800 text-white' : ''}`}>
 							<CardHeader>
 								<CardTitle>Métricas do Desafio</CardTitle>
 							</CardHeader>
 							<CardContent>
 								<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
 									<div className="text-center">
-										<div className="text-2xl font-bold text-gray-800">23</div>
-										<p className="text-sm text-gray-500">Ideias Submetidas</p>
+										<div className={`text-2xl font-bold ${theme === 'dark' ? 'text-gray-400' : 'text-gray-800'}`}>23</div>
+										<p className={`text-sm ${theme === 'dark' ? 'text-gray-200' : 'text-gray-500'}`}>Ideias Submetidas</p>
 									</div>
 									<div className="text-center">
-										<div className="text-2xl font-bold text-green-600">4</div>
-										<p className="text-sm text-gray-500">Startups Interessadas</p>
+										<div className={`text-2xl font-bold ${theme === 'dark' ? 'text-gray-400' : 'text-green-600'}`}>4</div>
+										<p className={`text-sm ${theme === 'dark' ? 'text-gray-200' : 'text-gray-500'}`}>Startups Interessadas</p>
 									</div>
 									<div className="text-center">
-										<div className="text-2xl font-bold text-blue-600">2</div>
-										<p className="text-sm text-gray-500">POCs Iniciadas</p>
+										<div className={`text-2xl font-bold ${theme === 'dark' ? 'text-gray-400' : 'text-blue-600'}`}>2</div>
+										<p className={`text-sm ${theme === 'dark' ? 'text-gray-200' : 'text-gray-500'}`}>POCs Iniciadas</p>
 									</div>
 									<div className="text-center">
-										<div className="text-2xl font-bold text-yellow-600">87%</div>
-										<p className="text-sm text-gray-500">Score Médio</p>
+										<div className={`text-2xl font-bold ${theme === 'dark' ? 'text-gray-400' : 'text-yellow-600'}`}>87%</div>
+										<p className={`text-sm ${theme === 'dark' ? 'text-gray-200' : 'text-gray-500'}`}>Score Médio</p>
 									</div>
 								</div>
 							</CardContent>
@@ -212,30 +213,30 @@ export function ChallengeDetails({ user, challenge, onNavigate }: ChallengeDetai
 
 					{/* Right Column - Actions */}
 					<div className="space-y-6">
-						<Card className="bg-white">
+						<Card className={`bg-white ${theme === 'dark' ? 'bg-gray-800 text-white' : ''}`}>
 							<CardHeader>
 								<CardTitle>Ações Rápidas</CardTitle>
 							</CardHeader>
 							<CardContent className="space-y-3">
-								<Button className="w-full justify-start cursor-pointer hover:bg-gray-100" variant='outline'>
+								<Button className={`w-full justify-start cursor-pointer  ${theme === 'dark' ? 'text-gray-200 hover:bg-gray-500' : 'text-gray-800 hover:bg-gray-100'}`} variant='outline'>
 									<Users className="w-4 h-4 mr-2" />
 									Gerenciar Participantes
 								</Button>
-								
-								<Button variant="outline" className="w-full justify-start cursor-pointer hover:bg-gray-100">
+
+								<Button variant="outline" className={`w-full justify-start cursor-pointer  ${theme === 'dark' ? 'text-gray-200 hover:bg-gray-500' : 'text-gray-800 hover:bg-gray-100'}`}>
 									<TrendingUp className="w-4 h-4 mr-2" />
 									Relatório Detalhado
 								</Button>
 								<Button
 									variant="outline"
-									className="w-full justify-start cursor-pointer hover:bg-gray-100"
+									className={`w-full justify-start cursor-pointer  ${theme === 'dark' ? 'text-gray-200 hover:bg-gray-500' : 'text-gray-800 hover:bg-gray-100'}`}
 									onClick={() => onNavigate('startup-database')}
 								>
 									<Building2 className="w-4 h-4 mr-2" />
 									Buscar Mais Startups
 								</Button>
 								<Button 
-									className="w-full justify-start bg-[#011677] text-white hover:bg-[#0121af] cursor-pointer"
+									className={`w-full justify-start bg-[#011677] text-white hover:bg-[#0121af] cursor-pointer ${theme === 'dark' ? 'bg-gray-600 hover:bg-gray-700 ' : ''}`}
 									onClick={() => router.push(`/funnel/${challenge.id}`)}
 									>
 									<Target className="w-4 h-4 mr-2" />
@@ -250,15 +251,15 @@ export function ChallengeDetails({ user, challenge, onNavigate }: ChallengeDetai
 				<div className="mt-8">
 					<Tabs defaultValue="submissions">
 						<TabsList className="mb-4 ">
-							<TabsTrigger value="submissions" className='border-r-gray-400 border-b-gray-400 cursor-pointer hover:bg-gray-200'>
+							<TabsTrigger value="submissions" className={`border-r-gray-400 border-b-gray-400 cursor-pointer hover:bg-gray-200 ${theme === 'dark' ? 'text-gray-200 hover:bg-gray-600' : 'text-gray-800'}`}>
 								<Lightbulb className="w-4 h-4 mr-2" />
 								Submissões de Ideias ({mockSubmissions.length})
 							</TabsTrigger>
-							<TabsTrigger value="startups" className='border-r-gray-400 border-b-gray-400 cursor-pointer hover:bg-gray-200'>
+							<TabsTrigger value="startups" className={`border-r-gray-400 border-b-gray-400 cursor-pointer hover:bg-gray-200 ${theme === 'dark' ? 'text-gray-200 hover:bg-gray-600' : 'text-gray-800'}`}>
 								<Star className="w-4 h-4 mr-2" />
 								Startups Recomendadas
 							</TabsTrigger>
-							<TabsTrigger value="discussion" className='border-r-gray-400 border-b-gray-400 cursor-pointer hover:bg-gray-200'>
+							<TabsTrigger value="discussion" className={`border-r-gray-400 border-b-gray-400 cursor-pointer hover:bg-gray-200 ${theme === 'dark' ? 'text-gray-200 hover:bg-gray-600' : 'text-gray-800'}`}>
 								<MessageCircle className="w-4 h-4 mr-2" />
 								Discussão Interna
 							</TabsTrigger>
@@ -266,7 +267,7 @@ export function ChallengeDetails({ user, challenge, onNavigate }: ChallengeDetai
 
 						{/* NOVA ABA DE SUBMISSÕES */}
 						<TabsContent value="submissions">
-							<Card className="bg-white">
+							<Card className={`bg-white ${theme === 'dark' ? 'bg-gray-800 text-white' : ''}`}>
 								<CardHeader>
 									<CardTitle>Ideias Submetidas</CardTitle>
 									<CardDescription>
@@ -275,7 +276,7 @@ export function ChallengeDetails({ user, challenge, onNavigate }: ChallengeDetai
 								</CardHeader>
 								<CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 									{mockSubmissions.map((idea) => (
-										<Card key={idea.id} className="flex flex-col">
+										<Card key={idea.id} className={`flex flex-col ${theme === 'dark' ? 'bg-gray-700 text-white' : ''}`}>
 											<CardHeader>
 												<CardTitle className="text-base">{idea.title}</CardTitle>
 												<CardDescription>por {idea.author}</CardDescription>
@@ -294,7 +295,7 @@ export function ChallengeDetails({ user, challenge, onNavigate }: ChallengeDetai
 						</TabsContent>
 
 						<TabsContent value="startups">
-							<Card className="bg-white">
+							<Card className={`bg-white ${theme === 'dark' ? 'bg-gray-800 text-white' : ''}`}>
 								<CardHeader>
 									<CardTitle>Recomendações Automáticas</CardTitle>
 									<CardDescription>
@@ -304,7 +305,7 @@ export function ChallengeDetails({ user, challenge, onNavigate }: ChallengeDetai
 								<CardContent>
 									<div className="space-y-4">
 										{recommendedStartups.map((startup) => (
-											<div key={startup.id} className="border border-gray-200 rounded-lg p-4">
+											<div key={startup.id} className={`  rounded-lg p-4 ${theme === 'dark' ? 'bg-gray-700' : 'border border-gray-200'}`}>
 												<div className="flex items-start justify-between mb-4">
 													<div className="space-y-2">
 														<div className="flex items-center gap-2">
@@ -312,8 +313,8 @@ export function ChallengeDetails({ user, challenge, onNavigate }: ChallengeDetai
 															<Badge variant="outline">{startup.segment}</Badge>
 															<Badge className="bg-green-100 text-green-800">{startup.matchScore}% Match</Badge>
 														</div>
-														<p className="text-sm text-gray-600">{startup.description}</p>
-														<div className="flex items-center gap-4 text-xs text-gray-500">
+														<p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>{startup.description}</p>
+														<div className={`flex items-center gap-4 text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
 															<span>Estágio: {startup.stage}</span>
 															<span>Tecnologia: {startup.technology}</span>
 														</div>
@@ -342,7 +343,7 @@ export function ChallengeDetails({ user, challenge, onNavigate }: ChallengeDetai
 						</TabsContent>
 
 						<TabsContent value="discussion">
-							<Card className="bg-white">
+							<Card className={`bg-white ${theme === 'dark' ? 'bg-gray-800 text-white' : ''}`}>
 								<CardHeader>
 									<CardTitle>Discussão Interna</CardTitle>
 									<CardDescription>
@@ -351,7 +352,7 @@ export function ChallengeDetails({ user, challenge, onNavigate }: ChallengeDetai
 								</CardHeader>
 								<CardContent className="space-y-6">
 									<div className="flex items-start gap-4">
-										<Avatar><AvatarFallback>{user.name.charAt(0)}</AvatarFallback></Avatar>
+										<Avatar className={`${theme === 'dark' ? 'bg-gray-700' : ''}`}><AvatarFallback>{user.name.charAt(0)}</AvatarFallback></Avatar>
 										<div className="w-full space-y-2">
 											<Textarea placeholder="Adicione um comentário..." value={newComment} onChange={(e) => setNewComment(e.target.value)} />
 											<div className="flex justify-between items-center">
@@ -370,7 +371,7 @@ export function ChallengeDetails({ user, challenge, onNavigate }: ChallengeDetai
 														<p className="font-medium text-sm">{comment.author.name}</p>
 														<p className="text-xs text-gray-500">{comment.timestamp}</p>
 													</div>
-													<p className="text-sm text-gray-600">{comment.text}</p>
+													<p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>{comment.text}</p>
 												</div>
 											</div>
 										))}

@@ -45,6 +45,7 @@ export function InnovationFunnel({ user, challenge }: InnovationFunnelProps) {
   const [isIdeaFormOpen, setIsIdeaFormOpen] = useState(false);
   const [votedIdeas, setVotedIdeas] = useState<string[]>([]);
   const [isEvaluationFormOpen, setIsEvaluationFormOpen] = useState(false);
+  const [theme, setTheme] = useState<string>(typeof window !== 'undefined' ? (sessionStorage.getItem('theme') || 'light') : 'light');
 
 
   const getPriorityBadge = (priority: string) => {
@@ -85,8 +86,8 @@ export function InnovationFunnel({ user, challenge }: InnovationFunnelProps) {
 
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      <div className="bg-[#011677] border-b border-gray-200 sticky top-0 z-10 text-white">
+    <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'} flex flex-col`}>
+      <div className={`bg-[#011677]  sticky top-0 z-10 text-white ${theme === 'dark' ? 'bg-gray-800 text-white' : ' text-black border-b border-gray-200'}`}>
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center gap-4">
             <Button variant="ghost"
@@ -119,7 +120,7 @@ export function InnovationFunnel({ user, challenge }: InnovationFunnelProps) {
 										className="w-80 bg-white rounded-lg flex flex-col shadow-md border border-gray-200"
 									>
 										{/* Coluna Header */}
-										<div className="p-4 bg-[#011677] rounded-t-lg">
+										<div className={`p-4 bg-[#011677] rounded-t-lg ${theme === 'dark' ? 'bg-gray-800 text-white' : 'text-white'}`}>
 											<div className="flex items-center justify-between">
 												<div className="flex items-center gap-2 text-white">
 													<span className="w-3 h-3 rounded-full bg-[#7eb526]"></span>
@@ -144,16 +145,16 @@ export function InnovationFunnel({ user, challenge }: InnovationFunnelProps) {
 																	{...provided.dragHandleProps}
 																	className={`shadow-md ${snapshot.isDragging ? 'opacity-80 shadow-lg' : ''}`}
 																>
-																	<Card className="cursor-pointer active:cursor-grabbing bg-white hover:bg-gray-50 border-l-4 border-[#011677] hover:border-[#7eb526] transition-all">
+																	<Card className={`cursor-pointer active:cursor-grabbing bg-white hover:bg-gray-50 border-l-4 border-[#011677] hover:border-[#7eb526] transition-all ${theme === 'dark' ? 'bg-gray-800 text-white hover:bg-gray-700' : ''}`}>
 																		<CardHeader className="p-4">
 																			<div className="flex justify-between items-start">
 																				{getPriorityBadge(idea.priority)}
-																				<GripVertical className="w-4 h-4 text-gray-400" />
+																				<GripVertical className={`w-4 h-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-400'}`} />
 																			</div>
-																			<CardTitle className="text-base mt-2 text-gray-900">{idea.title}</CardTitle>
+																			<CardTitle className={`text-base mt-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-900'}`}>{idea.title}</CardTitle>
 																		</CardHeader>
 																		<CardContent className="p-4 pt-0 flex-1 flex flex-col justify-end">
-																			<div className="flex items-center justify-between text-xs text-gray-500">
+																			<div className={`flex items-center justify-between text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
 																				<div className="flex items-center gap-1">
 																					<Clock className="w-3 h-3" />
 																					<span>{idea.days} dias</span>
@@ -170,8 +171,8 @@ export function InnovationFunnel({ user, challenge }: InnovationFunnelProps) {
 
 																			<Separator className="my-3" />
 																			<div className="flex items-center justify-between">
-																				<div className="flex items-center gap-1 text-sm text-gray-600">
-																					<ThumbsUp className="w-4 h-4 text-[#001f61]" />
+																				<div className={`flex items-center gap-1 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+																					<ThumbsUp className={`w-4 h-4 ${theme === 'dark' ? 'text-gray-400' : 'text-[#001f61]'}`} />
 																					<span>{idea.votes}</span>
 																				</div>
 																				<Button
