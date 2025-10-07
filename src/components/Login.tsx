@@ -69,7 +69,7 @@ export function Login({ onLogin }: LoginProps) {
               <div className="space-y-2">
                 <Label htmlFor="email">E-mail</Label>
                 <Input
-                  className='bg-white border-none py-6 text-gray-700'
+                  className='bg-white border-none py-6 text-gray-700 focus:ring-blue-900'
                   id="email"  
                   type="email"
                   placeholder="seu@email.com"
@@ -82,7 +82,7 @@ export function Login({ onLogin }: LoginProps) {
               <div className="space-y-2">
                 <Label htmlFor="company">Empresa</Label>
                 <Input
-                  className='bg-white border-none py-6 text-gray-700'
+                  className='bg-white border-none py-6 text-gray-700 focus:ring-blue-900'
                   id="company"
                   placeholder="Nome da sua empresa"
                   value={company}

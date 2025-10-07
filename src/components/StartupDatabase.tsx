@@ -264,7 +264,7 @@ export function StartupDatabase({ user, onNavigate }: StartupDatabaseProps) {
                     <Input
                       id="search"
                       placeholder="Nome, problema que resolve, tecnologia..."
-                      className="pl-10 focus:border-[#001f61] focus:ring focus:ring-[#001f61]/30 transition-colors"
+                      className="pl-10 focus:border-[#001f61] focus:ring focus:ring-[#001f61]/30 transition-colors border-gray-500"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                     />
@@ -335,7 +335,7 @@ export function StartupDatabase({ user, onNavigate }: StartupDatabaseProps) {
                       onChange={(e) =>
                         setFilters({ ...filters, technology: e.target.value })
                       }
-                      className="focus:border-[#001f61] focus:ring focus:ring-[#001f61]/30 transition-colors"
+                      className="focus:border-[#001f61] focus:ring focus:ring-[#001f61]/30 transition-colors border-gray-500"
                     />
                   </div>
                 </div>
@@ -346,9 +346,9 @@ export function StartupDatabase({ user, onNavigate }: StartupDatabaseProps) {
                     {filteredStartups.length} startups encontradas
                   </p>
                   <Button
-                    variant="link"
+                    variant="ghost"
                     size="sm"
-                    className="text-[#001f61] hover:underline"
+                    className="text-[#001f61] hover:text-white hovers-exit-dash"
                     onClick={() => {
                       setSearchQuery("");
                       setFilters({
