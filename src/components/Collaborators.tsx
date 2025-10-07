@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import {
   Card,
   CardContent,
@@ -82,6 +82,7 @@ const mockCompanies = [
 
 export function Collaborators({ user }: CollaboratorsProps) {
   const router = useRouter();
+  const [theme, setTheme] = useState<string>(typeof window !== 'undefined' ? (sessionStorage.getItem('theme') || 'light') : 'light');
 
   const getRoleLabel = (role: UserRole) => {
     const labels = {
@@ -93,14 +94,14 @@ export function Collaborators({ user }: CollaboratorsProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className={`min-h-screen bg-gray-50 flex ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'}`}>
       {/* Sidebar fixa */}
-      <Sidebar user={user} />
+      <Sidebar theme={theme} user={user} />
 
       {/* Conteúdo principal */}
       <div className="flex-1">
         {/* Header */}
-        <div className="bg-[#011677] border-b border-gray-200 sticky top-0 z-10">
+        <div className={`bg-[#011677] border-b border-gray-200 sticky top-0 z-10 ${theme === 'dark' ? 'bg-gray-800' : ''}`}>
           <div className="container mx-auto px-6 py-4">
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
@@ -115,30 +116,30 @@ export function Collaborators({ user }: CollaboratorsProps) {
 
         {/* Content */}
         <div className="container mx-auto px-6 py-8">
-          <Card className="bg-white border border-gray-200 shadow-sm">
+          <Card className={`bg-white border border-gray-200 shadow-sm ${theme === 'dark' ? 'bg-gray-800 border-gray-700' : ''}`}>
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
-                <CardTitle className="text-xl text-gray-900">
+                <CardTitle className={`text-xl ${theme === 'dark' ? 'text-gray-200' : 'text-gray-900'}`}>
                   Lista de Colaboradores
                 </CardTitle>
-                <CardDescription className="text-gray-600">
+                <CardDescription className={`text-gray-600 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                   Gerencie os acessos e permissões da sua equipa na plataforma.
                 </CardDescription>
               </div>
               <Dialog>
                 <DialogTrigger asChild>
-                  <Button className="cursor-pointer bg-[#011677] text-white hover:bg-[#0121af] transition-colors duration-200">
+                  <Button className={`cursor-pointer bg-[#011677] text-white hover:bg-[#0121af] transition-colors duration-200 ${theme === 'dark' ? 'bg-gray-700 hover:bg-gray-600' : ''}`}>
                     <UserPlus className="w-4 h-4 mr-2" />
                     Adicionar Colaborador
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="bg-white p-6 rounded-lg shadow-lg">
+                <DialogContent className={`bg-white p-6 rounded-lg shadow-lg ${theme === 'dark' ? 'bg-gray-800' : ''}`}>
                   <DialogHeader>
-                    <DialogTitle className="text-2xl font-bold text-center text-[#001f61]">
+                    <DialogTitle className={`text-2xl font-bold text-center text-[#001f61] ${theme === 'dark' ? 'text-gray-200' : ''}`}>
                       Adicionar Novo Colaborador
                     </DialogTitle>
                     {user.role === "admin" && (
-                      <DialogDescription className="text-gray-600 text-center mt-2">
+                      <DialogDescription className={`text-gray-600 text-center mt-2 ${theme === 'dark' ? 'text-gray-400' : ''}`}>
                         Você está a adicionar um novo utilizador. Selecione a
                         empresa e o nível de acesso.
                       </DialogDescription>
@@ -166,17 +167,17 @@ export function Collaborators({ user }: CollaboratorsProps) {
                       </div>
                     )}
                     <div className="space-y-2">
-                      <Label htmlFor="name" className="text-gray-700">
+                      <Label htmlFor="name" className={`text-gray-700 ${theme === 'dark' ? 'text-gray-400' : ''}`}>
                         Nome Completo
                       </Label>
                       <Input
                         id="name"
                         placeholder="Nome do colaborador"
-                        className="focus:border-[#001f61] focus:ring focus:ring-[#001f61]/30 transition-colors"
+                        className={`focus:border-[#001f61] focus:ring focus:ring-[#001f61]/30 transition-colors ${theme === 'dark' ? 'bg-gray-800 text-gray-200' : ''}`}
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="email" className="text-gray-700">
+                      <Label htmlFor="email" className={`text-gray-700 ${theme === 'dark' ? 'text-gray-400' : ''}`}>
                         E-mail
                       </Label>
                       <Input
@@ -187,7 +188,7 @@ export function Collaborators({ user }: CollaboratorsProps) {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="role" className="text-gray-700">
+                      <Label htmlFor="role" className={`text-gray-700 ${theme === 'dark' ? 'text-gray-400' : ''}`}>
                         Nível de Acesso
                       </Label>
                       <Select>
@@ -205,7 +206,7 @@ export function Collaborators({ user }: CollaboratorsProps) {
                     </div>
                     <Button
                       type="submit"
-                      className="w-full bg-[#001f61] hover:bg-[#002a7a] transition-colors text-white"
+                      className={`w-full bg-[#001f61] hover:bg-[#002a7a] transition-colors text-white ${theme === 'dark' ? 'bg-gray-700 hover:bg-gray-600' : ''}`}
                     >
                       Enviar Convite
                     </Button>
@@ -241,10 +242,10 @@ export function Collaborators({ user }: CollaboratorsProps) {
                             </AvatarFallback>
                           </Avatar>
                           <div>
-                            <p className="font-semibold text-gray-800">
+                            <p className={`font-semibold  ${theme === 'dark' ? 'text-gray-200' : 'text-gray-800'}`}>
                               {collab.name}
                             </p>
-                            <p className="text-sm text-gray-500">
+                            <p className={`text-sm text-gray-500 ${theme === 'dark' ? 'text-gray-400' : ''}`}>
                               {collab.email}
                             </p>
                           </div>
@@ -257,24 +258,24 @@ export function Collaborators({ user }: CollaboratorsProps) {
                             user.id === collab.id || user.role !== "gestor"
                           }
                         >
-                          <SelectTrigger className="w-48 border-gray-400 cursor-pointer">
+                          <SelectTrigger className={`w-48 border-gray-400 cursor-pointer ${theme === 'dark' ? 'bg-gray-800 text-gray-200' : ''}`}>
                             <SelectValue />
                           </SelectTrigger>
-                          <SelectContent className="bg-white border-gray-200 shadow">
+                          <SelectContent className={`bg-white border-gray-200 shadow ${theme === 'dark' ? 'bg-gray-800 border-gray-700' : ''}`}>
                             <SelectItem
-                              className="hover:bg-gray-200 cursor-pointer"
+                              className={`hover:bg-gray-200 cursor-pointer ${theme === 'dark' ? 'hover:bg-gray-700' : ''}`}
                               value="comum"
                             >
                               Usuário Comum
                             </SelectItem>
                             <SelectItem
-                              className="hover:bg-gray-200 cursor-pointer"
+                              className={`hover:bg-gray-200 cursor-pointer ${theme === 'dark' ? 'hover:bg-gray-700' : ''}`}
                               value="avaliador"
                             >
                               Avaliador
                             </SelectItem>
                             <SelectItem
-                              className="hover:bg-gray-200 cursor-pointer"
+                              className={`hover:bg-gray-200 cursor-pointer ${theme === 'dark' ? 'hover:bg-gray-700' : ''}`}
                               value="gestor"
                             >
                               Gestor de Inovação
