@@ -128,10 +128,10 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
 			</div>
 
 			{/* Content */}
-			<div className="container mx-auto px-6 py-8">
+			<div className="container mx-auto px-6 py-">
 				<div className="mx-auto">
 					<div className="mb-2 text-center">
-						<h2 className={`text-4xl font-extrabold text-[#001f61] ${theme === 'dark' ? 'text-white' : 'text-black'}`}>Cadastrar Desafio</h2>
+						<h2 className={`text-4xl font-extrabold mt-3 text-[#001f61] ${theme === 'dark' ? 'text-white' : 'text-black'}`}>Cadastrar Desafio</h2>
 						<p className={` font-medium ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
 							Crie um novo desafio para capturar ideias inovadoras e conectar com startups.
 						</p>
@@ -354,7 +354,6 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
 									</div>
 								</div>
 							</CardContent>
-						</Card>
 
 						{/* BOTÕES DE AÇÃO */}
 						<div className="flex gap-4 justify-end">
@@ -380,6 +379,8 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
 								)}
 							</Button>
 						</div>
+						{error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+						</Card>
 					</form>
 				</div>
 			</div>

@@ -146,12 +146,25 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
 				</p>
 				</div>
 
-				<button
-					className="px-4 py-2 rounded-lg bg-gray-200 text-gray-800 hover:bg-gray-300 transition-colors"
-					onClick={() => handleThemeChange(theme === 'light' ? 'dark' : 'light')}
+				<div className="fixed right-20 z-50">
+					<button
+						className={`w-14 cursor-pointer h-10 flex items-center justify-center rounded-full bg-gray-200 text-gray-800 hover:bg-gray-300 transition-colors shadow-md mr-4 ${theme === 'dark' ? 'bg-gray-700 text-white hover:bg-gray-600' : ''}`}
+						onClick={() => handleThemeChange(theme === 'light' ? 'dark' : 'light')}
+						aria-label="Mudar tema"
 					>
-					Mudar Tema
-				</button>
+						{/* Ícone de troca de tema (sol/lua) */}
+						{theme === 'light' ? (
+							<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+								<circle cx="12" cy="12" r="5" stroke="currentColor" strokeWidth="2" fill="currentColor" />
+								<path stroke="currentColor" strokeWidth="2" d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+							</svg>
+						) : (
+							<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+								<path stroke="currentColor" strokeWidth="2" d="M21 12.79A9 9 0 1111.21 3a7 7 0 109.79 9.79z" fill="currentColor" />
+							</svg>
+						)}
+					</button>
+				</div>
 
 				{/* INÍCIO DO BLOCO DE PERFIL CUSTOMIZADO */}
 				<div className="relative" ref={menuRef}>
@@ -178,7 +191,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
 
 				{/* Pop-up de Ações (Menu) - Estilo Card/Dropdown Profissional */}
 				{isMenuOpen && (
-					<Card className="absolute right-0 mt-3 w-72 rounded-xl border border-gray-200 shadow-2xl z-20 bg-white p-0 overflow-hidden">
+					<Card className={`absolute right-0 mt-3 w-72 rounded-xl border border-gray-200 shadow-2xl z-20 bg-white p-0 overflow-hidden ${theme === 'dark' ? 'bg-gray-900' : ''}`}>
 					{/* Informações do Usuário no Header do Card */}
 					<div className="bg-[#011677]/95 p-4 text-center border-b border-gray-100">
 						<p className="text-base font-semibold text-white">
@@ -190,30 +203,38 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
 					</div>
 
 					{/* Conteúdo (Ações) */}
-					<CardContent className="p-2 space-y-1">
+					<CardContent className={`p-2 space-y-1 ${theme === 'dark' ? 'bg-gray-900' : ''}`}>
 						{/* Item Ver Perfil */}
 						<div
-						className="flex items-center p-3 rounded-lg cursor-pointer text-gray-700 hover:bg-gray-100 transition-colors"
-						onClick={() => {
-							router.push("/profile");
-							setIsMenuOpen(false);
-						}}
+							className={`flex items-center p-3 rounded-lg cursor-pointer transition-colors ${
+								theme === 'dark'
+									? 'text-gray-200 hover:bg-gray-800'
+									: 'text-gray-700 hover:bg-gray-100'
+							}`}
+							onClick={() => {
+								router.push("/profile");
+								setIsMenuOpen(false);
+							}}
 						>
-						<UserIcon className="mr-3 h-4 w-4 text-[#011677]" />
-						<span className="text-sm font-medium">Ver Perfil</span>
+							<UserIcon className={`mr-3 h-4 w-4 ${theme === 'dark' ? 'text-gray-200' : 'text-[#011677]'}`} />
+							<span className="text-sm font-medium">Ver Perfil</span>
 						</div>
 
-						<hr className="my-1 border-gray-100" />
+						<hr className={`my-1 ${theme === 'dark' ? 'border-gray-700' : 'border-gray-100'}`} />
 
 						{/* Item Sair */}
 						<div
-						className="flex items-center p-3 rounded-lg cursor-pointer text-red-600 hover:bg-red-50 transition-colors"
-						onClick={onLogout}
+							className={`flex items-center p-3 rounded-lg cursor-pointer transition-colors ${
+								theme === 'dark'
+									? 'text-red-400 hover:bg-gray-800'
+									: 'text-red-600 hover:bg-red-50'
+							}`}
+							onClick={onLogout}
 						>
-						<LogOut className="mr-3 h-4 w-4 text-red-600" />
-						<span className="text-sm font-semibold">
-							Sair da Plataforma
-						</span>
+							<LogOut className={`mr-3 h-4 w-4 ${theme === 'dark' ? 'text-red-400' : 'text-red-600'}`} />
+							<span className="text-sm font-semibold">
+								Sair da Plataforma
+							</span>
 						</div>
 					</CardContent>
 					</Card>
