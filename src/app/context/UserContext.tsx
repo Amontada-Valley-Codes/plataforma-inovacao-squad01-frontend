@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-export type UserRole = 'comum' | 'avaliador' | 'gestor' | 'admin';
+export type UserRole = 'COMUM' | 'AVALIADOR' | 'GESTOR' | 'ADMIN';
 
 export interface User {
   id: string;
@@ -10,6 +10,7 @@ export interface User {
   role: UserRole;
   company: string;
   image_url?: string; // ✨ NOVO CAMPO ADICIONADO AQUI
+  access_token?: string; // ✨ NOVO CAMPO ADICIONADO AQUI
 }
 
 export interface Challenge {

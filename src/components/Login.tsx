@@ -6,6 +6,7 @@ import { Label } from './ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { User, UserRole } from '../app/context/UserContext';
 import Image from 'next/image';
+import api from '../lib/api';
 
 interface LoginProps {
   onLogin: (user: User) => void;
@@ -13,22 +14,10 @@ interface LoginProps {
 
 export function Login({ onLogin }: LoginProps) {
   const [email, setEmail] = useState('');
-  const [role, setRole] = useState<UserRole>('gestor');
+  const [role, setRole] = useState<UserRole>('GESTOR');
   const [company, setCompany] = useState('');
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    const mockUser: User = {
-      id: Date.now().toString(),
-      name: email.split('@')[0].charAt(0).toUpperCase() + email.split('@')[0].slice(1),
-      email,
-      role,
-      company: company || 'Empresa Demo'
-    };
-    
-    onLogin(mockUser);
-  };
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
 
   const quickLogin = (userRole: UserRole, userName: string, userCompany: string) => {
     const mockUser: User = {
@@ -40,6 +29,43 @@ export function Login({ onLogin }: LoginProps) {
     };
     onLogin(mockUser);
   };
+
+const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+
+    try {
+        const response = await api.post('/auth/login', {
+            email: email,
+            password: password,
+        });
+
+        // 1. Verificar se a resposta contém o token E os dados do usuário
+        if (response.data.access_token && response.data.user) {
+
+            // 2. Criar o objeto final do usuário, combinando o token e os dados recebidos
+            const loggedInUser: User = {
+                ...response.data.user, // Todos os dados do usuário vindos do backend
+                access_token: response.data.access_token, // Adiciona o token ao objeto
+            };
+
+            // 3. Chamar a função onLogin com o objeto de usuário completo
+            console.log('Usuário logado:', loggedInUser);
+            onLogin(loggedInUser);
+
+        } else {
+            setError('Resposta inválida do servidor.');
+        }
+    } catch (err: any) {
+        console.error('Falha no login:', err);
+        if (err.response && err.response.data) {
+            setError(err.response.data.message || 'Credenciais inválidas.');
+        } else {
+            setError('Não foi possível conectar ao servidor.');
+        }
+    }
+};
+
 
   return (
     <div className="h-screen flex flex-col w-auto md:flex-row items-center justify-center bg-[url(/img/fundo-login.jpg)] bg-center bg-cover ">
@@ -78,8 +104,23 @@ export function Login({ onLogin }: LoginProps) {
                   required
                 />
               </div>
-              
+
               <div className="space-y-2">
+                <Label htmlFor="password">Senha</Label>
+                <Input
+                  className='bg-white border-none py-6 text-gray-700 focus:ring-blue-900'
+                id="password"
+                  type="password"
+                  placeholder="********"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
+
+              {error && <p className="text-red-500 text-sm">{error}</p>}
+              
+              {/* <div className="space-y-2">
                 <Label htmlFor="company">Empresa</Label>
                 <Input
                   className='bg-white border-none py-6 text-gray-700 focus:ring-blue-900'
@@ -102,16 +143,16 @@ export function Login({ onLogin }: LoginProps) {
                     <SelectItem value="gestor">Gestor de Inovação - Visão completa</SelectItem>
                   </SelectContent>
                 </Select>
-              </div>
+              </div> */}
               <hr className='text-[#93889d] my-7'/>
 
-              <Button 
+              {/* <Button 
                 variant="outline" 
                 className="w-full justify-center cursor-pointer py-4 hover:bg-white hover:text-[#011677] text-white"
                 onClick={() => quickLogin('admin', 'Admin', 'Ninna Hub')}
               >
                 ⚙️ Admin - Super Usuário (Hub)
-              </Button>
+              </Button> */}
 
               <Button type="submit" className="w-full bg-white text-[#011677] hover:bg-[#011677] hover:border-white hover:border   hover:text-white cursor-pointer py-6">
                 Entrar na Plataforma

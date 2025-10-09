@@ -61,7 +61,7 @@ export function Sidebar({ user, theme }: SidebarProps) {
 
 		  
 
-		  {(user.role === "gestor" || user.role === "avaliador" ||  user.role === "comum") && (
+		  {(user.role === "GESTOR" || user.role === "AVALIADOR" ||  user.role === "COMUM") && (
           <Button
             variant="ghost"
             className={`w-full justify-start hovers-exit-dash ${
@@ -85,7 +85,7 @@ export function Sidebar({ user, theme }: SidebarProps) {
             {sidebarOpen && "Base de Startups"}
           </Button>
 
-		  {(user.role === "gestor") && (
+		  {(user.role === "GESTOR") && (
           <Button
             variant="ghost"
             className={`w-full justify-start hovers-exit-dash ${
@@ -98,7 +98,7 @@ export function Sidebar({ user, theme }: SidebarProps) {
           </Button>
 		  )}
 
-          {(user.role === "admin") && (
+          {(user.role === "ADMIN") && (
             <Button
               variant="ghost"
               className={`w-full justify-start hovers-exit-dash ${
@@ -113,7 +113,7 @@ export function Sidebar({ user, theme }: SidebarProps) {
             </Button>
           )}
 
-          {(user.role === "gestor" || user.role === "admin") && (
+          {(user.role === "GESTOR" || user.role === "ADMIN") && (
             <Button
               variant="ghost"
               className={`w-full justify-start hovers-exit-dash ${
@@ -128,8 +128,8 @@ export function Sidebar({ user, theme }: SidebarProps) {
             </Button>
           )}
 
-          {(user.role === "gestor" ||
-            user.role === "avaliador") && (
+          {(user.role === "GESTOR" ||
+            user.role === "AVALIADOR") && (
             <Button
               variant="ghost"
               className={`w-full hovers-exit-dash ${

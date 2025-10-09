@@ -13,6 +13,7 @@ import { ArrowLeft, Calendar as CalendarIcon, Plus, X, Save, Target } from 'luci
 import { format } from 'date-fns';
 import { pt } from 'date-fns/locale';
 import { User } from '../app/context/UserContext';
+import api from '../lib/api';
 
 interface ChallengeFormProps {
 	user: User;
@@ -32,6 +33,8 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
 	const [tags, setTags] = useState<string[]>([]);
 	const [currentTag, setCurrentTag] = useState('');
 	const [theme, setTheme] = useState<string>(typeof window !== 'undefined' ? (sessionStorage.getItem('theme') || 'light') : 'light');
+	const [isSubmitting, setIsSubmitting] = useState(false);
+    const [error, setError] = useState('');
 
 	const handleAddTag = () => {
 		if (currentTag.trim() && !tags.includes(currentTag.trim())) {
@@ -44,13 +47,58 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
 		setTags(tags.filter(tag => tag !== tagToRemove));
 	};
 
-	const handleSubmit = (e: React.FormEvent) => {
+	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
-		// Aqui seria onde salvaria o desafio
-		console.log('Desafio criado:', { ...formData, tags });
+		setError('');
+		setIsSubmitting(true);
 
-		// Simular sucesso e voltar ao dashboard
-		onNavigate('dashboard');
+		// 1. Validar dados (exemplo simples)
+		if (!formData.name || !formData.startDate || !formData.endDate || !formData.description) {
+			setError('Por favor, preencha todos os campos obrigatórios.');
+			setIsSubmitting(false);
+			return;
+		}
+
+		// 2. Mapear dados do frontend para o formato do DTO do backend
+		const challengeData = {
+			name: formData.name,
+			startDate: formData.startDate,
+			endDate: formData.endDate,
+			area: formData.area,
+			description: formData.description,
+			// Converte 'interno' -> 'RESTRITO', 'publico' -> 'PUBLICO'
+			typePublication: formData.type === 'interno' ? 'RESTRITO' : 'PUBLICO',
+			// Valores padrão para campos que não existem no formulário
+			status: 'ATIVO',
+			images: 'https://via.placeholder.com/150', // URL de imagem provisória
+			// O backend espera um Enum, vamos enviar a primeira tag como exemplo
+			// Idealmente, o backend deveria aceitar um array ou o frontend deveria ter um seletor para o Enum
+			tags: tags.length > 0 ? tags[0].toUpperCase().replace(/ /g, '_') : 'IA', 
+			categoria: 'TECNOLOGIA', // Valor padrão
+			companyId: user.company // Assumindo que o `user` do context tem o companyId
+		};
+
+		// Validação para o enum `Tags` (simplificada)
+		const validTags = ['IA', 'SUSTENTABILIDADE', 'FINTECH', 'HEALTHTECH', 'EDTECH', 'IOT', 'BLOCKCHAIN', 'AUTOMACAO'];
+		if (!validTags.includes(challengeData.tags)) {
+		challengeData.tags = 'IA'; // Define um padrão se a tag não for válida
+		}
+
+
+		try {
+			// 3. Enviar os dados para o backend
+			await api.post('/challenges', challengeData);
+
+			// 4. Sucesso: notificar o usuário (opcional) e navegar
+			alert('Desafio criado com sucesso!'); // Você pode substituir por um componente de notificação (Toaster)
+			onNavigate('dashboard');
+
+		} catch (err: any) {
+			console.error('Falha ao criar desafio:', err);
+			setError(err.response?.data?.message || 'Ocorreu um erro ao enviar o formulário.');
+		} finally {
+			setIsSubmitting(false);
+		}
 	};
 
 	const suggestedTags = ['IA', 'Sustentabilidade', 'FinTech', 'HealthTech', 'EdTech', 'IoT', 'Blockchain', 'Automação'];
@@ -322,9 +370,14 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
 							<Button
 								type="submit"
 								className="bg-gradient-to-r from-[#011677] to-[#160430] hover:opacity-90 text-white shadow-md rounded-lg px-6 py-2 cursor-pointer"
+								disabled={isSubmitting} // <-- Desativa o botão durante o envio
 							>
-								<Save className="w-4 h-4 mr-2" />
-								Criar Desafio
+								{isSubmitting ? 'A criar...' : ( // <-- Muda o texto durante o envio
+									<>
+										<Save className="w-4 h-4 mr-2" />
+										Criar Desafio
+									</>
+								)}
 							</Button>
 						</div>
 					</form>

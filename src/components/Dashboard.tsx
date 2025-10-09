@@ -223,7 +223,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
 			</div>
 
 			{/* KPI Cards (Visíveis para Gestor) */}
-			{user.role === "gestor" && (
+			{user.role === "GESTOR" && (
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 				{/* Card: Ideias Submetidas */}
 				<Card className={`shadow-lg hover:shadow-xl transition-shadow duration-300 ${theme === 'dark' ? 'bg-gray-800 text-white' : ''}`}>
@@ -294,7 +294,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
 			)}
 
 			{/* Funil de Inovação (Visível para Avaliador/Gestor) */}
-			{user.role === "avaliador" || user.role === "gestor" ? (
+			{user.role === "AVALIADOR" || user.role === "GESTOR" ? (
 				<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 				<Card className={`lg:col-span-2 shadow-lg ${theme === 'dark' ? 'bg-gray-800 text-white' : ''}`}>
 					<CardHeader>
@@ -328,7 +328,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
 			) : null}
 
 			{/* Gráficos de Tendência e Distribuição (Visível para Avaliador/Gestor) */}
-			{user.role === "avaliador" || user.role === "gestor" ? (
+			{user.role === "AVALIADOR" || user.role === "GESTOR" ? (
 				<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 				<Card className={`shadow-lg ${theme === 'dark' ? 'bg-gray-800 text-white' : ''}`}>
 					<CardHeader>
