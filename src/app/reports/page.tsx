@@ -27,7 +27,7 @@ export default function ReportsPage() {
   }
 
   // Apenas gestores e admins podem aceder a esta página
-  if (user.role !== 'gestor' && user.role !== 'admin') {
+  if (user.role !== 'GESTOR' && user.role !== 'ADMIN') {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center space-y-4">
