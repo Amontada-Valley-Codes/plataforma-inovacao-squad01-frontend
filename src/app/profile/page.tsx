@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Input } from "../../components/ui/input";
 import { Button } from "../../components/ui/button";
 import { Card } from "../../components/ui/card";
-import { User, Phone, Briefcase, Hash, ArrowLeft } from "lucide-react";
+import { User, Phone, Briefcase, ArrowLeft } from "lucide-react";
 import { Separator } from "../../components/ui/separator";
 import { useUser, type User as UserType } from "../context/UserContext";
 import { useRouter } from "next/navigation";
@@ -38,15 +38,15 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
+    <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-[#0d0d0d] transition-colors duration-300">
       {/* Navbar azul com botão de voltar */}
-      <div className="bg-[#011677] border-b border-gray-200 sticky top-0 z-10 shadow-md">
+      <div className="bg-[#011677] border-b border-gray-200 dark:border-gray-800 sticky top-0 z-10 shadow-md">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center gap-4">
             <Button
               variant="ghost"
               size="sm"
-              className="text-white hovers-exit-dash"
+              className="text-white hovers-exit-dash transition"
               onClick={() => router.push("/dashboard")}
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
@@ -65,23 +65,25 @@ export default function ProfilePage() {
       <main className="flex-1 p-8 flex justify-center items-start">
         <div className="flex flex-col md:flex-row gap-8 w-full max-w-6xl">
           {/* Card da esquerda */}
-          <Card className="p-6 flex flex-col shadow-md hover:shadow-xl transition-all duration-300 rounded-2xl flex-1 bg-white">
+          <Card className="p-6 flex flex-col shadow-md hover:shadow-xl transition-all duration-300 rounded-2xl flex-1 bg-white dark:bg-[#1a1a1a] dark:border-gray-700">
             <div className="mb-6">
-              <h2 className="text-2xl font-semibold text-gray-900">{profile.name}</h2>
-              <p className="text-gray-500">{profile.email}</p>
+              <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
+                {profile.name}
+              </h2>
+              <p className="text-gray-500 dark:text-gray-400">{profile.email}</p>
             </div>
 
-            <div className="space-y-4 divide-y divide-gray-200">
-              <div className="flex items-center gap-2 pt-2 text-gray-700">
-                <User size={18} className="text-gray-500" /> Cargo:{" "}
+            <div className="space-y-4 divide-y divide-gray-200 dark:divide-gray-700">
+              <div className="flex items-center gap-2 pt-2 text-gray-700 dark:text-gray-300">
+                <User size={18} className="text-gray-500 dark:text-gray-400" /> Cargo:{" "}
                 <span className="font-medium">{user.role}</span>
               </div>
-              <div className="flex items-center gap-2 pt-2 text-gray-700">
-                <Briefcase size={18} className="text-gray-500" />{" "}
+              <div className="flex items-center gap-2 pt-2 text-gray-700 dark:text-gray-300">
+                <Briefcase size={18} className="text-gray-500 dark:text-gray-400" />{" "}
                 <span className="font-medium">{profile.department}</span>
               </div>
-              <div className="flex items-center gap-2 pt-2 text-gray-700">
-                <Phone size={18} className="text-gray-500" />{" "}
+              <div className="flex items-center gap-2 pt-2 text-gray-700 dark:text-gray-300">
+                <Phone size={18} className="text-gray-500 dark:text-gray-400" />{" "}
                 <span className="font-medium">{profile.phone}</span>
               </div>
             </div>
@@ -92,20 +94,24 @@ export default function ProfilePage() {
           </Card>
 
           {/* Card da direita */}
-          <Card className="p-6 shadow-md hover:shadow-xl transition-all duration-300 rounded-2xl flex-1 bg-white">
-            <h3 className="text-xl font-semibold mb-2 text-gray-900">Informações</h3>
-            <p className="text-gray-500 mb-6">Edite suas informações abaixo:</p>
+          <Card className="p-6 shadow-md hover:shadow-xl transition-all duration-300 rounded-2xl flex-1 bg-white dark:bg-[#1a1a1a] dark:border-gray-700">
+            <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">
+              Informações
+            </h3>
+            <p className="text-gray-500 dark:text-gray-400 mb-6">
+              Edite suas informações abaixo:
+            </p>
 
             <form onSubmit={handleSubmit} className="space-y-5">
               <Input
-                className="focus:border-[#001f61] focus:ring focus:ring-[#001f61]/30 transition-colors rounded-lg"
+                className="focus:border-[#001f61] focus:ring focus:ring-[#001f61]/30 transition-colors rounded-lg dark:bg-[#2a2a2a] dark:border-gray-600 dark:text-white"
                 name="name"
                 value={profile.name}
                 onChange={handleChange}
                 placeholder="Nome"
               />
               <Input
-                className="focus:border-[#001f61] focus:ring focus:ring-[#001f61]/30 transition-colors rounded-lg"
+                className="focus:border-[#001f61] focus:ring focus:ring-[#001f61]/30 transition-colors rounded-lg dark:bg-[#2a2a2a] dark:border-gray-600 dark:text-white"
                 name="email"
                 value={profile.email}
                 onChange={handleChange}
@@ -113,14 +119,14 @@ export default function ProfilePage() {
               />
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Input
-                  className="focus:border-[#001f61] focus:ring focus:ring-[#001f61]/30 transition-colors rounded-lg"
+                  className="focus:border-[#001f61] focus:ring focus:ring-[#001f61]/30 transition-colors rounded-lg dark:bg-[#2a2a2a] dark:border-gray-600 dark:text-white"
                   name="department"
                   value={profile.department}
                   onChange={handleChange}
                   placeholder="Departamento"
                 />
                 <Input
-                  className="focus:border-[#001f61] focus:ring focus:ring-[#001f61]/30 transition-colors rounded-lg"
+                  className="focus:border-[#001f61] focus:ring focus:ring-[#001f61]/30 transition-colors rounded-lg dark:bg-[#2a2a2a] dark:border-gray-600 dark:text-white"
                   name="phone"
                   value={profile.phone}
                   onChange={handleChange}

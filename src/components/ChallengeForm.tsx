@@ -80,10 +80,10 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
 			</div>
 
 			{/* Content */}
-			<div className="container mx-auto px-6 py-8">
+			<div className="container mx-auto px-6 py-">
 				<div className="mx-auto">
 					<div className="mb-2 text-center">
-						<h2 className={`text-4xl font-extrabold text-[#001f61] ${theme === 'dark' ? 'text-white' : 'text-black'}`}>Cadastrar Desafio</h2>
+						<h2 className={`text-4xl font-extrabold mt-3 text-[#001f61] ${theme === 'dark' ? 'text-white' : 'text-black'}`}>Cadastrar Desafio</h2>
 						<p className={` font-medium ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
 							Crie um novo desafio para capturar ideias inovadoras e conectar com startups.
 						</p>
@@ -306,27 +306,26 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
 									</div>
 								</div>
 							</CardContent>
-						</Card>
 
-						{/* BOTÕES DE AÇÃO */}
-						<div className="flex gap-4 justify-end">
-							<Button
-								type="button"
-								variant="outline"
-								onClick={() => onNavigate('dashboard')}
-								className={`border-[#001f61] text-[#001f61] hover:bg-[#b9bbbe] transition-colors cursor-pointer ${theme === 'dark' ? 'text-white border-gray-700 hover:bg-gray-700' : ''}`}
-							>
-							
-								Cancelar
-							</Button>
-							<Button
-								type="submit"
-								className="bg-gradient-to-r from-[#011677] to-[#160430] hover:opacity-90 text-white shadow-md rounded-lg px-6 py-2 cursor-pointer"
-							>
-								<Save className="w-4 h-4 mr-2" />
-								Criar Desafio
-							</Button>
-						</div>
+							<div className="flex gap-10 justify-center mb-3">
+								<Button
+									type="button"
+									variant="outline"
+									onClick={() => onNavigate('dashboard')}
+									className={`border-[#001f61] text-[#001f61] hover:bg-[#b9bbbe] transition-colors cursor-pointer ${theme === 'dark' ? 'text-white border-gray-700 hover:bg-gray-700' : ''}`}
+								>
+								
+									Cancelar
+								</Button>
+								<Button
+									type="submit"
+									className="bg-gradient-to-r from-[#011677] to-[#160430] hover:opacity-90 text-white shadow-md rounded-lg px-6 py-2 cursor-pointer"
+								>
+									<Save className="w-4 h-4 mr-2" />
+									Criar Desafio
+								</Button>
+							</div>
+						</Card>
 					</form>
 				</div>
 			</div>
