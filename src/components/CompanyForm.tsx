@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Separator } from './ui/separator';
@@ -14,8 +14,9 @@ interface CompanyFormProps {
 }
 
 export function CompanyForm({ user, onNavigate }: CompanyFormProps) {
+  const [theme, setTheme] = useState<string>(typeof window !== 'undefined' ? (sessionStorage.getItem('theme') || 'light') : 'light');
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900 text-white' : ' bg-gray-50'}`}>
       {/* Header */}
       <div className="bg-[#011677] text-white shadow-lg">
         <div className="container mx-auto px-6 py-4">
@@ -33,8 +34,8 @@ export function CompanyForm({ user, onNavigate }: CompanyFormProps) {
         </div>
       </div>
       {/* Content */}
-      <div className="container mx-auto px-6 py-8 max-w-2xl">
-        <Card>
+      <div className={`container mx-auto px-6 py-8 max-w-2xl ${theme === 'dark' ? 'bg-gray-900 text-white' : ''}`}>
+        <Card className={`${theme === 'dark' ? 'bg-gray-800 text-white' : ''}`}>
           <CardHeader>
             <CardTitle>Dados da Empresa</CardTitle>
             <CardDescription>Insira as informações da nova empresa que usará a plataforma.</CardDescription>
