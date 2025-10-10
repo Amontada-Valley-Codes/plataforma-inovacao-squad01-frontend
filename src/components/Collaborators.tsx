@@ -101,7 +101,7 @@ export function Collaborators({ user }: CollaboratorsProps) {
       {/* Conteúdo principal */}
       <div className="flex-1">
         {/* Header */}
-        <div className={`bg-[#011677] border-b border-gray-200 sticky top-0 z-10 ${theme === 'dark' ? 'bg-gray-800' : ''}`}>
+        <div className={`bg-[#011677] sticky top-0 z-10 ${theme === 'dark' ? 'bg-gray-800' : ''}`}>
           <div className="container mx-auto px-6 py-4">
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">

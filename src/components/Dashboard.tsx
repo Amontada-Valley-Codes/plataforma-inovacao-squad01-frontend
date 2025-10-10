@@ -191,9 +191,9 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
 
 				{/* Pop-up de Ações (Menu) - Estilo Card/Dropdown Profissional */}
 				{isMenuOpen && (
-					<Card className={`absolute right-0 mt-3 w-72 rounded-xl border border-gray-200 shadow-2xl z-20 bg-white p-0 overflow-hidden ${theme === 'dark' ? 'bg-gray-900' : ''}`}>
+					<Card className={`absolute right-0 mt-3 w-72 rounded-xl shadow-2xl z-20 bg-white p-0 overflow-hidden ${theme === 'dark' ? 'bg-gray-900' : ''}`}>
 					{/* Informações do Usuário no Header do Card */}
-					<div className="bg-[#011677]/95 p-4 text-center border-b border-gray-100">
+					<div className="bg-[#011677]/95 p-4 text-center ">
 						<p className="text-base font-semibold text-white">
 						{user.name}
 						</p>
