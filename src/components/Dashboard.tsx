@@ -146,7 +146,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
 				</p>
 				</div>
 
-				<div className="fixed right-20 z-50">
+				<div className="relative left-90 z-50">
 					<button
 						className={`w-14 cursor-pointer h-10 flex items-center justify-center rounded-full bg-gray-200 text-gray-800 hover:bg-gray-300 transition-colors shadow-md mr-4 ${theme === 'dark' ? 'bg-gray-700 text-white hover:bg-gray-600' : ''}`}
 						onClick={() => handleThemeChange(theme === 'light' ? 'dark' : 'light')}

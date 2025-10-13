@@ -58,9 +58,11 @@ export function Login({ onLogin }: LoginProps) {
               <Image
               width={100}
               height={10}
-              src='/img/logo.png'
+              quality={100}
+              priority
+              src='/img/logo1.svg'
               alt="logo co.inova"
-              className='w-[250px] pb-10'
+              className='w-[250px] pb-10 object-contain'
               />
             </div>
           </CardHeader>

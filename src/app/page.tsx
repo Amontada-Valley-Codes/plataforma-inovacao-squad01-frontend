@@ -12,7 +12,7 @@ export default function InitialPage() {
       {/* 🔹 Navbar */}
       <nav className="bg-[#011677] flex justify-between p-2 items-center w-full">
         <Image
-          src="/img/logo.png"
+          src="/img/logo1.svg"
           alt="Ninna-Logo"
           height={80}
           width={120}
@@ -85,7 +85,7 @@ export default function InitialPage() {
           {/* Logo e Descrição */}
           <div className="col-span-1 md:col-span-2 flex flex-col items-start">
             <img
-              src="/img/logo.png"
+              src="/img/logo1.svg"
               alt="Logo co.inova"
               width={80}
               height={80}

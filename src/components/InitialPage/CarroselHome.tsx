@@ -166,7 +166,7 @@ export default function CarroselHome() {
               >
                 {filteredCards.map((item) => (
                   <div key={item.id} className="px-3" style={{ width: `${100 / visibleCards}%` }}>
-                    <Card className="h-full flex flex-col gap-2 transition-transform duration-300 hover:scale-105">
+                    <Card className="h-full flex flex-col gap-2 transition-transform duration-300 hover:scale-95">
                       <div className="relative w-full h-40">
                         <Image
                           src={item.img}
