@@ -97,11 +97,12 @@ export function Collaborators({ user }: CollaboratorsProps) {
             try {
                 // **NOTA:** Este endpoint `users/by-company` precisa ser criado no backend.
                 // Ele deve retornar todos os usuários associados ao `companyId` do usuário autenticado.
-                // const response = await api.get('/users/by-company'); 
-                // setCollaborators(response.data);
+                const response = await api.get(`/user/${user.companyId}`); 
+				console.log("Colaboradores buscados:", response.data);
+                setCollaborators(response.data);
 
                 // Por enquanto, vamos continuar a usar os dados mockados até o endpoint existir.
-                setCollaborators(mockCollaborators);
+                // setCollaborators(mockCollaborators);
 
             } catch (error) {
                 console.error("Falha ao buscar colaboradores:", error);
@@ -255,11 +256,11 @@ export function Collaborators({ user }: CollaboratorsProps) {
 													</Label>
 													<Select value={inviteRole} onValueChange={(value: UserRole) => setInviteRole(value)}> {/* Conectar estado */}
 														<SelectTrigger className="focus:ring-[#001f61]/30">
-															<SelectValue placeholder="Selecione um nível" />
+															<SelectValue placeholder={`Selecione um nível`} />
 														</SelectTrigger>
 														<SelectContent>
-															<SelectItem value="comum">Usuário Comum</SelectItem>
-															<SelectItem value="avaliador">Avaliador</SelectItem>
+															<SelectItem value="COMUM">Usuário Comum</SelectItem>
+															<SelectItem value="AVALIADOR">Avaliador</SelectItem>
 															{/* Apenas Admins podem criar Gestores, então removemos a opção */}
 															{user.role === 'ADMIN' && <SelectItem value="GESTOR">Gestor de Inovação</SelectItem>}
 														</SelectContent>
@@ -329,19 +330,19 @@ export function Collaborators({ user }: CollaboratorsProps) {
 													<SelectContent className={`bg-white border-gray-200 shadow ${theme === 'dark' ? 'bg-gray-800 border-gray-700' : ''}`}>
 														<SelectItem
 															className={`hover:bg-gray-200 cursor-pointer ${theme === 'dark' ? 'hover:bg-gray-700' : ''}`}
-															value="comum"
+															value="COMUM"
 														>
 															Usuário Comum
 														</SelectItem>
 														<SelectItem
 															className={`hover:bg-gray-200 cursor-pointer ${theme === 'dark' ? 'hover:bg-gray-700' : ''}`}
-															value="avaliador"
+															value="AVALIADOR"
 														>
 															Avaliador
 														</SelectItem>
 														<SelectItem
 															className={`hover:bg-gray-200 cursor-pointer ${theme === 'dark' ? 'hover:bg-gray-700' : ''}`}
-															value="gestor"
+															value="GESTOR"
 														>
 															Gestor de Inovação
 														</SelectItem>

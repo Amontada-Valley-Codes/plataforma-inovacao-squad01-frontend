@@ -8,9 +8,10 @@ export interface User {
   name: string;
   email: string;
   role: UserRole;
-  company: string;
-  image_url?: string; // ✨ NOVO CAMPO ADICIONADO AQUI
-  access_token?: string; // ✨ NOVO CAMPO ADICIONADO AQUI
+  company: string; // O nome da empresa
+  companyId?: string; // <-- ADICIONE ESTA LINHA (opcional para não quebrar outras partes)
+  image_url?: string;
+  access_token?: string;
 }
 
 export interface Challenge {

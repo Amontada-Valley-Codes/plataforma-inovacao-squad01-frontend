@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
@@ -8,12 +8,17 @@ import { Lightbulb } from 'lucide-react';
 
 interface IdeaFormProps {
   stageTitle: string;
+  onSubmit: (data: { title: string, description: string }) => void; // 1. Receber a função onSubmit
 }
 
-export function IdeaForm({ stageTitle }: IdeaFormProps) {
+export function IdeaForm({ stageTitle, onSubmit }: IdeaFormProps) {
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Nova ideia submetida!');
+    onSubmit({ title, description }); // 3. Chamar a função recebida com os dados do formulário
+    
   };
 
   return (
@@ -37,6 +42,9 @@ export function IdeaForm({ stageTitle }: IdeaFormProps) {
               id="idea-title" 
               placeholder="Ex: App de Recomendações com IA" 
               className="border-[#001f61] focus:ring-[#7eb526] focus:border-[#7eb526] rounded-lg"
+              value={title} // Conectar estado
+              onChange={(e) => setTitle(e.target.value)} // Conectar estado
+              required
             />
           </div>
           <div className="space-y-2">
@@ -45,10 +53,13 @@ export function IdeaForm({ stageTitle }: IdeaFormProps) {
               id="idea-description" 
               placeholder="Descreva a sua ideia em detalhe..." 
               className="border-[#001f61] focus:ring-[#7eb526] focus:border-[#7eb526] rounded-lg"
+              value={description} // Conectar estado
+              onChange={(e) => setDescription(e.target.value)} // Conectar estado
+              required
             />
           </div>
         </div>
-        
+
         <DialogFooter>
           <DialogClose asChild>
             <Button 

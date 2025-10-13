@@ -21,7 +21,7 @@ export default function CommitteeReviewPage() {
   }
 
   // Apenas gestores e avaliadores podem aceder
-  if (user.role !== 'gestor' && user.role !== 'avaliador' && user.role !== 'admin') {
+  if (user.role !== 'GESTOR' && user.role !== 'AVALIADOR' && user.role !== 'ADMIN') {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
