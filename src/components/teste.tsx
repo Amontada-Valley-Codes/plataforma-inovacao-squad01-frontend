@@ -1,118 +1,76 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
+import { Separator } from './ui/separator';
+import { ArrowLeft, Building2, Save } from 'lucide-react';
+import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Textarea } from './ui/textarea';
-import { DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from './ui/dialog';
-import { Badge } from './ui/badge';
-import { Separator } from './ui/separator';
-import { Checkbox } from './ui/checkbox';
-import { Check, Archive, ArrowRight } from 'lucide-react';
+import { User } from '../app/context/UserContext';
 
-interface Idea {
-  id: string;
-  stage: string;
-  title: string;
-  priority: string;
-  author: string;
-  comments: number;
-  days: number;
+interface CompanyFormProps {
+  user: User;
+  onNavigate: (page: 'dashboard') => void;
 }
 
-interface EvaluationFormProps {
-  idea: Idea;
-}
-
-export function EvaluationForm({ idea }: EvaluationFormProps) {
-  const isPreScreening = idea.stage === 'pre-screening';
-  const isDetailedScreening = idea.stage === 'detailed-screening';
-
+export function CompanyForm({ user, onNavigate }: CompanyFormProps) {
+  const [theme, setTheme] = useState<string>(typeof window !== 'undefined' ? (sessionStorage.getItem('theme') || 'light') : 'light');
   return (
-    <div>
-      <DialogHeader>
-        <DialogTitle className="text-[#001f61] font-bold">{idea.title}</DialogTitle>
-        <DialogDescription>
-          Avaliação da ideia submetida por <span className="font-semibold text-[#001f61]">{idea.author}</span>.
-        </DialogDescription>
-        <div className="flex gap-2 pt-2">
-          <Badge className="bg-[#001f61] text-white">Prioridade: {idea.priority}</Badge>
-          <Badge className="bg-[#7eb526] text-white">Comentários: {idea.comments}</Badge>
-        </div>
-      </DialogHeader>
-      
-      <div className="py-6 space-y-6">
-        <Separator />
-        
-        {/* Formulário de Pré-Triagem */}
-        {isPreScreening && (
-          <div className="space-y-4">
-            <h4 className="font-semibold text-[#001f61]">Checklist de Pré-Triagem</h4>
-            <div className="flex items-center space-x-2">
-              <Checkbox id="alignment" className="border-[#001f61] text-[#7eb526]" />
-              <Label htmlFor="alignment" className="text-gray-800">Possui alinhamento estratégico com a empresa?</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Checkbox id="innovative" className="border-[#001f61] text-[#7eb526]" />
-              <Label htmlFor="innovative" className="text-gray-800">A ideia tem potencial inovador?</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Checkbox id="relevance" className="border-[#001f61] text-[#7eb526]" />
-              <Label htmlFor="relevance" className="text-gray-800">É relevante para o negócio atualmente?</Label>
-            </div>
-          </div>
-        )}
-
-        {/* Formulário de Triagem Detalhada */}
-        {isDetailedScreening && (
-          <div className="space-y-4">
-            <h4 className="font-semibold text-[#001f61]">Análise Detalhada</h4>
-            <div className="space-y-2">
-              <Label htmlFor="viability" className="text-gray-800">Análise de Viabilidade Técnica</Label>
-              <Textarea 
-                id="viability" 
-                placeholder="Descreva a viabilidade técnica, tecnologias necessárias, etc." 
-                className="border-[#001f61] focus:ring-[#7eb526] focus:border-[#7eb526] rounded-lg"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="impact" className="text-gray-800">Análise de Impacto Financeiro</Label>
-              <Textarea 
-                id="impact" 
-                placeholder="Descreva o potencial de retorno, custos estimados, etc." 
-                className="border-[#001f61] focus:ring-[#7eb526] focus:border-[#7eb526] rounded-lg"
-              />
-            </div>
-             <div className="space-y-2">
-              <Label htmlFor="risks" className="text-gray-800">Análise de Riscos</Label>
-              <Textarea 
-                id="risks" 
-                placeholder="Descreva os possíveis riscos de mercado, técnicos ou operacionais." 
-                className="border-[#001f61] focus:ring-[#7eb526] focus:border-[#7eb526] rounded-lg"
-              />
-            </div>
-          </div>
-        )}
-      </div>
-
-      <DialogFooter className="sm:justify-between">
-        <Button type="button" variant="destructive" className="bg-red-600 hover:bg-red-700">
-          <Archive className="w-4 h-4 mr-2" />
-          Arquivar Ideia
-        </Button>
-        <div className="flex gap-2">
-          <DialogClose asChild>
-            <Button type="button" variant="secondary" className="bg-gray-200 text-[#001f61] hover:bg-gray-300">
-              Fechar
+    <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-gray-50 text-black'}`}>
+      {/* Header */}
+      <div className={`bg-[#011677] text-white shadow-lg ${theme === 'dark' ? 'bg-gray-800' : 'bg-[#011677]'} sticky top-0 z-10`}>
+        <div className="container mx-auto px-6 py-4">
+          <div className="flex items-center gap-4">
+            <Button className='hovers-exit-dash' variant="ghost" size="sm" onClick={() => onNavigate('dashboard')}>
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Voltar ao Dashboard
             </Button>
-          </DialogClose>
-          <Button 
-            type="submit"
-            className="bg-[#7eb526] hover:bg-[#6aa21e] text-white"
-          >
-            Aprovar para próxima fase
-            <ArrowRight className="w-4 h-4 ml-2" />
-          </Button>
+            <Separator orientation="vertical" className="h-6" />
+            <div className="flex items-center gap-2">
+              <Building2 className="w-5 h-5" />
+              <h1>Cadastrar Nova Empresa</h1>
+            </div>
+          </div>
         </div>
-      </DialogFooter>
+      </div>
+      {/* Content */}
+      <div className="container mx-auto px-6 py-8 max-w-2xl">
+        <Card>
+          <CardHeader>
+            <CardTitle>Dados da Empresa</CardTitle>
+            <CardDescription>Insira as informações da nova empresa que usará a plataforma.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="company-name">Nome da Empresa</Label>
+              <Input 
+              id="company-name" 
+              placeholder="Ex: Inova Corp"
+              className='focus:border-[#001f61] focus:ring focus:ring-[#001f61]/30 transition-colors' />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="company-cnpj">CNPJ</Label>
+              <Input 
+              id="company-cnpj" 
+              placeholder="00.000.000/0001-00"
+              className='focus:border-[#001f61] focus:ring focus:ring-[#001f61]/30 transition-colors' />
+            </div>
+
+             <div className="space-y-2">
+              <Label htmlFor="company-description">Descrição Breve</Label>
+              <Textarea 
+              id="company-description" 
+              placeholder="Uma breve descrição sobre a empresa..."
+              className='focus:border-[#001f61] focus:ring focus:ring-[#001f61]/30 transition-colors' />
+
+            </div>
+            <Button className="w-full bg-[#001f61] hover:bg-[#002a7a] transition-colors text-white">
+              <Save className="w-4 h-4 mr-2" />
+              Salvar Empresa
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

@@ -102,10 +102,10 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                     challengesRes,
                     startupsRes
                 ] = await Promise.all([
-                    api.get('/idea'),
+                    api.get('/idea/company/' + user.companyId), // Pegar todas as ideias
                     api.get('/connections'),
                     api.get('/poc'),
-                    api.get('/challenges/findAllPaginated?limit=5'), // Pegar os 5 mais recentes
+                    api.get(`/challenges/findByCompany/${user.companyId}`), // Pegar os 5 mais recentes
                     api.get('/startups')
                 ]);
 
@@ -116,6 +116,8 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                 const connectionsCount = connectionsRes.data.length;
                 const pocsCount = pocsRes.data.length;
 				const startupsCount = startupsRes.data.length;
+
+				console.log('Challenges:', challengesRes.data);
 
                 // Gráfico de Funil
                 const funnelCounts = ideasRes.data.reduce((acc: any, idea: any) => {
@@ -149,7 +151,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                     pocsCount,
                     avgTime: 18, // Manter mockado por enquanto
                     funnelData,
-                    recentChallenges: challengesRes.data.data, // A API paginada retorna em `data.data`
+                    recentChallenges: challengesRes.data, // A API paginada retorna em `data.data`
                     pieData,
 					startupsCount,
 					startups: startupsRes.data,
@@ -159,6 +161,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                         { name: "Mai", ideas: ideasCount },
                     ]
                 });
+				// console.log('challengesRes.data.data', challengesRes.data.data);
 
             } catch (error) {
                 console.error("Falha ao carregar dados do dashboard:", error);
@@ -453,6 +456,11 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
 						
                         <CardContent>
 										<div className="space-y-4">
+											{dashboardData.recentChallenges.length === 0 && (
+												<p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+													Nenhum desafio recente encontrado.
+												</p>
+											)}
 											{dashboardData.recentChallenges.map((challenge) => (
 											<div
 												key={challenge.id}

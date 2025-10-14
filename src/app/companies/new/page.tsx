@@ -10,7 +10,7 @@ export default function NewCompanyPage() {
   const router = useRouter();
 
   useEffect(() => {
-    if (!isAuthenticated || !user || user.role !== 'admin') {
+    if (!isAuthenticated || !user || user.role !== 'ADMIN') {
       router.push('/');
     }
   }, [isAuthenticated, user, router]);

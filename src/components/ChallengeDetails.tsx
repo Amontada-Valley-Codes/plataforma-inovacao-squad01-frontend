@@ -1,4 +1,7 @@
-import React, { useState } from 'react';
+// /plat_inovacao/src/components/ChallengeDetails.tsx
+'use client';
+
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Label } from './ui/label';
 import { Button } from './ui/button';
@@ -24,10 +27,26 @@ import {
 	TrendingUp,
 	Paperclip,
 	Lightbulb,
-	ThumbsUp
+	ThumbsUp,
+	Plus
 } from 'lucide-react';
-import { User, Challenge, Startup } from '../app/context/UserContext';
+import { User, Challenge, Startup, Idea } from '../app/context/UserContext';
 import { useRouter } from 'next/navigation';
+import api from '../lib/api';
+
+// Tipos de dados específicos para esta página
+interface Comment {
+	id: string;
+	author: { name: string; avatar?: string };
+	text: string;
+	createdAt: string;
+}
+
+interface RecommendedStartup extends Startup {
+	matchScore: number;
+	connectionStatus: 'nenhum' | 'interesse' | 'convidada' | 'poc' | 'rejeitada';
+	lastInteraction?: string;
+}
 
 interface ChallengeDetailsProps {
 	user: User;
@@ -35,49 +54,95 @@ interface ChallengeDetailsProps {
 	onNavigate: (page: 'dashboard' | 'startup-database') => void;
 }
 
-// Mock de dados para os comentários
-const mockComments = [
-	{ id: 'c1', author: { name: 'Ana Silva', avatar: 'https://i.pravatar.cc/40?u=ana' }, text: 'Achei a FinanceAI muito promissora.', timestamp: '2 dias atrás' },
-	{ id: 'c2', author: { name: 'Carlos Santos', avatar: 'https://i.pravatar.cc/40?u=carlos' }, text: 'Concordo com a Ana. A SmartAudit também parece interessante.', timestamp: '1 dia atrás' },
-];
-
-// Mock de dados para as ideias submetidas a este desafio
-const mockSubmissions = [
-	{ id: 'idea-1', title: 'App de Recomendações com IA', author: 'Maria Costa', votes: 42, comments: 15, stage: 'ideation' },
-	{ id: 'idea-2', title: 'Pagamentos com Reconhecimento Facial', author: 'Carlos Santos', votes: 89, comments: 31, stage: 'poc' },
-	{ id: 'idea-3', title: 'Plataforma de Treinamento Gamificada', author: 'João Pereira', votes: 25, comments: 8, stage: 'pre-screening' },
-];
-
-
 export function ChallengeDetails({ user, challenge, onNavigate }: ChallengeDetailsProps) {
-	const [newComment, setNewComment] = useState('');
-	const router = useRouter();
 	const [theme, setTheme] = useState<string>(typeof window !== 'undefined' ? (sessionStorage.getItem('theme') || 'light') : 'light');
+	const router = useRouter();
 
-	const handlePostComment = () => {
-		if (newComment.trim()) {
-			console.log('Novo comentário:', newComment);
+	// Estados para os dados dinâmicos
+	const [submissions, setSubmissions] = useState<Idea[]>([]);
+	const [recommendedStartups, setRecommendedStartups] = useState<RecommendedStartup[]>([]);
+	const [comments, setComments] = useState<Comment[]>([]);
+	const [newComment, setNewComment] = useState('');
+	const [isSubmittingComment, setIsSubmittingComment] = useState(false);
+
+	// useEffect para buscar os dados secundários
+	useEffect(() => {
+		if (!challenge.id) return;
+
+		const fetchRelatedData = async () => {
+			try {
+				// Buscar tudo em paralelo
+				const [ideasRes, startupsRes, commentsRes] = await Promise.all([
+					api.get('/idea'),
+					api.get('/startups'),
+					api.get(`/comments/${challenge.id}/CHALLENGE`)
+				]);
+
+				// Filtrar ideias por challengeId
+				const challengeIdeas = ideasRes.data.filter((idea: any) => idea.challengeId === challenge.id);
+				setSubmissions(challengeIdeas);
+
+				// Simular lógica de recomendação de startups
+				const recommendations = startupsRes.data.slice(0, 3).map((startup: Startup, index: number) => ({
+					...startup,
+					matchScore: 95 - (index * 5) // Lógica de score simples
+				}));
+				setRecommendedStartups(recommendations);
+
+				// Mapear comentários para o formato do frontend
+				const formattedComments = commentsRes.data.map((comment: any) => ({
+					id: comment.id,
+					author: { name: comment.author.name || 'Usuário' },
+					text: comment.text,
+					createdAt: new Date(comment.createdAt).toLocaleDateString('pt-BR'),
+				}));
+				setComments(formattedComments);
+
+			} catch (error) {
+				console.error("Falha ao buscar dados relacionados ao desafio:", error);
+			}
+		};
+
+		fetchRelatedData();
+	}, [challenge.id]);
+
+	const handlePostComment = async () => {
+		if (!newComment.trim()) return;
+		setIsSubmittingComment(true);
+		try {
+			const response = await api.post('/comments', {
+				text: newComment,
+				commentableType: 'CHALLENGE',
+				commentableId: challenge.id,
+			});
+
+			// Adicionar o novo comentário à lista para atualização da UI
+			const newCommentData: Comment = {
+				id: response.data.id,
+				author: { name: user.name },
+				text: response.data.text,
+				createdAt: new Date().toLocaleDateString('pt-BR'),
+			};
+			setComments(prev => [newCommentData, ...prev]);
 			setNewComment('');
+
+		} catch (error) {
+			console.error("Falha ao publicar comentário:", error);
+			alert("Não foi possível publicar o seu comentário.");
+		} finally {
+			setIsSubmittingComment(false);
 		}
 	};
 
-	// ... (funções getStatusColor, getStatusLabel, getStatusIcon, handleConnectionAction, calculateProgress continuam aqui)
-	const recommendedStartups: (Startup & {
-		matchScore: number;
-		connectionStatus: 'nenhum' | 'interesse' | 'convidada' | 'poc' | 'rejeitada';
-		lastInteraction?: string;
-	})[] = [
-			{
-				id: '1', name: 'FinanceAI', segment: 'FinTech', stage: 'tracao', technology: 'IA, Machine Learning',
-				problem: 'Automação de processos financeiros', description: 'Plataforma de IA para automação inteligente de processos financeiros corporativos, reduzindo custos operacionais em até 60%.',
-				matchScore: 95, connectionStatus: 'interesse', lastInteraction: '2024-01-10'
-			},
-			{
-				id: '2', name: 'ProcessBot', segment: 'FinTech', stage: 'operacao', technology: 'RPA, IA',
-				problem: 'Automação robótica de processos', description: 'Solução de RPA especializada em processos financeiros com inteligência artificial integrada.',
-				matchScore: 88, connectionStatus: 'nenhum'
-			},
-		];
+	// Funções auxiliares (progress, etc.)
+	const calculateProgress = () => {
+		const startDate = new Date(challenge.startDate);
+		const endDate = new Date(challenge.endDate);
+		const now = new Date();
+		const total = endDate.getTime() - startDate.getTime();
+		const elapsed = now.getTime() - startDate.getTime();
+		return Math.min(100, Math.max(0, (elapsed / total) * 100));
+	};
 
 	const getStatusColor = (status: string) => {
 		const colors: { [key: string]: string } = {
@@ -103,22 +168,10 @@ export function ChallengeDetails({ user, challenge, onNavigate }: ChallengeDetai
 			default: return null;
 		}
 	};
-	const handleConnectionAction = (startupId: string, action: 'interesse' | 'convidar' | 'rejeitar') => {
-		console.log(`Ação ${action} para startup ${startupId}`);
-	};
-	const calculateProgress = () => {
-		const startDate = new Date(challenge.startDate);
-		const endDate = new Date(challenge.endDate);
-		const now = new Date();
-		const total = endDate.getTime() - startDate.getTime();
-		const elapsed = now.getTime() - startDate.getTime();
-		return Math.min(100, Math.max(0, (elapsed / total) * 100));
-	};
 
 
 	return (
 		<div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'}`}>
-			{/* Header */}
 			<div className={`bg-[#011677]  ${theme === 'dark' ? 'bg-gray-800 text-white' : ' text-black border-b border-gray-200 '}`}>
 				<div className="container mx-auto px-6 py-4">
 					<div className="flex items-center gap-4">
@@ -235,10 +288,10 @@ export function ChallengeDetails({ user, challenge, onNavigate }: ChallengeDetai
 									<Building2 className="w-4 h-4 mr-2" />
 									Buscar Mais Startups
 								</Button>
-								<Button 
+								<Button
 									className={`w-full justify-start bg-[#011677] text-white hover:bg-[#0121af] cursor-pointer ${theme === 'dark' ? 'bg-gray-600 hover:bg-gray-700 ' : ''}`}
 									onClick={() => router.push(`/funnel/${challenge.id}`)}
-									>
+								>
 									<Target className="w-4 h-4 mr-2" />
 									Aceder ao Funil de Ideias
 								</Button>
@@ -247,46 +300,34 @@ export function ChallengeDetails({ user, challenge, onNavigate }: ChallengeDetai
 					</div>
 				</div>
 
-				{/* Tabs for Startups, Discussion, and Submissions */}
+				{/* Tabs */}
 				<div className="mt-8">
 					<Tabs defaultValue="submissions">
-						<TabsList className="mb-4 ">
-							<TabsTrigger value="submissions" className={`border-r-gray-400 border-b-gray-400 cursor-pointer hover:bg-gray-200 ${theme === 'dark' ? 'text-gray-200 hover:bg-gray-600' : 'text-gray-800'}`}>
-								<Lightbulb className="w-4 h-4 mr-2" />
-								Submissões de Ideias ({mockSubmissions.length})
-							</TabsTrigger>
-							<TabsTrigger value="startups" className={`border-r-gray-400 border-b-gray-400 cursor-pointer hover:bg-gray-200 ${theme === 'dark' ? 'text-gray-200 hover:bg-gray-600' : 'text-gray-800'}`}>
-								<Star className="w-4 h-4 mr-2" />
-								Startups Recomendadas
-							</TabsTrigger>
-							<TabsTrigger value="discussion" className={`border-r-gray-400 border-b-gray-400 cursor-pointer hover:bg-gray-200 ${theme === 'dark' ? 'text-gray-200 hover:bg-gray-600' : 'text-gray-800'}`}>
-								<MessageCircle className="w-4 h-4 mr-2" />
-								Discussão Interna
-							</TabsTrigger>
+						<TabsList className={`bg-white border-b ${theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'border-gray-200'}`}>
+							<TabsTrigger className={`py-4 px-6 text-sm font-medium ${theme === 'dark' ? 'text-gray-200 hover:bg-gray-700' : 'text-gray-800 hover:bg-gray-100'}`} value="submissions">Submissões ({submissions.length})</TabsTrigger>
+							<TabsTrigger className={`py-4 px-6 text-sm font-medium ${theme === 'dark' ? 'text-gray-200 hover:bg-gray-700' : 'text-gray-800 hover:bg-gray-100'}`} value="startups">Startups Recomendadas ({recommendedStartups.length})</TabsTrigger>
+							<TabsTrigger className={`py-4 px-6 text-sm font-medium ${theme === 'dark' ? 'text-gray-200 hover:bg-gray-700' : 'text-gray-800 hover:bg-gray-100'}`} value="discussion">Discussão Interna ({comments.length})</TabsTrigger>
 						</TabsList>
 
-						{/* NOVA ABA DE SUBMISSÕES */}
+						{/* Tab de Submissões de Ideias */}
 						<TabsContent value="submissions">
-							<Card className={`bg-white ${theme === 'dark' ? 'bg-gray-800 text-white' : ''}`}>
+							<Card className={`bg-white mt-4 ${theme === 'dark' ? 'bg-gray-800 text-white' : ''}`}>
 								<CardHeader>
 									<CardTitle>Ideias Submetidas</CardTitle>
-									<CardDescription>
-										Veja e avalie as ideias propostas pela equipa para este desafio.
-									</CardDescription>
 								</CardHeader>
 								<CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-									{mockSubmissions.map((idea) => (
+									{submissions.map((idea) => (
 										<Card key={idea.id} className={`flex flex-col ${theme === 'dark' ? 'bg-gray-700 text-white' : ''}`}>
 											<CardHeader>
 												<CardTitle className="text-base">{idea.title}</CardTitle>
-												<CardDescription>por {idea.author}</CardDescription>
+												<CardDescription>por {idea.authorId}</CardDescription>
 											</CardHeader>
 											<CardContent className="flex-1 flex items-end justify-between text-sm text-gray-500">
 												<div className="flex items-center gap-4">
 													<span className="flex items-center gap-1"><ThumbsUp className="w-4 h-4" /> {idea.votes}</span>
 													<span className="flex items-center gap-1"><MessageCircle className="w-4 h-4" /> {idea.comments}</span>
 												</div>
-												<Badge variant="outline">{idea.stage}</Badge>
+												<Badge className={` ${theme === 'dark' ? 'bg-gray-600 text-gray-200' : 'bg-gray-100 text-gray-800'}`} variant="outline">{idea.stage}</Badge>
 											</CardContent>
 										</Card>
 									))}
@@ -294,84 +335,84 @@ export function ChallengeDetails({ user, challenge, onNavigate }: ChallengeDetai
 							</Card>
 						</TabsContent>
 
+						{/* Tab de Startups */}
 						<TabsContent value="startups">
-							<Card className={`bg-white ${theme === 'dark' ? 'bg-gray-800 text-white' : ''}`}>
-								<CardHeader>
-									<CardTitle>Recomendações Automáticas</CardTitle>
-									<CardDescription>
-										Startups compatíveis com este desafio baseadas em IA e histórico de matches.
-									</CardDescription>
-								</CardHeader>
-								<CardContent>
-									<div className="space-y-4">
-										{recommendedStartups.map((startup) => (
-											<div key={startup.id} className={`  rounded-lg p-4 ${theme === 'dark' ? 'bg-gray-700' : 'border border-gray-200'}`}>
-												<div className="flex items-start justify-between mb-4">
-													<div className="space-y-2">
-														<div className="flex items-center gap-2">
-															<h4 className="font-medium">{startup.name}</h4>
-															<Badge variant="outline">{startup.segment}</Badge>
-															<Badge className="bg-green-100 text-green-800">{startup.matchScore}% Match</Badge>
-														</div>
-														<p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>{startup.description}</p>
-														<div className={`flex items-center gap-4 text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-															<span>Estágio: {startup.stage}</span>
-															<span>Tecnologia: {startup.technology}</span>
-														</div>
+							<Card className={`bg-white mt-4 ${theme === 'dark' ? 'bg-gray-800 text-white' : ''}`}>
+								<CardHeader><CardTitle>Recomendações Automáticas</CardTitle></CardHeader>
+								<CardContent className="space-y-4">
+									{recommendedStartups.map((startup) => (
+										<div key={startup.id} className={`  rounded-lg p-4 ${theme === 'dark' ? 'bg-gray-700' : 'border border-gray-200'}`}>
+											<div className="flex items-start justify-between mb-4">
+												<div className="space-y-2">
+													<div className="flex items-center gap-2">
+														<h4 className="font-medium">{startup.name}</h4>
+														<Badge variant="outline">{startup.segment}</Badge>
+														<Badge className="bg-green-100 text-green-800">{startup.matchScore}% Match</Badge>
 													</div>
-													<div className="text-right">
-														<div className="text-2xl font-bold text-green-600">{startup.matchScore}%</div>
-														<p className="text-xs text-gray-500">Compatibilidade</p>
+													<p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>{startup.description}</p>
+													<div className={`flex items-center gap-4 text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
+														<span>Estágio: {startup.stage}</span>
+														<span>Tecnologia: {startup.technology}</span>
 													</div>
 												</div>
-												<div className="flex items-center justify-between pt-4 border-t border-gray-200">
-													<div className="flex items-center gap-2">
-														<Badge className={getStatusColor(startup.connectionStatus)}>
-															{getStatusIcon(startup.connectionStatus)}
-															<span className="ml-1">{getStatusLabel(startup.connectionStatus)}</span>
-														</Badge>
-													</div>
-													<div className="flex gap-2">
-														{/* Botões de Ação */}
-													</div>
+												<div className="text-right">
+													<div className="text-2xl font-bold text-green-600">{startup.matchScore}%</div>
+													<p className="text-xs text-gray-500">Compatibilidade</p>
 												</div>
 											</div>
-										))}
-									</div>
+											<div className="flex items-center justify-between pt-4 border-t border-gray-200">
+												<div className="flex items-center gap-2">
+													<Badge className={getStatusColor(startup.connectionStatus)}>
+														{getStatusIcon(startup.connectionStatus)}
+														<span className="ml-1">{getStatusLabel(startup.connectionStatus)}</span>
+													</Badge>
+												</div>
+												<div className="flex gap-2">
+													{/* Botões de Ação */}
+													<Button variant="ghost" size="sm" onClick={() => router.push(`/startup/${startup.id}`)}>
+														<Building2 className="w-4 h-4 mr-2" />
+														Ver Perfil
+													</Button>
+													<Button variant="ghost" size="sm" onClick={() => router.push(`/startup/${startup.id}`)}>	
+														<Plus className="w-4 h-4 mr-2" />
+														Adicionar
+													</Button>
+													<Button variant="ghost" size="sm" onClick={() => router.push(`/startup/${startup.id}`)}>
+														<ThumbsUp className="w-4 h-4 mr-2" />
+														Conectar
+													</Button>
+												</div>
+											</div>
+										</div>
+									))}
 								</CardContent>
 							</Card>
 						</TabsContent>
 
+						{/* Tab de Discussão */}
 						<TabsContent value="discussion">
-							<Card className={`bg-white ${theme === 'dark' ? 'bg-gray-800 text-white' : ''}`}>
-								<CardHeader>
-									<CardTitle>Discussão Interna</CardTitle>
-									<CardDescription>
-										Espaço para colaboradores discutirem o desafio, submissões e startups.
-									</CardDescription>
-								</CardHeader>
+							<Card className={`bg-white mt-4 ${theme === 'dark' ? 'bg-gray-800 text-white' : ''}`}>
+								<CardHeader><CardTitle>Discussão Interna</CardTitle></CardHeader>
 								<CardContent className="space-y-6">
 									<div className="flex items-start gap-4">
-										<Avatar className={`${theme === 'dark' ? 'bg-gray-700' : ''}`}><AvatarFallback>{user.name.charAt(0)}</AvatarFallback></Avatar>
+										<Avatar className={theme === 'dark' ? 'bg-gray-700' : ''}><AvatarFallback>{user.name.charAt(0)}</AvatarFallback></Avatar>
 										<div className="w-full space-y-2">
 											<Textarea placeholder="Adicione um comentário..." value={newComment} onChange={(e) => setNewComment(e.target.value)} />
-											<div className="flex justify-between items-center">
-												<Button variant="outline" size="sm"><Paperclip className="w-4 h-4 mr-2" />Anexar</Button>
-												<Button onClick={handlePostComment} size="sm"><Send className="w-4 h-4 mr-2" />Publicar</Button>
+											<div className="flex justify-end">
+												<Button onClick={handlePostComment} size="sm" disabled={isSubmittingComment}>
+													{isSubmittingComment ? 'A publicar...' : <><Send className="w-4 h-4 mr-2" />Publicar</>}
+												</Button>
 											</div>
 										</div>
 									</div>
 									<Separator />
 									<div className="space-y-6">
-										{mockComments.map((comment) => (
+										{comments.map((comment) => (
 											<div key={comment.id} className="flex items-start gap-4">
-												<Avatar><AvatarImage src={comment.author.avatar} /><AvatarFallback>{comment.author.name.charAt(0)}</AvatarFallback></Avatar>
-												<div className="w-full">
-													<div className="flex items-center gap-2 mb-1">
-														<p className="font-medium text-sm">{comment.author.name}</p>
-														<p className="text-xs text-gray-500">{comment.timestamp}</p>
-													</div>
-													<p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>{comment.text}</p>
+												<Avatar><AvatarFallback>{comment.author.name.charAt(0)}</AvatarFallback></Avatar>
+												<div>
+													<p className="font-medium text-sm">{comment.author.name}</p>
+													<p className={`text-sm ${theme === 'dark' ? 'text-gray-200' : 'text-gray-500'}`}>{comment.text}</p>
 												</div>
 											</div>
 										))}

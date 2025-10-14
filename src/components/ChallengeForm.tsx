@@ -75,7 +75,7 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
 			// Idealmente, o backend deveria aceitar um array ou o frontend deveria ter um seletor para o Enum
 			tags: tags.length > 0 ? tags[0].toUpperCase().replace(/ /g, '_') : 'IA', 
 			categoria: 'TECNOLOGIA', // Valor padrão
-			companyId: user.company // Assumindo que o `user` do context tem o companyId
+			companyId: user.companyId // Assumindo que o `user` do context tem o companyId
 		};
 
 		// Validação para o enum `Tags` (simplificada)

@@ -12,6 +12,7 @@ import {
   Users,
   Menu,
   Building2,
+  Rocket,
 } from "lucide-react";
 import { User } from "../app/context/UserContext";
 import { useRouter, usePathname } from "next/navigation";
@@ -99,18 +100,34 @@ export function Sidebar({ user, theme }: SidebarProps) {
 		  )}
 
           {(user.role === "ADMIN") && (
-            <Button
-              variant="ghost"
-              className={`w-full justify-start hovers-exit-dash ${
-                isActive("/companies/new")
-                  ? "bg-[#001a90] active-exit-dash"
-                  : ""
-              } ${sidebarOpen ? "justify-start" : "justify-center"}`}
-              onClick={() => router.push("/companies/new")}
-            >
-              <Building2 className={`w-5 h-5 ${sidebarOpen ? "mr-2" : ""}`} />
-              {sidebarOpen && "Cadastrar Empresa"}
-            </Button>
+             <> {/* Usar um fragmento para agrupar os botões do admin */}
+        <Button
+          variant="ghost"
+          className={`w-full justify-start hovers-exit-dash ${
+            isActive("/companies/new")
+              ? "bg-[#001a90] active-exit-dash"
+              : ""
+          } ${sidebarOpen ? "justify-start" : "justify-center"}`}
+          onClick={() => router.push("/companies/new")}
+        >
+          <Building2 className={`w-5 h-5 ${sidebarOpen ? "mr-2" : ""}`} />
+          {sidebarOpen && "Cadastrar Empresa"}
+        </Button>
+
+        {/* BOTÃO NOVO PARA STARTUPS */}
+        <Button
+          variant="ghost"
+          className={`w-full justify-start hovers-exit-dash ${
+            isActive("/startups/new")
+              ? "bg-[#001a90] active-exit-dash"
+              : ""
+          } ${sidebarOpen ? "justify-start" : "justify-center"}`}
+          onClick={() => router.push("/startups/new")}
+        >
+          <Rocket className={`w-5 h-5 ${sidebarOpen ? "mr-2" : ""}`} />
+          {sidebarOpen && "Cadastrar Startup"}
+        </Button>
+    </>
           )}
 
           {(user.role === "GESTOR" || user.role === "ADMIN") && (

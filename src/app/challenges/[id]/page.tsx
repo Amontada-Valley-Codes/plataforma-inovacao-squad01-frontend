@@ -1,15 +1,21 @@
+// /plat_inovacao/src/app/challenges/[id]/page.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useUser, Challenge } from '../../context/UserContext';
 import { ChallengeDetails } from '../../../components/ChallengeDetails';
+import api from '../../../lib/api'; // Importar o axios
+import Loading from '../../loading'; // Importar o loading
 
 export default function ChallengeDetailsPage() {
   const { user, isAuthenticated } = useUser();
   const router = useRouter();
   const params = useParams();
+  const challengeId = params.id as string;
+
   const [challenge, setChallenge] = useState<Challenge | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (!isAuthenticated || !user) {
@@ -17,56 +23,37 @@ export default function ChallengeDetailsPage() {
       return;
     }
 
-    // Try to get challenge from sessionStorage first
-    const storedChallenge = sessionStorage.getItem('selectedChallenge');
-    if (storedChallenge) {
-      try {
-        const challengeData = JSON.parse(storedChallenge);
-        if (challengeData.id === params.id) {
-          setChallenge(challengeData);
-          return;
-        }
-      } catch (error) {
-        console.error('Error parsing stored challenge:', error);
-      }
-    }
+    if (!challengeId) return;
 
-    // If not found in sessionStorage, create a mock challenge based on ID
-    // In a real app, this would fetch from an API
-    const mockChallenge: Challenge = {
-      id: params.id as string,
-      name: 'Automação de Processos Financeiros',
-      startDate: '2024-01-15',
-      endDate: '2024-03-15',
-      area: 'FinTech',
-      description: 'Buscar soluções inovadoras para automatizar processos financeiros internos, reduzindo custos operacionais e aumentando a eficiência.',
-      type: 'interno',
-      company: user.company,
-      status: 'ativo'
+    const fetchChallenge = async () => {
+      setIsLoading(true);
+      try {
+        const response = await api.get(`/challenges/${challengeId}`);
+        setChallenge(response.data);
+      } catch (error) {
+        console.error('Falha ao buscar detalhes do desafio:', error);
+        // Opcional: redirecionar para uma página de erro ou dashboard
+        router.push('/dashboard');
+      } finally {
+        setIsLoading(false);
+      }
     };
-    setChallenge(mockChallenge);
-  }, [isAuthenticated, user, router, params.id]);
+
+    fetchChallenge();
+  }, [isAuthenticated, user, router, challengeId]);
 
   const handleNavigate = (page: string) => {
-    switch (page) {
-      case 'dashboard':
-        router.push('/dashboard');
-        break;
-      case 'startup-database':
-        router.push('/startups');
-        break;
-      default:
-        break;
-    }
+    if (page === 'dashboard') router.push('/dashboard');
+    if (page === 'startup-database') router.push('/startups');
   };
 
-  if (!isAuthenticated || !user || !challenge) {
-    return null;
+  if (isLoading || !challenge) {
+    return <Loading />;
   }
 
   return (
     <ChallengeDetails 
-      user={user} 
+      user={user!} 
       challenge={challenge}
       onNavigate={handleNavigate}
     />
