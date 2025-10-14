@@ -173,7 +173,7 @@ export function Collaborators({ user }: CollaboratorsProps) {
                       <Input
                         id="name"
                         placeholder="Nome do colaborador"
-                        className={`focus:border-[#001f61] focus:ring focus:ring-[#001f61]/30 transition-colors ${theme === 'dark' ? 'bg-gray-800 text-gray-200' : ''}`}
+                        className={`focus:border-[#001f61]/30 focus:ring focus:ring-[#001f61]/30 transition-colors ${theme === 'dark' ? 'bg-gray-800 text-gray-200' : ''}`}
                       />
                     </div>
                     <div className="space-y-2">
@@ -184,7 +184,7 @@ export function Collaborators({ user }: CollaboratorsProps) {
                         id="email"
                         type="email"
                         placeholder="email@empresa.com"
-                        className="focus:border-[#001f61] focus:ring focus:ring-[#001f61]/30 transition-colors"
+                        className={`focus:border-[#001f61]/30 focus:ring focus:ring-[#001f61]/30 transition-colors ${theme === 'dark' ? 'bg-gray-800 text-gray-200' : ''}`}
                       />
                     </div>
                     <div className="space-y-2">
@@ -219,7 +219,7 @@ export function Collaborators({ user }: CollaboratorsProps) {
                 <TableHeader>
                   <TableRow>
                     <TableHead className="text-gray-600">Colaborador</TableHead>
-                    <TableHead className="text-gray-600">
+                    <TableHead className="text-gray-400">
                       Nível de Acesso
                     </TableHead>
                     <TableHead className="text-right text-gray-600">
@@ -261,21 +261,21 @@ export function Collaborators({ user }: CollaboratorsProps) {
                           <SelectTrigger className={`w-48 border-gray-400 cursor-pointer ${theme === 'dark' ? 'bg-gray-800 text-gray-200' : ''}`}>
                             <SelectValue />
                           </SelectTrigger>
-                          <SelectContent className={`bg-white border-gray-200 shadow ${theme === 'dark' ? 'bg-gray-800 border-gray-700' : ''}`}>
+                          <SelectContent className={`bg-white border-gray-200 shadow ${theme === 'dark' ? 'bg-gray-900 border-gray-700' : ''}`}>
                             <SelectItem
-                              className={`hover:bg-gray-200 cursor-pointer ${theme === 'dark' ? 'hover:bg-gray-700' : ''}`}
+                              className={`hover:bg-gray-200 cursor-pointer ${theme === 'dark' ? 'hover:bg-gray-700 text-gray-300' : ''}`}
                               value="comum"
                             >
                               Usuário Comum
                             </SelectItem>
                             <SelectItem
-                              className={`hover:bg-gray-200 cursor-pointer ${theme === 'dark' ? 'hover:bg-gray-700' : ''}`}
+                              className={`hover:bg-gray-200 cursor-pointer ${theme === 'dark' ? 'hover:bg-gray-700 text-gray-300' : ''}`}
                               value="avaliador"
                             >
                               Avaliador
                             </SelectItem>
                             <SelectItem
-                              className={`hover:bg-gray-200 cursor-pointer ${theme === 'dark' ? 'hover:bg-gray-700' : ''}`}
+                              className={`hover:bg-gray-200 cursor-pointer ${theme === 'dark' ? 'hover:bg-gray-700 text-gray-300' : ''}`}
                               value="gestor"
                             >
                               Gestor de Inovação
@@ -288,7 +288,7 @@ export function Collaborators({ user }: CollaboratorsProps) {
                           variant="ghost"
                           size="sm"
                           disabled={user.id === collab.id}
-                          className="text-white bg-red-600 cursor-pointer hover:bg-red-700"
+                          className={`text-white bg-red-700 cursor-pointer hover:bg-red-800 transition-colors ${theme === 'dark' ? 'bg-red-800 hover:bg-red-700' : ''}`}
                         >
                           Remover
                         </Button>

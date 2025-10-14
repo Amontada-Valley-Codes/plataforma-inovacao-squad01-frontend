@@ -354,10 +354,10 @@ export function ChallengeDetails({ user, challenge, onNavigate }: ChallengeDetai
 									<div className="flex items-start gap-4">
 										<Avatar className={`${theme === 'dark' ? 'bg-gray-700' : ''}`}><AvatarFallback>{user.name.charAt(0)}</AvatarFallback></Avatar>
 										<div className="w-full space-y-2">
-											<Textarea placeholder="Adicione um comentário..." value={newComment} onChange={(e) => setNewComment(e.target.value)} />
+											<Textarea className='focus:border-[#001f61] focus:ring focus:ring-[#001f61]/30 transition-colors' placeholder="Adicione um comentário..." value={newComment} onChange={(e) => setNewComment(e.target.value)} />
 											<div className="flex justify-between items-center">
-												<Button variant="outline" size="sm"><Paperclip className="w-4 h-4 mr-2" />Anexar</Button>
-												<Button onClick={handlePostComment} size="sm"><Send className="w-4 h-4 mr-2" />Publicar</Button>
+												<Button className={`hover:bg-gray-300 cursor-pointer ${theme === 'dark' ? 'hover:bg-gray-600' : '' }`} variant="outline" size="sm"><Paperclip className="w-4 h-4 mr-2" />Anexar</Button>
+												<Button className={`hover:bg-gray-300 cursor-pointer ${theme === 'dark' ? 'hover:bg-gray-600' : ''}`} onClick={handlePostComment} size="sm"><Send className="w-4 h-4 mr-2 " />Publicar</Button>
 											</div>
 										</div>
 									</div>

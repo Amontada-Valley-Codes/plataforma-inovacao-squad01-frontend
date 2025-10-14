@@ -138,14 +138,14 @@ export function Reports({ user, onNavigate }: ReportsProps) {
                 </TableHeader>
                 <TableBody>
                   {ideasData.map((idea) => (
-                    <TableRow key={idea.id} className={`hover:bg-blue-50/50 transition-colors duration-200 ${theme === 'dark' ? 'bg-gray-800 text-white' : ''}`}>
+                    <TableRow key={idea.id} className={`hover:bg-blue-50/20 transition-colors duration-200 ${theme === 'dark' ? 'bg-gray-800 text-white' : ''}`}>
                       <TableCell className={`font-medium ${theme === 'dark' ? 'text-gray-200' : 'text-gray-800'}`}>{idea.title}</TableCell>
                       <TableCell className={`text-gray-600 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>{idea.author}</TableCell>
                       <TableCell className={`text-gray-600 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>{idea.area}</TableCell>
                       <TableCell>
                         {/* Estilização da Badge baseada no padrão de cores azul/índigo */}
                         <Badge
-                          className={`bg-indigo-100 text-indigo-800 hover:bg-indigo-200 text-xs font-medium px-2 py-0.5 ${theme === 'dark' ? 'bg-indigo-900 text-indigo-300' : ''}`}
+                          className={`bg-indigo-100 text-indigo-800 hover:bg-indigo-600 text-xs font-medium px-2 py-0.5 ${theme === 'dark' ? 'bg-indigo-900 text-indigo-300' : ''}`}
                         >
                           {idea.stage}
                         </Badge>

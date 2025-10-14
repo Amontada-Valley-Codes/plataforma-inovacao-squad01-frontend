@@ -493,7 +493,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
 
 						<div className="flex flex-col md:flex-row md:space-x-3 space-y-2 md:space-y-0 mt-4 md:mt-0">
 						<Button
-							className="bg-gray-200 text-gray-700 h-9 hover:bg-gray-300 transition-colors font-medium cursor-pointer"
+							className="bg-gray-200 text-gray-700 h-9 hover:bg-gray-400 transition-colors font-medium cursor-pointer"
 							size="sm"
 							onClick={(e) => {
 							e.stopPropagation(); // Evita que o clique se propague para o div pai

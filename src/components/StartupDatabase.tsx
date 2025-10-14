@@ -349,7 +349,7 @@ export function StartupDatabase({ user, onNavigate }: StartupDatabaseProps) {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className={`text-[#001f61] hover:text-white hovers-exit-dash ${theme === 'dark' ? 'bg-gray-800 text-gray-200' : 'bg-white text-black'}`}
+                    className={`text-[#001f61] hovers-exit-dash ${theme === 'dark' ? 'bg-gray-800 text-gray-200' : 'bg-white text-black'}`}
                     onClick={() => {
                       setSearchQuery("");
                       setFilters({
