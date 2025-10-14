@@ -122,7 +122,7 @@ export function ChallengeDetails({ user, challenge, onNavigate }: ChallengeDetai
 			<div className={`bg-[#011677]  ${theme === 'dark' ? 'bg-gray-800 text-white' : ' text-white border-b border-gray-200 '}`}>
 				<div className="container mx-auto px-6 py-4">
 					<div className="flex items-center gap-4">
-						<Button className='hovers-exit-dash' variant="ghost" size="sm" onClick={() => onNavigate('dashboard')}>
+						<Button className={`hovers-exit-dash ${theme === 'dark' ? 'hover:bg-gray-600' : ''}`} variant="ghost" size="sm" onClick={() => onNavigate('dashboard')}>
 							<ArrowLeft className="w-4 h-4 mr-2" />
 							Voltar ao Dashboard
 						</Button>

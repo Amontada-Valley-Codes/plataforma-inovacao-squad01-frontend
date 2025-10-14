@@ -190,7 +190,7 @@ export function InnovationFunnel({ user, challenge }: InnovationFunnelProps) {
             <Button
               variant="ghost"
               size="sm"
-              className="hovers-exit-dash text-white"
+              className={`hovers-exit-dash ${theme === 'dark' ? 'hover:bg-gray-600' : ''}`}
               onClick={() => router.push(`/challenges/${challenge.id}`)}
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
