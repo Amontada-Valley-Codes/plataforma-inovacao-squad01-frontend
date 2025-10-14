@@ -482,12 +482,12 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
 													{/* Badge do Tipo */}
 													<Badge
 													className={
-														challenge.type === "publico"
+														challenge.type === "PUBLICO"
 														? "bg-green-500 text-white hover:bg-green-600"
 														: "bg-yellow-500 text-white hover:bg-yellow-600"
 													}
 													>
-													{challenge.type === "publico" ? "Público" : "Interno"}
+													{challenge.type === "PUBLICO" ? "Público" : "Interno"}
 													</Badge>
 						
 													{/* Período */}

@@ -200,8 +200,8 @@ export function ChallengeDetails({ user, challenge, onNavigate }: ChallengeDetai
 										<CardTitle className="text-xl">{challenge.name}</CardTitle>
 										<div className="flex items-center gap-2">
 											<Badge variant="outline">{challenge.area}</Badge>
-											<Badge variant={challenge.type === 'publico' ? 'default' : 'secondary'}>
-												{challenge.type === 'publico' ? 'Público' : 'Interno'}
+											<Badge variant={challenge.type === 'PUBLICO' ? 'default' : 'secondary'}>
+												{challenge.type === 'PUBLICO' ? 'Público' : 'Interno'}
 											</Badge>
 											<Badge variant="outline">{challenge.company}</Badge>
 										</div>

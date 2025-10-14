@@ -34,7 +34,7 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
 	const [currentTag, setCurrentTag] = useState('');
 	const [theme, setTheme] = useState<string>(typeof window !== 'undefined' ? (sessionStorage.getItem('theme') || 'light') : 'light');
 	const [isSubmitting, setIsSubmitting] = useState(false);
-    const [error, setError] = useState('');
+	const [error, setError] = useState('');
 
 	const handleAddTag = () => {
 		if (currentTag.trim() && !tags.includes(currentTag.trim())) {
@@ -73,7 +73,7 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
 			images: 'https://via.placeholder.com/150', // URL de imagem provisória
 			// O backend espera um Enum, vamos enviar a primeira tag como exemplo
 			// Idealmente, o backend deveria aceitar um array ou o frontend deveria ter um seletor para o Enum
-			tags: tags.length > 0 ? tags[0].toUpperCase().replace(/ /g, '_') : 'IA', 
+			tags: tags.length > 0 ? tags[0].toUpperCase().replace(/ /g, '_') : 'IA',
 			categoria: 'TECNOLOGIA', // Valor padrão
 			companyId: user.companyId // Assumindo que o `user` do context tem o companyId
 		};
@@ -81,7 +81,7 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
 		// Validação para o enum `Tags` (simplificada)
 		const validTags = ['IA', 'SUSTENTABILIDADE', 'FINTECH', 'HEALTHTECH', 'EDTECH', 'IOT', 'BLOCKCHAIN', 'AUTOMACAO'];
 		if (!validTags.includes(challengeData.tags)) {
-		challengeData.tags = 'IA'; // Define um padrão se a tag não for válida
+			challengeData.tags = 'IA'; // Define um padrão se a tag não for válida
 		}
 
 
@@ -101,7 +101,7 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
 		}
 	};
 
-	const suggestedTags = ['IA', 'Sustentabilidade', 'FinTech', 'HealthTech', 'EdTech', 'IoT', 'Blockchain', 'Automação'];
+	const suggestedTags = ['IA', 'Sustentabilidade', 'FinTech', 'HealthTech', 'EdTech', 'IoT', 'BLOCKHAIN', 'Automação'];
 
 	return (
 		<div className={`min-h-screen bg-background h-screen w-full bg-[url('/ninnafundo.jpg')] bg-cover bg-center" ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'}`}>
@@ -327,59 +327,69 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
 													setFormData({ ...formData, type: value })
 												}
 											>
-												<div className={`flex items-center space-x-2 p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors ${theme === 'dark' ? 'border-gray-700 hover:bg-gray-700' : ''}`} onClick={() => setFormData({ ...formData, type: 'interno' })}>
-													<RadioGroupItem value="interno" id="interno" className="text-[#001f61] border-gray-300" />
+												{/* Mude a <div> para <Label> e adicione o htmlFor */}
+												<Label
+													htmlFor="interno"
+													className={`flex items-center space-x-2 p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors ${theme === 'dark' ? 'border-gray-700 hover:bg-gray-700' : ''}`}
+												>
+													<RadioGroupItem value="interno" id="interno" className={`text-[#001f61] border-gray-300 ${theme === 'dark' ? 'text-white' : 'text-black'}`} />
 													<div className={`space-y-1 flex-1`}>
-														<Label htmlFor="interno" className={`font-medium text-[#001f61] ${theme === 'dark' ? 'text-white' : 'text-black'}`}>
+														{/* O Label interno agora age mais como um simples texto estilizado */}
+														<div className={`font-medium text-[#001f61] ${theme === 'dark' ? 'text-white' : 'text-black'}`}>
 															🔒 Restrito (Inovação Interna)
-														</Label>
+														</div>
 														<p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
 															Apenas colaboradores da sua empresa podem ver e participar deste desafio.
 														</p>
 													</div>
-												</div>
-												<div className={`flex items-center space-x-2 p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors ${theme === 'dark' ? ' border-gray-600 hover:bg-gray-700' : ''}`}>
-													<RadioGroupItem value="publico" id="publico" className="text-[#001f61] border-gray-300" />
+												</Label>
+
+												{/* Faça o mesmo para a segunda opção */}
+												<Label
+													htmlFor="publico"
+													className={`flex items-center space-x-2 p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors ${theme === 'dark' ? ' border-gray-600 hover:bg-gray-700' : ''}`}
+												>
+													<RadioGroupItem value="publico" id="publico" className={`text-[#001f61] border-gray-300 ${theme === 'dark' ? 'text-white' : 'text-black'}`} />
 													<div className={`space-y-1 flex-1`}>
-														<Label htmlFor="publico" className={`font-medium text-[#001f61] ${theme === 'dark' ? 'text-white' : 'text-black'}`}>
+														<div className={`font-medium text-[#001f61] ${theme === 'dark' ? 'text-white' : 'text-black'}`}>
 															🌍 Público (Externo)
-														</Label>
+														</div>
 														<p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
 															Startups e parceiros externos podem ver e se candidatar para este desafio.
 														</p>
 													</div>
-												</div>
+												</Label>
 											</RadioGroup>
 										</div>
 									</div>
 								</div>
 							</CardContent>
 
-						{/* BOTÕES DE AÇÃO */}
-						<div className="flex gap-4 justify-end">
-							<Button
-								type="button"
-								variant="outline"
-								onClick={() => onNavigate('dashboard')}
-								className={`border-[#001f61] text-[#001f61] hover:bg-[#b9bbbe] transition-colors cursor-pointer ${theme === 'dark' ? 'text-white border-gray-700 hover:bg-gray-700' : ''}`}
-							>
-							
-								Cancelar
-							</Button>
-							<Button
-								type="submit"
-								className="bg-gradient-to-r from-[#011677] to-[#160430] hover:opacity-90 text-white shadow-md rounded-lg px-6 py-2 cursor-pointer"
-								disabled={isSubmitting} // <-- Desativa o botão durante o envio
-							>
-								{isSubmitting ? 'A criar...' : ( // <-- Muda o texto durante o envio
-									<>
-										<Save className="w-4 h-4 mr-2" />
-										Criar Desafio
-									</>
-								)}
-							</Button>
-						</div>
-						{error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+							{/* BOTÕES DE AÇÃO */}
+							<div className="flex gap-4 justify-end">
+								<Button
+									type="button"
+									variant="outline"
+									onClick={() => onNavigate('dashboard')}
+									className={`border-[#001f61] text-[#001f61] hover:bg-[#b9bbbe] transition-colors cursor-pointer ${theme === 'dark' ? 'text-white border-gray-700 hover:bg-gray-700' : ''}`}
+								>
+
+									Cancelar
+								</Button>
+								<Button
+									type="submit"
+									className="bg-gradient-to-r from-[#011677] to-[#160430] hover:opacity-90 text-white shadow-md rounded-lg px-6 py-2 cursor-pointer"
+									disabled={isSubmitting} // <-- Desativa o botão durante o envio
+								>
+									{isSubmitting ? 'A criar...' : ( // <-- Muda o texto durante o envio
+										<>
+											<Save className="w-4 h-4 mr-2" />
+											Criar Desafio
+										</>
+									)}
+								</Button>
+							</div>
+							{error && <p className="text-red-500 text-sm mt-2">{error}</p>}
 						</Card>
 					</form>
 				</div>

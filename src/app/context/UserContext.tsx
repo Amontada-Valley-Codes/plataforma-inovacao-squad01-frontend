@@ -22,7 +22,7 @@ export interface Challenge {
   endDate: string;
   area: string;
   description: string;
-  type: 'interno' | 'publico';
+  type: 'INTERNO' | 'PUBLICO';
   company: string;
   status: 'ativo' | 'finalizado' | 'rascunho';
 }
