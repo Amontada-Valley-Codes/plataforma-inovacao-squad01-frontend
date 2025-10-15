@@ -77,9 +77,7 @@ export function Sidebar({ user, theme }: SidebarProps) {
 		  {(user.role === "GESTOR" || user.role === "AVALIADOR" ||  user.role === "COMUM") && (
           <Button
             variant="ghost"
-            className={`w-full justify-start hovers-exit-dash ${
-              isActive("/challenges/new") ? "bg-[#001a90] active-exit-dash" : ""
-            } ${sidebarOpen ? "justify-start" : "justify-center"}`}
+            className={getButtonClasses("/challenges/new")}
             onClick={() => router.push("/challenges/new")}
           >
             <Plus className={`w-5 h-5 ${sidebarOpen ? "mr-2" : ""}`} />
@@ -99,9 +97,7 @@ export function Sidebar({ user, theme }: SidebarProps) {
 		  {(user.role === "GESTOR") && (
           <Button
             variant="ghost"
-            className={`w-full justify-start hovers-exit-dash ${
-              isActive("/reports") ? "bg-[#001a90] active-exit-dash" : ""
-            } ${sidebarOpen ? "justify-start" : "justify-center"}`}
+            className={getButtonClasses("/reports")}
             onClick={() => router.push("/reports")}
           >
             <FileText className={`w-5 h-5 ${sidebarOpen ? "mr-2" : ""}`} />

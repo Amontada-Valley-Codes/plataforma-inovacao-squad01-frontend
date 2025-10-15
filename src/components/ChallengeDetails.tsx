@@ -174,7 +174,7 @@ export function ChallengeDetails({ user, challenge, onNavigate }: ChallengeDetai
     return (
         <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'}`}>
             {/* Header */}
-            <div className={`bg-[#011677]  ${theme === 'dark' ? 'bg-gray-800 text-white' : ' text-white border-b border-gray-200 '}`}>
+            <div className={`  ${theme === 'dark' ? 'bg-gray-700 text-white' : ' text-white border-b border-gray-200 bg-[#011677]'}`}>
                 <div className="container mx-auto px-6 py-4">
                     <div className="flex items-center gap-4">
                         <Button className={`hovers-exit-dash ${theme === 'dark' ? 'hover:bg-gray-600' : ''}`} variant="ghost" size="sm" onClick={() => onNavigate('dashboard')}>
