@@ -13,6 +13,7 @@ import {
   Menu,
   Building2,
   Rocket,
+  ClipboardCheck,
 } from "lucide-react";
 import { User } from "../app/context/UserContext";
 import { useRouter, usePathname } from "next/navigation";
