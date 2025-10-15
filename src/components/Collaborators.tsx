@@ -90,6 +90,9 @@ export function Collaborators({ user }: CollaboratorsProps) {
 	const [formError, setFormError] = useState('');
 	const [collaborators, setCollaborators] = useState<User[]>([]);
 	const [isLoading, setIsLoading] = useState(false);
+	const [companies, setCompanies] = useState<{ id: string; name: string }[]>([]);
+	const [selectedCompanyId, setSelectedCompanyId] = useState<string | null>(null);
+
 
 	useEffect(() => {
         const fetchCollaborators = async () => {
@@ -105,11 +108,27 @@ export function Collaborators({ user }: CollaboratorsProps) {
                 // setCollaborators(mockCollaborators);
 
             } catch (error) {
-                console.error("Falha ao buscar colaboradores:", error);
+				// Se o erro for 404 retorna array vazio
+				if (error.response && error.response.status === 404) {
+					setCollaborators([]);
+				} else {
+					console.error("Falha ao buscar colaboradores:", error);
+				}
             } finally {
                 setIsLoading(false);
             }
         };
+
+		const fetchCompanies = async () => {
+			try {
+				const response = await api.get('/companies');
+				console.log("Empresas buscadas:", response.data);
+				setCompanies(response.data);
+			} catch (error) {
+				console.error("Falha ao buscar empresas:", error);
+			}
+		};
+		fetchCompanies();
 
         fetchCollaborators();
     }, []);
@@ -142,17 +161,23 @@ export function Collaborators({ user }: CollaboratorsProps) {
 			// O DTO do backend espera a role em maiúsculas (AVALIADOR, COMUM)
 			const roleForBackend = inviteRole.toUpperCase();
 
-			await api.post('/invitations', {
-				email: inviteEmail,
-				role: roleForBackend,
-			});
+			// Monta o payload dinamicamente
+            const payload: { email: string; role: string; companyId?: string } = {
+                email: inviteEmail,
+                role: roleForBackend,
+            };
 
-			alert('Convite enviado com sucesso!');
-			// Fechar o dialog (a lógica de fecho pode ser melhorada com o estado do Radix)
-			// e talvez recarregar a lista de colaboradores.
-			setInviteEmail('');
-			setInviteRole('COMUM');
+            // Se o usuário for admin, adiciona o companyId selecionado ao payload
+            if (user.role === 'ADMIN') {
+                if (!selectedCompanyId) {
+                    setFormError('Admin deve selecionar uma empresa.');
+                    setIsSubmitting(false);
+                    return;
+                }
+                payload.companyId = selectedCompanyId;
+            }
 
+            await api.post('/invitations', payload);
 		} catch (err: any) {
 			console.error('Falha ao enviar convite:', err);
 			setFormError(err.response?.data?.message || 'Ocorreu um erro.');
@@ -220,12 +245,12 @@ export function Collaborators({ user }: CollaboratorsProps) {
 												<Label htmlFor="company" className="text-gray-700">
 													Empresa
 												</Label>
-												<Select>
+												<Select value={selectedCompanyId} onValueChange={setSelectedCompanyId}>
 													<SelectTrigger className="focus:ring-[#001f61]/30">
 														<SelectValue placeholder="Selecione a empresa" />
 													</SelectTrigger>
 													<SelectContent>
-														{mockCompanies.map((company) => (
+														{companies.map((company) => (
 															<SelectItem key={company.id} value={company.id}>
 																{company.name}
 															</SelectItem>
@@ -294,6 +319,13 @@ export function Collaborators({ user }: CollaboratorsProps) {
 									</TableRow>
 								</TableHeader>
 								<TableBody>
+									{collaborators.length === 0 && (
+										<TableRow>
+											<TableCell colSpan={3} className="text-center py-4">
+												{isLoading ? 'A carregar...' : 'Nenhum colaborador encontrado.'}
+											</TableCell>
+										</TableRow>
+									)}
 									{collaborators.map((collab) => (
 										<TableRow key={collab.id}>
 											<TableCell>
