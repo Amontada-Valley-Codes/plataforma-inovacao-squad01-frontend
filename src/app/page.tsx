@@ -25,17 +25,17 @@ export default function InitialPage() {
         />
         <ul className="md:flex items-center hidden mr-7 text-[#011677] space-x-10 text-[21px]">
           <li>
-            <Link className="hovers-exit-dash rounded p-1 font-semibold" href="#Inicio">
+            <Link className="hover:bg-gray-300 hovers-exit-dash rounded p-1 font-semibold" href="#Inicio">
               Inicio
             </Link>
           </li>
           <li>
-            <Link className="hovers-exit-dash rounded p-1 font-semibold" href="#Desafios">
+            <Link className="hover:bg-gray-300 hovers-exit-dash rounded p-1 font-semibold" href="#Desafios">
               Desafios
             </Link>
           </li>
           <li>
-            <Link className="hovers-exit-dash rounded p-1 font-semibold" href="#Contato">
+            <Link className="hover:bg-gray-300 hovers-exit-dash rounded p-1 font-semibold" href="#Contato">
               Contato
             </Link>
           </li>
