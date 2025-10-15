@@ -254,7 +254,7 @@ export function Collaborators({ user }: CollaboratorsProps) {
                     <Button
                       type="submit"
                       disabled={inviteStatus !== 'idle'} // Desabilita se estiver carregando ou em sucesso
-                      className={`w-full font-bold h-10 transition-all duration-300 ${
+                      className={`w-full cursor-pointer font-bold h-10 transition-all duration-300 ${
                         inviteStatus === 'idle' 
                           ? 'bg-[#001f61] hover:bg-[#002a7a] text-white' 
                           : inviteStatus === 'loading' 
