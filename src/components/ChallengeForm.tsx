@@ -113,7 +113,7 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
 							variant="ghost"
 							size="sm"
 							onClick={() => onNavigate('dashboard')}
-							className='hovers-exit-dash'
+							className={`hovers-exit-dash ${theme === 'dark' ? 'hover:bg-gray-600' : ''}`}
 						>
 							<ArrowLeft className="w-4 h-4 mr-2" />
 							Voltar ao Dashboard
