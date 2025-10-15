@@ -10,7 +10,7 @@ type DetalhesPageProps = {
 };
 
 // Next.js passa os 'params' da URL para a sua página
-export default function PaginaDetalhesDesafio({ params }: DetalhesPageProps) {
+export default async function PaginaDetalhesDesafio({ params }: DetalhesPageProps) {
   const { id } = params;
   const desafio = desafios.find((d) => d.id === id);
 

@@ -323,7 +323,7 @@ export function Collaborators({ user }: CollaboratorsProps) {
                               user.id === collab.id || user.role !== "gestor"
                             }
                           >
-                            <SelectTrigger className={`w-48 hover:bg-gray-800 cursor-pointer border-gray-300 focus:ring-[#001f61]/30 ${theme === 'dark' ? 'bg-gray-700 text-gray-200 border-gray-600' : ''}`}>
+                            <SelectTrigger className={`w-48 hover:bg-gray-800 cursor-pointer border-gray-300 focus:ring-[#001f61]/30 ${theme === 'dark' ? 'bg-gray-700 text-gray-200 border-gray-600' : 'hover:bg-gray-300'}`}>
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent className={`shadow-lg ${theme === 'dark' ? 'bg-gray-800 border-gray-600' : ''}`}>
