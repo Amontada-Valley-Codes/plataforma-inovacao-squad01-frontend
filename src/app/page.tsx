@@ -17,7 +17,7 @@ export default function InitialPage() {
       {/* 🔹 Navbar */}
       <nav className=" flex z-30  justify-between absolute h-[10vh] p-2 items-center w-full">
         <Image
-          src="/img/logo1.svg"
+          src="/img/logo2.png"
           alt="Ninna-Logo"
           height={40}
           width={80}
