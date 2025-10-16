@@ -39,9 +39,9 @@ export default function InitialPage() {
               Contato
             </Link>
           </li>
-          <li className="py-1 px-6 cursor-pointer bg-[#011677] hover:bg-[#0121af] text-white font-semibold rounded">
-            <Link href="/login">Login</Link>
-          </li>
+          <Link href="/login" className="py-1 px-6 cursor-pointer bg-[#011677] hover:bg-[#0121af] text-white font-semibold rounded">
+            Login
+          </Link>
         </ul>
         {/* Mobile */}
 
@@ -63,7 +63,7 @@ export default function InitialPage() {
                 Contato
               </Link>
             </li>
-            <li className="py-1 px-3 cursor-pointer bg-[#011677] hover:bg-[#0121af] text-white font-semibold rounded">
+            <li className="py-1 px-30 cursor-pointer bg-[#011677] hover:bg-[#0121af] text-white font-semibold rounded">
               <Link href="/login">Login</Link>
             </li>
           </ul>
