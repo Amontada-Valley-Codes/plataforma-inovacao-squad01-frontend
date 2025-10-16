@@ -166,7 +166,7 @@ useEffect(() => {
                 startupsCount,
                 connectionsCount,
                 pocsCount,
-                recentChallenges: challengesRes.data.data,
+                recentChallenges: challengesRes.data.data || challengesRes.data, 
                 pieData,
                 kpiData: [
                     { name: "Jan", ideas: 10 }, { name: "Fev", ideas: 20 },
