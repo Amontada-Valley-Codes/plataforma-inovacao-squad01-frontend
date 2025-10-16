@@ -76,14 +76,14 @@ ${name}
         <div className="flex flex-col justify-center relative px-8 py-12 bg-[url('/img/fundo-contato.jpg')] bg-cover bg-center text-white">
         <div className='bg-[#011677]/60 absolute top-0 right-0 bottom-0 left-0'></div>
         <div className='z-10'>
-          <h1 className="text-4xl font-extrabold mb-4">Conecte sua Empresa à Inovação</h1>
+          <h1 className="text-4xl font-extrabold mb-4 text-center pb-10">Conecte sua Empresa à Inovação</h1>
           <p className="text-lg mb-6 leading-relaxed">
             Sua empresa enfrenta desafios complexos? Traga-os para a nossa comunidade de startups! Juntos, podemos encontrar soluções inovadoras e acelerar o crescimento do seu negócio.
           </p>
-          <ul className="space-y-2 text-blue-100">
-            <li>💡 Resolva desafios reais com o apoio de startups promissoras.</li>
-            <li>🤝 Construa parcerias estratégicas para o futuro do seu setor.</li>
-            <li>🚀 Encontre a tecnologia e o talento certos para impulsionar a sua empresa.</li>
+          <ul className="space-y-2 text-blue-100 text-center">
+            <li>Resolva desafios reais com o apoio de startups promissoras.</li>
+            <li>Construa parcerias estratégicas para o futuro do seu setor.</li>
+            <li>Encontre a tecnologia e o talento certos para impulsionar a sua empresa.</li>
           </ul>
         </div>
             
@@ -164,7 +164,7 @@ ${name}
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-[#011677] text-white font-bold py-3 rounded-lg shadow-lg hover:opacity-90 transition disabled:opacity-50"
+              className="w-full bg-[#011677] cursor-pointer text-white font-bold py-3 rounded-lg shadow-lg hover:opacity-90 transition disabled:opacity-50"
             >
               {isSubmitting ? 'Enviando...' : 'Enviar'}
             </button>

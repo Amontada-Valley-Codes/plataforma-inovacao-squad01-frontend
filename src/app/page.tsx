@@ -84,7 +84,7 @@ export default function InitialPage() {
               href="/login"
               className="bg-[#011677] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#0121af] transition"
             >
-              Contato
+              Comece Agora
             </Link>
           </div>
           <div className="bg-white/80 absolute top-0 left-0 right-0 bottom-0 z-10"></div>
