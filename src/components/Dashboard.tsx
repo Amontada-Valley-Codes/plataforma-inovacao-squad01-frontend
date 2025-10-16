@@ -87,29 +87,60 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
     };
 
     // useEffect combinado para buscar dados e gerir o menu dropdown
-    useEffect(() => {
-        // Lógica de busca de dados da sua branch HEAD
-        const fetchData = async () => {
-            if (!user.companyId) {
-                setIsLoading(false);
-                return;
+    // /plat_inovacao/src/components/Dashboard.tsx
+
+useEffect(() => {
+    const fetchData = async () => {
+        setIsLoading(true);
+        try {
+            // Define os endpoints com base na função do usuário
+            const challengesEndpoint = user.role === 'ADMIN' 
+                ? '/challenges/findAllPaginated?limit=5&page=1' 
+                : `/challenges/findByCompany/${user.companyId}`;
+
+            const ideasEndpoint = user.role === 'ADMIN'
+                ? '/idea'
+                : `/idea/company/${user.companyId}`;
+			
+			const startupsEndpoint = '/startups'; 
+
+
+            // Para o admin, alguns endpoints podem não ser necessários ou podem ser diferentes
+            const connectionsEndpoint = user.role === 'ADMIN' ? '/companies/list' : '/connections';
+            const pocsEndpoint = user.role === 'ADMIN' ? null : '/poc'; // Admin não vê POCs por enquanto
+
+            // Monta as chamadas da API
+            const apiCalls = [
+                api.get(ideasEndpoint),
+                api.get(startupsEndpoint), // Supondo que startups são sempre globais
+                api.get(challengesEndpoint),
+                api.get(connectionsEndpoint),
+            ];
+
+            if (pocsEndpoint) {
+                apiCalls.push(api.get(pocsEndpoint));
             }
-            setIsLoading(true);
-            try {
-                const [ideasRes, connectionsRes, pocsRes, challengesRes, startupsRes] = await Promise.all([
-                    api.get('/idea/company/' + user.companyId),
-                    api.get('/connections'),
-                    api.get('/poc'),
-                    api.get(`/challenges/findByCompany/${user.companyId}`),
-                    api.get('/startups')
-                ]);
 
-                const ideasCount = ideasRes.data.length;
-                const connectionsCount = connectionsRes.data.length;
-                const pocsCount = pocsRes.data.length;
-                const startupsCount = startupsRes.data.length;
+            const [ideasRes, startupsRes, challengesRes, connectionsRes, pocsRes] = await Promise.all(apiCalls);
 
-                const funnelCounts = ideasRes.data.reduce((acc: any, idea: any) => {
+			console.log('Dados recebidos:', { ideasRes, startupsRes, challengesRes, connectionsRes, pocsRes });
+
+            // --- Processamento dos dados ---
+
+            // O resto da sua lógica de processamento continua igual,
+            // mas agora ela receberá os dados corretos para cada tipo de usuário.
+
+            const ideasCount = ideasRes.data.length;
+            const startupsCount = startupsRes.data.length;
+            const challengesCount = challengesRes.data.length;
+            // Para o admin, 'connections' são as empresas; para outros, são as conexões reais
+            const connectionsCount = connectionsRes.data.length; 
+
+
+            // pocsRes pode não existir para o admin
+            const pocsCount = pocsRes ? pocsRes.data.length : 0; 
+
+            const funnelCounts = ideasRes.data.reduce((acc: any, idea: any) => {
                     const stageName = stageLabels[idea.stage] || 'Outro';
                     acc[stageName] = (acc[stageName] || 0) + 1;
                     return acc;
@@ -130,41 +161,37 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                     color: ['#3B82F6', '#10B981', '#F59E0B', '#8B5CF6'][index % 4]
                 }));
 
-                setDashboardData({
-                    ideasCount,
-                    connectionsCount,
-                    pocsCount,
-                    startupsCount,
-                    avgTime: 18,
-                    funnelData,
-                    recentChallenges: challengesRes.data,
-                    pieData,
-                    kpiData: [
-                        { name: "Jan", ideas: 10 }, { name: "Fev", ideas: 20 },
-                        { name: "Mar", ideas: 15 }, { name: "Abr", ideas: 25 },
-                        { name: "Mai", ideas: ideasCount },
-                    ]
-                });
-            } catch (error) {
-                console.error("Falha ao carregar dados do dashboard:", error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
+            setDashboardData({
+                ideasCount,
+                startupsCount,
+                connectionsCount,
+                pocsCount,
+                recentChallenges: challengesRes.data.data,
+                pieData,
+                kpiData: [
+                    { name: "Jan", ideas: 10 }, { name: "Fev", ideas: 20 },
+                    { name: "Mar", ideas: 15 }, { name: "Abr", ideas: 25 },
+                    { name: "Mai", ideas: ideasCount },
+                ],
+                avgTime: 0, 
+                funnelData,
+            });
 
+        } catch (error) {
+            console.error("Falha ao carregar dados do dashboard:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    // Adiciona uma verificação para não executar se não houver usuário
+    if (user) {
         fetchData();
+    } else {
+        setIsLoading(false);
+    }
 
-        // Lógica do menu dropdown da 'main'
-        const handleClickOutside = (event: MouseEvent) => {
-            if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-                setIsMenuOpen(false);
-            }
-        };
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
-    }, [user.companyId]);
+}, [user]); // Depende do objeto user inteiro
 
     // Handlers combinados de ambas as branches
     const handleChallengeClick = (challenge: Challenge) => {
