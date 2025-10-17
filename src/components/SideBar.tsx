@@ -56,7 +56,12 @@ export function Sidebar({ user, theme }: SidebarProps) {
       <div className="p-4 w-full flex flex-col">
         <div className="flex items-center justify-center gap-2 mb-8 w-full">
           <div className="w-8 h-8 rounded-lg flex items-center justify-center">
-            <Image alt="logo" src="/img/icon-logo.png" width={60} height={60} />
+                <Image
+                  alt="logo"
+                  src={theme === "dark" ? "/img/icon-logo1.png" : "/img/icon-logo.png"}
+                  width={60}
+                  height={60}
+                />
           </div>
           {sidebarOpen && <span className="font-semibold">CO.INOVA</span>}
         </div>
@@ -105,34 +110,39 @@ export function Sidebar({ user, theme }: SidebarProps) {
           </Button>
 		  )}
 
-          {(user.role === "ADMIN") && (
-             <> {/* Usar um fragmento para agrupar os botões do admin */}
-        <Button
-          variant="ghost"
-          className={`w-full justify-start hovers-exit-dash ${
-            isActive("/companies/new")
-              ? "bg-[#001a90] active-exit-dash"
-              : ""
-          } ${sidebarOpen ? "justify-start" : "justify-center"}`}
-          onClick={() => router.push("/companies/new")}
-        >
-          <Building2 className={`w-5 h-5 ${sidebarOpen ? "mr-2" : ""}`} />
-          {sidebarOpen && "Cadastrar Empresa"}
-        </Button>
+          {user.role === "ADMIN" && (
+        <>
+          {/* BOTÃO - Cadastrar Empresa */}
+          <Button
+            variant="ghost"
+            className={`w-full justify-start hovers-exit-dash ${
+              isActive("/companies/new")
+                ? "bg-[#001a90] active-exit-dash"
+                : ""
+            } ${theme === "dark" ? "hover:bg-gray-600" : ""} ${
+              sidebarOpen ? "justify-start" : "justify-center"
+            }`}
+            onClick={() => router.push("/companies/new")}
+          >
+            <Building2 className={`w-5 h-5 ${sidebarOpen ? "mr-2" : ""}`} />
+            {sidebarOpen && "Cadastrar Empresa"}
+          </Button>
 
-        {/* BOTÃO NOVO PARA STARTUPS */}
-        <Button
-          variant="ghost"
-          className={`w-full justify-start hovers-exit-dash ${
-            isActive("/startups/new")
-              ? "bg-[#001a90] active-exit-dash"
-              : ""
-          } ${sidebarOpen ? "justify-start" : "justify-center"}`}
-          onClick={() => router.push("/startups/new")}
-        >
-          <Rocket className={`w-5 h-5 ${sidebarOpen ? "mr-2" : ""}`} />
-          {sidebarOpen && "Cadastrar Startup"}
-        </Button>
+          {/* BOTÃO - Cadastrar Startup */}
+          <Button
+            variant="ghost"
+            className={`w-full justify-start hovers-exit-dash ${
+              isActive("/startups/new")
+                ? "bg-[#001a90] active-exit-dash"
+                : ""
+            } ${theme === "dark" ? "hover:bg-gray-600" : ""} ${
+              sidebarOpen ? "justify-start" : "justify-center"
+            }`}
+            onClick={() => router.push("/startups/new")}
+          >
+            <Rocket className={`w-5 h-5 ${sidebarOpen ? "mr-2" : ""}`} />
+            {sidebarOpen && "Cadastrar Startup"}
+          </Button>
     </>
           )}
 
