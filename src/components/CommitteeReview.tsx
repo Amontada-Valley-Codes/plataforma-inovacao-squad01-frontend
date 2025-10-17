@@ -19,13 +19,21 @@ import Loading from '../app/loading';
 interface Evaluation {
   id: string;
   evaluator: { name: string };
-  comments: { text: string }[];
+  comments: Comment[];
   criteria: { name: string; value: boolean }[];
+}
+
+interface Comment {
+    id: string;
+    author: { name: string };
+    text: string;
+    createdAt: string;
 }
 
 interface IdeaForReview extends Idea {
   challengeTitle: string;
   evaluations: Evaluation[];
+  discussionComments: Comment[];
 }
 
 interface CommitteeReviewProps {
@@ -36,6 +44,7 @@ export function CommitteeReview({ user }: CommitteeReviewProps) {
   const [theme, setTheme] = useState<string>(typeof window !== 'undefined' ? (sessionStorage.getItem('theme') || 'light') : 'light');
   const [ideasForReview, setIdeasForReview] = useState<IdeaForReview[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [newComment, setNewComment] = useState<{ [ideaId: string]: string }>({});
 
   async function fetchAndProcessData() {
     setIsLoading(true);
@@ -55,25 +64,36 @@ export function CommitteeReview({ user }: CommitteeReviewProps) {
       // 3. Combinar os dados
       const enrichedIdeas = await Promise.all(
         preScreeningIdeas.map(async (idea) => {
-          // Encontrar as avaliações para esta ideia
-          const relatedEvaluations = allEvaluations.filter(ev => ev.ideaId === idea.id);
+            // ... (lógica existente para buscar avaliações e desafios)
+            const relatedEvaluations = allEvaluations.filter(ev => ev.ideaId === idea.id);
+            let challengeTitle = 'Desafio não encontrado';
+            try {
+                const challengeResponse = await api.get(`/challenges/${idea.challengeId}`);
+                challengeTitle = challengeResponse.data.name;
+            } catch (e) {
+                console.error(`Falha ao buscar desafio ${idea.challengeId}`);
+            }
 
-          // Buscar o nome do desafio
-          let challengeTitle = 'Desafio não encontrado';
-          try {
-            const challengeResponse = await api.get(`/challenges/${idea.challengeId}`);
-            challengeTitle = challengeResponse.data.name;
-          } catch (e) {
-            console.error(`Falha ao buscar desafio ${idea.challengeId}`);
-          }
+            // NOVO: Buscar os comentários de discussão da ideia
+            let discussionComments: Comment[] = [];
+            try {
+                const commentsResponse = await api.get(`/comments/${idea.id}/IDEA`);
+                discussionComments = commentsResponse.data.map((comment: any) => ({
+                    ...comment,
+                    createdAt: new Date(comment.createdAt).toLocaleString('pt-BR'),
+                }));
+            } catch (e) {
+                console.error(`Falha ao buscar comentários para a ideia ${idea.id}`);
+            }
 
-          return {
-            ...idea,
-            challengeTitle,
-            evaluations: relatedEvaluations,
-          };
+            return {
+                ...idea,
+                challengeTitle,
+                evaluations: relatedEvaluations,
+                discussionComments, // <-- Adiciona os comentários ao objeto
+            };
         })
-      );
+    );
 
       setIdeasForReview(enrichedIdeas);
     } catch (error) {
@@ -81,6 +101,8 @@ export function CommitteeReview({ user }: CommitteeReviewProps) {
     } finally {
       setIsLoading(false);
     }
+
+    
   }
 
   useEffect(() => {
@@ -105,6 +127,55 @@ export function CommitteeReview({ user }: CommitteeReviewProps) {
   if (isLoading) {
     return <Loading />;
   }
+
+// /plat_inovacao/src/components/CommitteeReview.tsx
+
+const handlePostComment = async (ideaId: string) => {
+    const commentText = newComment[ideaId];
+    if (!commentText || !commentText.trim()) return;
+
+    try {
+        // Passo 1: Envia o novo comentário para o backend.
+        // O backend deve retornar o comentário recém-criado.
+        const response = await api.post('/comments', {
+            text: commentText,
+            commentableType: 'IDEA',
+            commentableId: ideaId,
+        });
+
+        const newCommentFromServer = response.data;
+
+        // Passo 2: Atualiza o estado localmente em vez de recarregar.
+        setIdeasForReview(currentIdeas => {
+            // Encontra a ideia correta e adiciona o novo comentário à sua lista
+            return currentIdeas.map(idea => {
+                if (idea.id === ideaId) {
+                    // Cria um novo objeto de comentário formatado para a UI
+                    const formattedNewComment: Comment = {
+                        id: newCommentFromServer.id,
+                        author: { name: user.name },
+                        text: newCommentFromServer.text,
+                        createdAt: new Date(newCommentFromServer.createdAt).toLocaleString('pt-BR'),
+                    };
+
+                    // Retorna a ideia atualizada com o novo comentário
+                    return {
+                        ...idea,
+                        discussionComments: [...idea.discussionComments, formattedNewComment],
+                    };
+                }
+                return idea; // Retorna as outras ideias sem modificação
+            });
+        });
+
+        // Passo 3: Limpa o campo de texto daquela ideia específica
+        setNewComment(prev => ({ ...prev, [ideaId]: '' }));
+
+    } catch (error) {
+        console.error('Falha ao publicar comentário:', error);
+        alert('Não foi possível enviar o seu comentário.');
+    }
+};
 
   return (
     <div className={`min-h-screen bg-gray-50 flex ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'}`}>
@@ -165,6 +236,51 @@ export function CommitteeReview({ user }: CommitteeReviewProps) {
                         </div>
 
                         <Separator />
+
+    {/* --- INÍCIO DA NOVA SECÇÃO DE COMENTÁRIOS --- */}
+    <div className="space-y-4">
+        <h4 className={`font-semibold ${theme === 'dark' ? 'text-gray-200' : 'text-gray-800'}`}>Discussão do Comitê</h4>
+
+        {/* Lista de comentários existentes */}
+        <div className="space-y-4 max-h-48 overflow-y-auto pr-2">
+            {idea.discussionComments.length > 0 ? (
+                idea.discussionComments.map((comment) => (
+                    <div key={comment.id} className="flex items-start gap-3">
+                        <Avatar className={`w-8 h-8 ${theme === 'dark' ? 'bg-gray-600' : 'bg-gray-200'}`}><AvatarFallback>{comment.author.name.charAt(0)}</AvatarFallback></Avatar>
+                        <div>
+                            <p className={`font-semibold text-sm ${theme === 'dark' ? 'text-gray-200' : 'text-gray-800'}`}>{comment.author.name}</p>
+                            <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>{comment.text}</p>
+                            <p className={`text-xs mt-1 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}`}>{comment.createdAt}</p>
+                        </div>
+                    </div>
+                ))
+            ) : (
+                <p className={`text-sm text-center py-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>Nenhum comentário na discussão ainda.</p>
+            )}
+        </div>
+
+        {/* Formulário para novo comentário */}
+        <div className="flex items-start gap-3 pt-4 border-t">
+            <Avatar className={`w-8 h-8 ${theme === 'dark' ? 'bg-gray-600' : 'bg-gray-200'}`}><AvatarFallback>{user.name.charAt(0)}</AvatarFallback></Avatar>
+            <div className="w-full space-y-2">
+                <Textarea
+                    placeholder="Adicione seu parecer ou comentário..."
+                    value={newComment[idea.id] || ''}
+                    onChange={(e) => setNewComment(prev => ({ ...prev, [idea.id]: e.target.value }))}
+                    className={`focus:border-[#001f61] focus:ring focus:ring-[#001f61]/30 transition-colors ${theme === 'dark' ? 'bg-gray-700 text-gray-200' : 'bg-gray-50 text-gray-800'}`}
+                />
+                <div className="flex justify-end">
+                    <Button className={`${theme === 'dark' ? 'bg-gray-600 text-gray-200' : 'bg-gray-200 text-gray-800'} hover:bg-gray-500 transition-colors`} size="sm" onClick={() => handlePostComment(idea.id)}>
+                        <Send className="w-4 h-4 mr-2" />
+                        Publicar
+                    </Button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {/* --- FIM DA NOVA SECÇÃO --- */}
+
+    <Separator />
 
                         {/* Ações do Comitê */}
                         <div className="flex justify-end gap-4">
