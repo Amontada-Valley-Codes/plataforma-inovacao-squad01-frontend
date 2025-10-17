@@ -168,7 +168,7 @@ export default function InitialPage() {
           </div>
         </div>
         <div className="mt-12 pt-6 border-t border-gray-400 text-center text-sm text-gray-400">
-          © {new Date().getFullYear()} Ninna. Todos os direitos reservados.
+          © {new Date().getFullYear()} CO.INOVA. Todos os direitos reservados.
         </div>
       </footer>
     </div>
