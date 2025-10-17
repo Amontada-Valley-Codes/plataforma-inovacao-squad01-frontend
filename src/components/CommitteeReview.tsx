@@ -128,20 +128,48 @@ export function CommitteeReview({ user }: CommitteeReviewProps) {
     return <Loading />;
   }
 
-  const handlePostComment = async (ideaId: string) => {
+// /plat_inovacao/src/components/CommitteeReview.tsx
+
+const handlePostComment = async (ideaId: string) => {
     const commentText = newComment[ideaId];
     if (!commentText || !commentText.trim()) return;
 
     try {
-        await api.post('/comments', {
+        // Passo 1: Envia o novo comentário para o backend.
+        // O backend deve retornar o comentário recém-criado.
+        const response = await api.post('/comments', {
             text: commentText,
-            commentableType: 'IDEA', // Indica que é um comentário na ideia
+            commentableType: 'IDEA',
             commentableId: ideaId,
         });
 
-        // Limpa o campo de texto e recarrega os dados para mostrar o novo comentário
+        const newCommentFromServer = response.data;
+
+        // Passo 2: Atualiza o estado localmente em vez de recarregar.
+        setIdeasForReview(currentIdeas => {
+            // Encontra a ideia correta e adiciona o novo comentário à sua lista
+            return currentIdeas.map(idea => {
+                if (idea.id === ideaId) {
+                    // Cria um novo objeto de comentário formatado para a UI
+                    const formattedNewComment: Comment = {
+                        id: newCommentFromServer.id,
+                        author: { name: user.name },
+                        text: newCommentFromServer.text,
+                        createdAt: new Date(newCommentFromServer.createdAt).toLocaleString('pt-BR'),
+                    };
+
+                    // Retorna a ideia atualizada com o novo comentário
+                    return {
+                        ...idea,
+                        discussionComments: [...idea.discussionComments, formattedNewComment],
+                    };
+                }
+                return idea; // Retorna as outras ideias sem modificação
+            });
+        });
+
+        // Passo 3: Limpa o campo de texto daquela ideia específica
         setNewComment(prev => ({ ...prev, [ideaId]: '' }));
-        fetchAndProcessData();
 
     } catch (error) {
         console.error('Falha ao publicar comentário:', error);
