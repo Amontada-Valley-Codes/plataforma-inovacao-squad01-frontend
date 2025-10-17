@@ -168,9 +168,9 @@ export function InnovationFunnel({ user, challenge }: InnovationFunnelProps) {
             <div className={`bg-[#011677] sticky top-0 z-10 text-white ${theme === "dark" ? "bg-gray-800 text-white" : "text-white border-b border-gray-200"}`}>
                 <div className="container mx-auto px-6 py-4">
                     <div className="flex items-center gap-4">
-                        <Button variant="ghost" size="sm" className={`hovers-exit-dash ${theme === 'dark' ? 'hover:bg-gray-600' : ''}`} onClick={() => router.push(`/challenges/${challenge.id}`)}>
+                        <Button variant="ghost" size="sm" className={`hovers-exit-dash ${theme === 'dark' ? 'hover:bg-gray-600' : ''}`} onClick={() => router.push(`/dashboard`)}>
                             <ArrowLeft className="w-4 h-4 mr-2" />
-                            Voltar aos Detalhes do Desafio
+                            Voltar ao Dashboard
                         </Button>
                         <Separator orientation="vertical" className="h-6" />
                         <div className="flex items-center gap-2">
