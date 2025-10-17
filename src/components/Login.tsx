@@ -68,9 +68,9 @@ const handleSubmit = async (e: React.FormEvent) => {
 
 
   return (
-    <div className="h-screen flex flex-col w-auto md:flex-row items-center justify-center bg-[url(/img/fundo-login.jpg)] bg-center bg-cover ">
+    <div className="h-[95vh] md:h-screen flex flex-col w-auto md:flex-row items-center justify-center bg-[url(/img/fundo-login.jpg)] bg-center bg-cover ">
       <div className='absolute top-0 bottom-0 left-0 right-0 bg-[#011677]/40 '></div>
-      <div className="w-full space-y-6 flex justify-between z-10">
+      <div className="w-full space-y-6 flex justify-center md:justify-between z-10">
         <div className="md:text- justify-center flex-col md:ml-24 hidden md:flex">
           <div className="mx-auto w-12 h-12 bg-primary rounded-xl flex items-center justify-center mb-4">
           </div>
@@ -78,7 +78,7 @@ const handleSubmit = async (e: React.FormEvent) => {
           <p className="text-white mt-4">Conectando corporações e startups para acelerar a inovação</p>
         </div>
 
-        <div className='h-screen md:w-1/3 w-full pt-10 flex space-y-2.5 md:px-4 flex-col justify-center  bg-[#011677] text-white shadow'>
+        <div className='md:h-screen md:w-1/3 rounded-2xl md:rounded-none w-10/12 pt-10 flex space-y-2.5 md:px-4 flex-col justify-center  bg-[#011677] text-white shadow'>
           <CardHeader>
             <div className='flex justify-center'>
               <Image
@@ -88,7 +88,7 @@ const handleSubmit = async (e: React.FormEvent) => {
               priority
               src='/img/logo1.svg'
               alt="logo co.inova"
-              className='w-[250px] pb-10 object-contain'
+              className='md:w-[250px] w-[150px] pb-10 object-contain'
               />
             </div>
           </CardHeader>
