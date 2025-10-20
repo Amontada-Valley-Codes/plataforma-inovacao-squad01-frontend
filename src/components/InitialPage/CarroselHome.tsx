@@ -131,7 +131,7 @@ export default function CarroselHome() {
       {/* Cabeçalho */}
       <div className="flex flex-col sm:flex-row justify-between items-center mb-4 gap-4">
         <div>
-          <h2 className="text-3xl font-bold text-white">Nossos Desafios</h2>
+          <h2 className="md:text-3xl font-bold text-white text-center md:text-start text-2xl">Nossos Desafios</h2>
           <p className="text-gray-300 text-sm">
             Explore desafios em andamento na plataforma.
           </p>
@@ -160,7 +160,7 @@ export default function CarroselHome() {
             <button
               onClick={prevSlide}
               disabled={currentIndex === 0}
-              className="absolute left-[-60px] top-1/2 -translate-y-1/2 bg-white/90 text-[#011677] p-3 rounded-full shadow-lg hover:bg-white transition disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed"
+              className="absolute left-[-10px] z-50 top-1/2 -translate-y-1/2 bg-white text-[#011677] p-3 rounded-full shadow-lg cursor-pointer disabled:cursor-not-allowed"
             >
               <ChevronLeft size={22} />
             </button>
@@ -223,7 +223,7 @@ export default function CarroselHome() {
             <button
               onClick={nextSlide}
               disabled={currentIndex >= filteredCards.length - visibleCards}
-              className="absolute right-[-60px] top-1/2 -translate-y-1/2 bg-white/90 cursor-pointer text-[#011677] p-3 rounded-full shadow-lg hover:bg-white transition disabled:opacity-40"
+              className="absolute right-[-10]  top-1/2 -translate-y-1/2 bg-white cursor-pointer text-[#011677] p-3 rounded-full shadow-lg "
             >
               <ChevronRight size={22} />
             </button>

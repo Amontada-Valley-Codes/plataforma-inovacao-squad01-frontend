@@ -66,7 +66,7 @@ export function StartupForm({ user, onNavigate }: StartupFormProps) {
       <div className={`bg-[#011677] text-white shadow-lg ${theme === 'dark' ? 'bg-gray-800' : 'bg-[#011677]'} sticky top-0 z-10`}>
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center gap-4">
-            <Button className='hovers-exit-dash' variant="ghost" size="sm" onClick={() => onNavigate('dashboard')}>
+            <Button className={`hovers-exit-dash ${theme === 'dark' ? 'hover:bg-gray-600' : ''}`} variant="ghost" size="sm" onClick={() => onNavigate('dashboard')}>
               <ArrowLeft className="w-4 h-4 mr-2" />
               Voltar ao Dashboard
             </Button>
