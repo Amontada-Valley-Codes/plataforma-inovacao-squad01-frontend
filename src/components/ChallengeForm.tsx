@@ -128,7 +128,7 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
 			</div>
 
 			{/* Content */}
-			<div className="container mx-auto px-6 py-">
+			<div className="container mx-auto px-6 flex justify-center items-center">
 				<div className="mx-auto">
 					<div className="mb-2 text-center">
 						<h2 className={`text-4xl font-extrabold mt-3 text-[#001f61] ${theme === 'dark' ? 'text-white' : 'text-black'}`}>Cadastrar Desafio</h2>
@@ -155,7 +155,7 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
 													value={formData.name}
 													onChange={(e) => setFormData({ ...formData, name: e.target.value })}
 													required
-													className={` rounded-lg transition-colors ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-black focus:border-[#001f61] focus:ring focus:ring-[#001f61]/30'}`}
+													className={` rounded-lg transition-colors ${theme === 'dark' ? 'bg-gray-800 text-white focus:border-white/10 focus:ring-white/60' : 'bg-white text-black focus:border-[#001f61] focus:ring focus:ring-[#001f61]/30'}`}
 												/>
 											</div>
 										</div>
@@ -169,7 +169,7 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
 															variant="outline"
 															className={`w-full justify-start text-left font-normal border-gray-300  transition-colors cursor-pointer ${theme === 'dark' ? 'text-white' : 'text-black hover:border-[#001f61]'}`}
 														>
-															<CalendarIcon className="mr-2 h-4 w-4 text-black" />
+															<CalendarIcon className={`mr-2 h-4 w-4 text-black ${theme === 'dark' ? 'text-white' : ''}`} />
 															{formData.startDate ? (
 																format(formData.startDate, "dd/MM/yyyy", { locale: pt })
 															) : (
@@ -202,7 +202,7 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
 															variant="outline"
 															className={`w-full justify-start text-left font-normal border-gray-300  transition-colors cursor-pointer ${theme === 'dark' ? 'text-white' : 'text-black hover:border-[#001f61]'}`}
 														>
-															<CalendarIcon className="mr-2 h-4 w-4 text-black" />
+															<CalendarIcon className={`mr-2 h-4 w-4 text-black ${theme === 'dark' ? 'text-white' : ''}`} />
 															{formData.endDate ? (
 																format(formData.endDate, "dd/MM/yyyy", { locale: pt })
 															) : (
@@ -235,7 +235,7 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
 												placeholder="Ex: FinTech, HealthTech..."
 												value={formData.area}
 												onChange={(e) => setFormData({ ...formData, area: e.target.value })}
-												className={`focus:border-[#001f61] focus:ring focus:ring-[#001f61]/30 rounded-lg transition-colors ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-black'}`}
+												className={`focus:border-[#001f61] focus:ring focus:ring-[#001f61]/30 rounded-lg transition-colors ${theme === 'dark' ? 'bg-gray-800 text-white focus:border-white/10 focus:ring-white/60' : 'bg-white text-black'}`}
 											/>
 										</div>
 
@@ -244,7 +244,7 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
 											<div className="flex gap-2">
 												<Input
 													placeholder="Digite uma tag e pressione Enter"
-													className={`focus:border-[#001f61] focus:ring focus:ring-[#001f61]/30 rounded-lg transition-colors ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-black'}`}
+													className={`focus:border-[#001f61] focus:ring focus:ring-[#001f61]/30 rounded-lg transition-colors ${theme === 'dark' ? 'bg-gray-800 text-white focus:border-white/10 focus:ring-white/60' : 'bg-white text-black'}`}
 													value={currentTag}
 													onChange={(e) => setCurrentTag(e.target.value)}
 													onKeyPress={(e) => {
@@ -254,7 +254,7 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
 														}
 													}}
 												/>
-												<Button type="button" onClick={handleAddTag} className='bg-black text-white hover:bg-blue-900 transition-colors cursor-pointer'>
+												<Button type="button" onClick={handleAddTag} className={`bg-black text-white hover:bg-blue-900 transition-colors cursor-pointer ${theme === 'dark' ? 'bg-gray-700 hover:bg-gray-500' : ''}`}>
 													<Plus className="w-4 h-4" />
 												</Button>
 											</div>
@@ -262,14 +262,14 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
 											{tags.length > 0 && (
 												<div className="flex flex-wrap gap-2 mt-3">
 													{tags.map((tag) => (
-														<Badge key={tag} className={`bg-[#001f61] text-white hover:bg-[#002a7a] transition-colors flex items-center gap-1`}>
+														<Badge key={tag} className={`bg-[#001f61] text-white hover:bg-[#002a7a] transition-colors flex items-center gap-1 ${theme === 'dark' ? 'bg-gray-700 text-white hover:bg-gray-500' : ''}`}>
 															{tag}
 															<button
 																type="button"
 																onClick={() => handleRemoveTag(tag)}
 																className="ml-1 opacity-70 hover:opacity-100"
 															>
-																<X className="w-3 h-3 text-black" />
+																<X className="w-3 h-3 text-black cursor-pointer" />
 															</button>
 														</Badge>
 													))}
@@ -285,7 +285,7 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
 															type="button"
 															variant="outline"
 															size="sm"
-															className={`border-black text-black hover:bg-blue-100 transition-colors ${theme === 'dark' ? 'border-gray-700 text-gray-300 hover:bg-blue-900' : ''}`}
+															className={`border-black cursor-pointer text-black hover:bg-blue-100 transition-colors ${theme === 'dark' ? 'border-gray-700 text-gray-300 hover:bg-gray-700' : ''}`}
 															onClick={() => {
 																if (!tags.includes(tag)) {
 																	setTags([...tags, tag]);
@@ -310,7 +310,7 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
 											<Textarea
 												id="description"
 												placeholder="Descreva o contexto, o problema específico..."
-												className={`min-h-[120px] focus:border-[#001f61] focus:ring focus:ring-[#001f61]/30 rounded-lg transition-colors ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-black'}`}
+												className={`min-h-[120px] focus:border-[#001f61] focus:ring focus:ring-[#001f61]/30 rounded-lg transition-colors ${theme === 'dark' ? 'bg-gray-800 text-white focus:border-white/10 focus:ring-white/60' : 'bg-white text-black'}`}
 												value={formData.description}
 												onChange={(e) => setFormData({ ...formData, description: e.target.value })}
 												required
@@ -326,37 +326,86 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
 												onValueChange={(value: 'interno' | 'publico') =>
 													setFormData({ ...formData, type: value })
 												}
-											>
-												{/* Mude a <div> para <Label> e adicione o htmlFor */}
+												>
+												{/* INTERNO */}
 												<Label
 													htmlFor="interno"
-													className={`flex items-center space-x-2 p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors ${theme === 'dark' ? 'border-gray-700 hover:bg-gray-700' : ''}`}
+													className={`flex items-center space-x-2 p-4 rounded-lg cursor-pointer transition-all border 
+													${formData.type === 'interno'
+														? 'border-[#001f61] bg-[#001f61]/10 ring-2 ring-[#001f61]/40'
+														: 'border-gray-200 hover:bg-gray-100'
+													} 
+													${theme === 'dark'
+														? formData.type === 'interno'
+														? 'bg-[#001f61]/20 border-[#001f61]'
+														: 'border-gray-700 hover:bg-gray-700'
+														: ''
+													}`}
 												>
-													<RadioGroupItem value="interno" id="interno" className={`text-[#001f61] border-gray-300 ${theme === 'dark' ? 'text-white' : 'text-black'}`} />
-													<div className={`space-y-1 flex-1`}>
-														{/* O Label interno agora age mais como um simples texto estilizado */}
-														<div className={`font-medium text-[#001f61] ${theme === 'dark' ? 'text-white' : 'text-black'}`}>
-															🔒 Restrito (Inovação Interna)
-														</div>
-														<p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-															Apenas colaboradores da sua empresa podem ver e participar deste desafio.
-														</p>
+													<RadioGroupItem
+													value="interno"
+													id="interno"
+													className={`text-[#001f61] border-gray-300 ${
+														theme === 'dark' ? 'text-white' : 'text-black'
+													}`}
+													/>
+													<div className="space-y-1 flex-1">
+													<div
+														className={`font-medium ${
+														theme === 'dark' ? 'text-white' : 'text-[#001f61]'
+														}`}
+													>
+														🔒 Restrito (Inovação Interna)
+													</div>
+													<p
+														className={`text-sm ${
+														theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+														}`}
+													>
+														Apenas colaboradores da sua empresa podem ver e participar deste
+														desafio.
+													</p>
 													</div>
 												</Label>
 
-												{/* Faça o mesmo para a segunda opção */}
+												{/* PUBLICO */}
 												<Label
 													htmlFor="publico"
-													className={`flex items-center space-x-2 p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors ${theme === 'dark' ? ' border-gray-600 hover:bg-gray-700' : ''}`}
+													className={`flex items-center space-x-2 p-4 rounded-lg cursor-pointer transition-all border 
+													${formData.type === 'publico'
+														? 'border-[#001f61] bg-[#001f61]/10 ring-2 ring-[#001f61]/40'
+														: 'border-gray-200 hover:bg-gray-100'
+													} 
+													${theme === 'dark'
+														? formData.type === 'publico'
+														? 'bg-[#001f61]/20 border-[#001f61]'
+														: 'border-gray-700 hover:bg-gray-700'
+														: ''
+													}`}
 												>
-													<RadioGroupItem value="publico" id="publico" className={`text-[#001f61] border-gray-300 ${theme === 'dark' ? 'text-white' : 'text-black'}`} />
-													<div className={`space-y-1 flex-1`}>
-														<div className={`font-medium text-[#001f61] ${theme === 'dark' ? 'text-white' : 'text-black'}`}>
-															🌍 Público (Externo)
-														</div>
-														<p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-															Startups e parceiros externos podem ver e se candidatar para este desafio.
-														</p>
+													<RadioGroupItem
+													value="publico"
+													id="publico"
+													className={`text-[#001f61] border-gray-300 ${
+														theme === 'dark' ? 'text-white' : 'text-black'
+													}`}
+													/>
+													<div className="space-y-1 flex-1">
+													<div
+														className={`font-medium ${
+														theme === 'dark' ? 'text-white' : 'text-[#001f61]'
+														}`}
+													>
+														🌍 Público (Externo)
+													</div>
+													<p
+														className={`text-sm ${
+														theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+														}`}
+													>
+														Startups e parceiros externos podem ver e se candidatar para este
+														desafio.
+													</p>
 													</div>
 												</Label>
 											</RadioGroup>
@@ -366,7 +415,7 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
 							</CardContent>
 
 							{/* BOTÕES DE AÇÃO */}
-							<div className="flex gap-4 justify-end">
+							<div className="flex gap-6 justify-center mb-4">
 								<Button
 									type="button"
 									variant="outline"
