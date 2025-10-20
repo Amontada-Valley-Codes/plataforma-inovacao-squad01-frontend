@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { User, UserRole } from '../app/context/UserContext';
 import Image from 'next/image';
 import api from '../lib/api';
+import Link from 'next/link';
 
 interface LoginProps {
   onLogin: (user: User) => void;
@@ -122,44 +123,16 @@ const handleSubmit = async (e: React.FormEvent) => {
 
               {error && <p className="text-red-500 text-sm">{error}</p>}
               
-              {/* <div className="space-y-2">
-                <Label htmlFor="company">Empresa</Label>
-                <Input
-                  className='bg-white border-none py-6 text-gray-700 focus:ring-blue-900'
-                  id="company"
-                  placeholder="Nome da sua empresa"
-                  value={company}
-                  onChange={(e) => setCompany(e.target.value)}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="role">Nível de Acesso</Label>
-                <Select value={role} onValueChange={(value: UserRole) => setRole(value)}>
-                  <SelectTrigger className='bg-white border-none text-[#686a6e] py-6'>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className='bg-gray-300 text-[#686a6e] border-none'>
-                    <SelectItem value="comum">Usuário Comum - Submete ideias</SelectItem>
-                    <SelectItem value="avaliador">Avaliador - Analisa ideias</SelectItem>
-                    <SelectItem value="gestor">Gestor de Inovação - Visão completa</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div> */}
               <hr className='text-[#93889d] my-7'/>
-
-              {/* <Button 
-                variant="outline" 
-                className="w-full justify-center cursor-pointer py-4 hover:bg-white hover:text-[#011677] text-white"
-                onClick={() => quickLogin('admin', 'Admin', 'Ninna Hub')}
-              >
-                ⚙️ Admin - Super Usuário (Hub)
-              </Button> */}
 
               <Button type="submit" className="w-full bg-white text-[#011677] hover:bg-[#011677] hover:border-white hover:border   hover:text-white cursor-pointer py-6">
                 Entrar na Plataforma
               </Button>
-              
+              <div className="text-center">
+                <Link href="/cadastro-startups" className="text-sm text-white hover:underline">
+                  Não tem uma conta? Cadastre sua startup
+                </Link>
+              </div>
             </form>
           </CardContent>
         </div>

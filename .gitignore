@@ -6,7 +6,8 @@
 /node_modules
 /.pnp
 .pnp.js
-
+/copia_frotend
+copia_frontend.rar
 # testing
 /coverage
 
