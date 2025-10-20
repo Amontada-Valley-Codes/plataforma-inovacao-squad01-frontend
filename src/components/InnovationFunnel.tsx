@@ -19,7 +19,7 @@ import Loading from '../app/loading';
 // Tipo Idea estendido da sua branch, para incluir campos de UI
 type Idea = BaseIdea & {
     days: number;
-    author: string;
+    author: { name: string };
     comments: number;
 };
 
@@ -216,7 +216,7 @@ export function InnovationFunnel({ user, challenge }: InnovationFunnelProps) {
                                                                             <div className={`flex items-center justify-between text-xs ${theme === "dark" ? "text-gray-400" : "text-gray-500"}`}>
                                                                                 <div className="flex items-center gap-1"><Clock className="w-3 h-3" /><span>{idea.days} dias</span></div>
                                                                                 <div className="flex items-center gap-1"><MessageSquare className="w-3 h-3" /><span>{idea.comments}</span></div>
-                                                                                <div className="flex items-center gap-1"><User className="w-3 h-3" /><span>{idea.author}</span></div>
+                                                                                <div className="flex items-center gap-1"><User className="w-3 h-3" /><span>{idea.author.name}</span></div>
                                                                             </div>
                                                                             <Separator className="my-3" />
                                                                             <div className="flex items-center justify-between">
