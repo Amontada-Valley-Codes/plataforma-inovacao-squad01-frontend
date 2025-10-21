@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser } from '../context/UserContext';
-import { Collaborators } from '../../components/Collaborators';
+import Collaborators from '../../components/Collaborators';
 import { Button } from '../../components/ui/button';
 
 export default function CollaboratorsPage() {
