@@ -99,7 +99,11 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                 ? '/challenges/findByPublic'
                 : `/challenges/findByCompany/${user.companyId}`;
 
-            const ideasEndpoint = `/idea/company/${user.companyId}`; // Usado para Startup
+            const ideasEndpoint = user.role === 'STARTUP'
+                ? `/idea/`
+                : `/idea/company/${user.companyId}`;
+
+           
             const startupsEndpoint = '/startups';
             const connectionsEndpoint = user.role === 'ADMIN' ? '/companies/list' : '/connections';
             const pocsEndpoint = user.role === 'ADMIN' ? null : '/poc';
@@ -120,10 +124,12 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
             
             const challenges = challengesRes.data.data || challengesRes.data;
             console.log("Desafios carregados:", challengesRes);
+            console.log("Ideias carregadas:", startupIdeasRes);
 
+            const ideasFilter = startupIdeasRes?.data.filter((idea: Idea) => idea.authorId === user.id) || [];
             // 💡 Lógica para carregar as ideias da startup
             if (user.role === 'STARTUP') {
-                 const ideasWithChallengeName = startupIdeasRes.data.map((idea: Idea) => {
+                 const ideasWithChallengeName = ideasFilter.map((idea: Idea) => {
                     const challenge = challenges.find((c: Challenge) => c.id === idea.challengeId);
                     return {
                         ...idea,
@@ -190,10 +196,11 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                 description: formData.description,
                 challengeId: selectedChallengeForIdea.id,
                 authorId: user.id,
-                companyId: user.companyId, // startupId
+                companyId: user.companyId || user.startupId, 
                 stage: 'GERACAO',
                 priority: 'BAIXA',
             };
+            console.log("Enviando nova ideia:", newIdeaData);
             await api.post('/idea', newIdeaData);
             setIsIdeaModalOpen(false);
             fetchData(); // Recarrega os dados do dashboard
