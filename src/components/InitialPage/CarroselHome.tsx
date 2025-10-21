@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -10,11 +10,15 @@ import {
   CardContent,
   CardFooter,
 } from "../ui/card";
-import { ChevronLeft, ChevronRight, Search } from "lucide-react";
-import CardList from "./CardList";
+import { Search } from "lucide-react"; 
+import CardList from "./CardList"; 
 import React from "react";
 import api from "../../lib/api"; // Importando a instância da API
-
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination } from "swiper";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination"; 
 // Interface para o formato dos dados recebidos da API
 interface Challenge {
   id: string;
@@ -139,35 +143,36 @@ export default function CarroselHome() {
 
       <hr className="border-gray-400/40 mb-6" />
 
-      {/* Carrossel */}
+      {/* Carrossel Container (Relative para os botões) */}
       <div className="relative max-w-7xl mx-auto">
-        {showNavigation ? (
+        {filteredCards.length > 0 ? (
           <>
-            {/* Botão Prev */}
-            <button
-              onClick={prevSlide}
-              disabled={currentIndex === 0}
-              className="absolute left-[-10px] z-50 top-1/2 -translate-y-1/2 bg-white text-[#011677] p-3 rounded-full shadow-lg cursor-pointer disabled:cursor-not-allowed"
+            <Swiper
+              // Configuração para usar os botões customizados (agora irmãos do Swiper)
+              navigation={{
+                  nextEl: '.swiper-button-next-custom',
+                  prevEl: '.swiper-button-prev-custom',
+              }}
+              modules={[Navigation, Pagination]}
+              
+              slidesPerView={1.2} 
+              slidesPerGroup={1} 
+              spaceBetween={24} 
+              loop={false} 
+              
+              breakpoints={{
+                0: { slidesPerView: 1.2, }, 
+                640: { slidesPerView: 2.2, }, 
+                1024: { slidesPerView: 3.2, }, 
+                1280: { slidesPerView: 4.2, }, 
+              }}
+              
+              className="carrossel-home-swiper" 
             >
-              <ChevronLeft size={22} />
-            </button>
-
-            {/* Área de rolagem */}
-            <div className="overflow-hidden">
-              <div
-                className="flex transition-transform duration-500 ease-in-out"
-                style={{
-                  transform: `translateX(-${currentIndex * (100 / visibleCards)}%)`,
-                  width: `${(filteredCards.length / visibleCards) * 100}%`,
-                }}
-              >
-                {filteredCards.map((item) => (
-                  <div
-                    key={item.id}
-                    className="px-3"
-                    style={{ width: `${100 / visibleCards}%` }}
-                  >
-                    <Card className="h-full flex flex-col bg-white rounded-2xl shadow-md hover:shadow-xl transition-transform duration-300 hover:-translate-y-2 hover:scale-95">
+              {filteredCards.map((item) => (
+                <SwiperSlide key={item.id} className="pb-4 h-full"> 
+                  <div className="px-0 h-full"> 
+                    <Card className="h-full flex flex-col bg-white rounded-2xl shadow-md hover:shadow-xl transition-transform duration-300 hover:-translate-y-2">
                       <div className="relative w-full h-40">
                         <Image
                           src={item.img}
@@ -202,23 +207,68 @@ export default function CarroselHome() {
                       </CardFooter>
                     </Card>
                   </div>
-                ))}
-              </div>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+            
+            {/* *** BOTÕES DE NAVEGAÇÃO CUSTOMIZADOS *** (FORA do Swiper) */}
+            
+            {/* Botão Prev */}
+            <div className="swiper-button-prev-custom absolute left-[-10px] z-50 top-1/2 -translate-y-1/2 bg-white text-[#011677] p-3 rounded-full shadow-lg cursor-pointer">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevron-left">
+                <path d="m15 18-6-6 6-6"/>
+              </svg>
             </div>
 
             {/* Botão Next */}
-            <button
-              onClick={nextSlide}
-              disabled={currentIndex >= filteredCards.length - visibleCards}
-              className="absolute right-[-10]  top-1/2 -translate-y-1/2 bg-white cursor-pointer text-[#011677] p-3 rounded-full shadow-lg "
-            >
-              <ChevronRight size={22} />
-            </button>
+            <div className="swiper-button-next-custom absolute right-[-10px] z-50 top-1/2 -translate-y-1/2 bg-white cursor-pointer text-[#011677] p-3 rounded-full shadow-lg">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevron-right">
+                <path d="m9 18 6-6-6-6"/>
+              </svg>
+            </div>
           </>
         ) : (
           <CardList cards={filteredCards} />
         )}
       </div>
+      
+      {/* *** CSS GLOBAL ESSENCIAL COM CORREÇÃO *** */}
+      <style jsx global>{`
+        /* Importante: Adiciona classes para o contexto de navegação. */
+        .relative.max-w-7xl.mx-auto {
+            /* Garante que o Swiper procure os botões no container pai */
+            --swiper-navigation-top-offset: 50%;
+            --swiper-navigation-sides-offset: 0;
+        }
+
+        /* Garante que os botões fiquem centrados e o clique funcione */
+        .swiper-button-prev-custom, .swiper-button-next-custom {
+            /* top e transform gerenciados pelo Tailwind (top-1/2 -translate-y-1/2) */
+            transition: opacity 0.3s;
+            pointer-events: auto; 
+            z-index: 50; /* Reforça o z-index no CSS para ter prioridade */
+        }
+        
+        /* Aplica o estilo de desabilitado quando o Swiper adiciona a classe .swiper-button-disabled */
+        .swiper-button-prev-custom.swiper-button-disabled,
+        .swiper-button-next-custom.swiper-button-disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        /* Oculta os botões padrão do Swiper */
+        .swiper-button-next, .swiper-button-prev {
+            display: none !important;
+        }
+        
+        /* Garante que o container do SwiperSlide tenha altura mínima para que os h-full funcionem */
+        .swiper-slide {
+            height: auto !important;
+            /* Opcional: Adiciona espaço no final para evitar que o último card fique "colado" na borda */
+            padding-bottom: 24px; 
+        }
+      `}</style>
     </section>
   );
 }
