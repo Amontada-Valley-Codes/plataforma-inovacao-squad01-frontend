@@ -58,7 +58,7 @@ export function Sidebar({ user, theme }: SidebarProps) {
           <div className="w-8 h-8 rounded-lg flex items-center justify-center">
                 <Image
                   alt="logo"
-                  src={theme === "dark" ? "/img/icon-logo.png" : "/img/icon-logo.png"}
+                  src={"/img/icon-logo.png"}
                   width={60}
                   height={60}
                 />
