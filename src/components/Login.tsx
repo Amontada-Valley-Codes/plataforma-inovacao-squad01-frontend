@@ -8,6 +8,7 @@ import { Label } from './ui/label';
 import Image from 'next/image';
 import api from '../lib/api';
 import { User, UserRole } from '../app/context/UserContext';
+import Link from 'next/link';
 
 interface LoginProps {
   onLogin: (user: User) => void;
@@ -15,12 +16,13 @@ interface LoginProps {
 
 export default function Login({ onLogin }: LoginProps) {
   const [email, setEmail] = useState('');
+  // Mantendo os estados que não estavam sendo usados no primeiro bloco mas estavam declarados
   const [role, setRole] = useState<UserRole>('GESTOR');
   const [company, setCompany] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
 
-  // 🔹 Login real com API
+  // 🔹 Login real com API (Funcionalidade intacta)
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -145,6 +147,8 @@ export default function Login({ onLogin }: LoginProps) {
               {error && (
                 <p className="text-center text-sm text-red-500 mt-2">{error}</p>
               )}
+              
+              <hr className='text-[#93889d] my-7'/>
 
               <Button
                 type="submit"
@@ -152,16 +156,13 @@ export default function Login({ onLogin }: LoginProps) {
               >
                 Entrar na Plataforma
               </Button>
+              
+              <div className="text-center pt-2">
+                <Link href="/cadastro-startups" className="text-sm text-[#001f61] hover:underline font-medium">
+                  Não tem uma conta? Cadastre sua startup
+                </Link>
+              </div>
 
-              <p className="text-center text-sm text-gray-500 mt-4">
-                Esqueceu sua senha?{' '}
-                <a
-                  href="#"
-                  className="text-[#001f61] hover:underline font-medium"
-                >
-                  Recuperar acesso
-                </a>
-              </p>
             </form>
           </CardContent>
         </div>
