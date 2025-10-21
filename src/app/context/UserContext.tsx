@@ -12,6 +12,7 @@ export interface User {
   companyId?: string; // <-- ADICIONE ESTA LINHA (opcional para não quebrar outras partes)
   image_url?: string;
   access_token?: string;
+  startupId?: string; // <-- ADICIONE ESTA LINHA (opcional para não quebrar outras partes)
 }
 
 export interface Challenge {
