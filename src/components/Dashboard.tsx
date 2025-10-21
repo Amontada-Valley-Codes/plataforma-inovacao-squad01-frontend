@@ -94,11 +94,11 @@ useEffect(() => {
         setIsLoading(true);
         try {
             // Define os endpoints com base na função do usuário
-            const challengesEndpoint = user.role === 'ADMIN' 
+            const challengesEndpoint = user.role === 'ADMIN' || user.role === 'STARTUP'
                 ? '/challenges/findAllPaginated?limit=5&page=1' 
                 : `/challenges/findByCompany/${user.companyId}`;
 
-            const ideasEndpoint = user.role === 'ADMIN'
+            const ideasEndpoint = user.role === 'ADMIN' || user.role === 'STARTUP'
                 ? '/idea'
                 : `/idea/company/${user.companyId}`;
 			
@@ -179,6 +179,22 @@ useEffect(() => {
 
         } catch (error) {
             console.error("Falha ao carregar dados do dashboard:", error);
+            // Vericar se o status de erro for 403 colocar lista vazias nas poc ideias e connections
+            if (error.response?.status === 403) {
+                setDashboardData({
+                    ideasCount: 0,
+                    startupsCount: 0,
+                    connectionsCount: 0,
+                    pocsCount: 0,
+                    recentChallenges: [],
+                    pieData: [],
+                    kpiData: [],
+                    avgTime: 0,
+                    funnelData: [],
+                });
+            } else {
+                throw error;
+            }
         } finally {
             setIsLoading(false);
         }

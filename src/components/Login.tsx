@@ -152,7 +152,7 @@ export default function Login({ onLogin }: LoginProps) {
 
               <Button
                 type="submit"
-                className="w-full py-6 bg-[#001f61] text-white hover:bg-[#002a7a] transition-all duration-200 rounded-xl font-semibold"
+                className="w-full py-6 bg-[#001f61] text-white cursor-pointer hover:bg-[#002a7a] transition-all duration-200 rounded-xl font-semibold"
               >
                 Entrar na Plataforma
               </Button>

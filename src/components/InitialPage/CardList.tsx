@@ -4,7 +4,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import React from 'react';
 
 interface CardItem {
-  id: number;
+  id: string; // ALTERADO DE number PARA string
   title: string;
   venc: string;
   empresa: string;
