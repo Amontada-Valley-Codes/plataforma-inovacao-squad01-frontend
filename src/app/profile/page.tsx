@@ -82,13 +82,13 @@ export default function ProfilePage() {
       }`}
     >
       {/* Navbar */}
-      <div className="bg-[#011677] sticky top-0 z-10 shadow-md">
+      <div className={` ${theme === 'dark' ? 'bg-gray-800'  : 'bg-[#011677]'} sticky top-0 z-10 shadow-md`}>
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center gap-4">
             <Button
               variant="ghost"
               size="sm"
-              className="text-white hovers-exit-dash transition-colors duration-200"
+              className={`text-white ${theme === 'dark' ? 'hover:bg-gray-600' : ''} hovers-exit-dash transition-colors duration-200`}
               onClick={() => router.push("/dashboard")}
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
