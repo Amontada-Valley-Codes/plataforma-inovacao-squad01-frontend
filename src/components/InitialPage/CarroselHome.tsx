@@ -13,10 +13,21 @@ import {
 import { ChevronLeft, ChevronRight, Search } from "lucide-react";
 import CardList from "./CardList";
 import React from "react";
-import { cn } from "../ui/utils"; // garante compatibilidade de classes
+import api from "../../lib/api"; // Importando a instância da API
 
+// Interface para o formato dos dados recebidos da API
+interface Challenge {
+  id: string;
+  name: string;
+  description: string;
+  company: { name: string };
+  area: string;
+  images: string[];
+}
+
+// Interface para o formato esperado pelo card
 interface CardItem {
-  id: number;
+  id: string;
   title: string;
   venc: string;
   empresa: string;
@@ -25,70 +36,38 @@ interface CardItem {
 }
 
 export default function CarroselHome() {
+  const [challenges, setChallenges] = useState<CardItem[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [visibleCards, setVisibleCards] = useState(5);
   const [searchTerm, setSearchTerm] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
-  const cards: CardItem[] = [
-    {
-      id: 1,
-      title: "Desafio de Energia Sustentável",
-      venc: "Buscar soluções para reduzir o consumo energético em ambientes corporativos utilizando IoT e análise de dados.",
-      empresa: "Enel Brasil",
-      area: "Energia e Sustentabilidade",
-      img: "/img/desafio1.jpg",
-    },
-    {
-      id: 2,
-      title: "Saúde Digital Preventiva",
-      venc: "Desenvolver tecnologias para monitoramento remoto de pacientes crônicos com uso de wearables.",
-      empresa: "Hapvida NotreDame",
-      area: "Saúde e Tecnologia",
-      img: "/img/desafio2.png",
-    },
-    {
-      id: 3,
-      title: "Mobilidade Inteligente",
-      venc: "Criar soluções de transporte urbano com foco em eficiência e redução de emissão de carbono.",
-      empresa: "Volvo Cars Brasil",
-      area: "Mobilidade e Cidades Inteligentes",
-      img: "/img/desafio3.jpg",
-    },
-    {
-      id: 4,
-      title: "Agronegócio 4.0",
-      venc: "Inovações para monitoramento de solo e cultivo utilizando inteligência artificial e sensores conectados.",
-      empresa: "Ambev Agro",
-      area: "Agronegócio e Tecnologia",
-      img: "/img/desafio4.jpg",
-    },
-    {
-      id: 5,
-      title: "Inclusão Financeira",
-      venc: "Soluções digitais para ampliar o acesso a serviços financeiros em comunidades desbancarizadas.",
-      empresa: "Banco do Brasil",
-      area: "Finanças e Impacto Social",
-      img: "/img/desafio5.jpeg",
-    },
-    {
-      id: 6,
-      title: "Indústria 4.0",
-      venc: "Automatização de linhas de produção com uso de robótica colaborativa e visão computacional.",
-      empresa: "WEG",
-      area: "Indústria e Automação",
-      img: "/img/desafio6.jpg",
-    },
-    {
-      id: 7,
-      title: "Educação Personalizada",
-      venc: "Plataformas que usem IA para adaptar o aprendizado às necessidades individuais de cada aluno.",
-      empresa: "Google for Education",
-      area: "Educação e Tecnologia",
-      img: "/img/desafio7.webp",
-    },
-  ];
+  useEffect(() => {
+    const fetchPublicChallenges = async () => {
+      setIsLoading(true);
+      try {
+        const response = await api.get<Challenge[]>('/challenges/findByPublic');
+        const formattedChallenges = response.data.map(challenge => ({
+          id: challenge.id,
+          title: challenge.name,
+          venc: challenge.description,
+          empresa: challenge.company?.name || 'Empresa não informada',
+          area: challenge.area,
+          img: challenge.images?.[0] || '/img/desafio_default.png' // Usa a primeira imagem ou uma padrão
+        }));
+        setChallenges(formattedChallenges);
+      } catch (error) {
+        console.error("Erro ao buscar desafios públicos:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  const filteredCards = cards.filter(
+    fetchPublicChallenges();
+  }, []);
+
+
+  const filteredCards = challenges.filter(
     (card) =>
       card.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       card.venc.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -101,7 +80,7 @@ export default function CarroselHome() {
       if (window.innerWidth < 640) setVisibleCards(1);
       else if (window.innerWidth < 1024) setVisibleCards(2);
       else if (window.innerWidth < 1280) setVisibleCards(3);
-      else setVisibleCards(5); // 👈 agora são 5 cards em telas grandes
+      else setVisibleCards(5);
     };
     handleResize();
     window.addEventListener("resize", handleResize);
@@ -125,6 +104,14 @@ export default function CarroselHome() {
   }, [searchTerm]);
 
   const showNavigation = filteredCards.length > visibleCards;
+  
+  if (isLoading) {
+    return (
+        <section className="relative bg-gradient-to-b from-[#011677] to-[#00134d] py-6 px-8 text-white text-center">
+            <h2 className="md:text-3xl font-bold text-2xl">Carregando Desafios...</h2>
+        </section>
+    );
+  }
 
   return (
     <section className="relative bg-gradient-to-b from-[#011677] to-[#00134d] py-6 px-8">

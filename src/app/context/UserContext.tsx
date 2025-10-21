@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-export type UserRole = 'COMUM' | 'AVALIADOR' | 'GESTOR' | 'ADMIN';
+export type UserRole = 'COMUM' | 'AVALIADOR' | 'GESTOR' | 'ADMIN'| 'STARTUP';
 
 export interface User {
   id: string;

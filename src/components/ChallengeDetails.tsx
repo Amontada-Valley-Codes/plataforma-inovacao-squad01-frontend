@@ -308,7 +308,7 @@ export function ChallengeDetails({ user, challenge, onNavigate }: ChallengeDetai
                         <TabsList className={`bg-white border-b ${theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'border-gray-200'}`}>
                             <TabsTrigger className={`py-4 px-6 text-sm font-medium ${theme === 'dark' ? 'text-gray-200 hover:bg-gray-700' : 'text-gray-800 hover:bg-gray-100'}`} value="submissions">Submissões ({submissions.length})</TabsTrigger>
                             <TabsTrigger className={`py-4 px-6 text-sm font-medium ${theme === 'dark' ? 'text-gray-200 hover:bg-gray-700' : 'text-gray-800 hover:bg-gray-100'}`} value="startups">Startups Recomendadas ({recommendedStartups.length})</TabsTrigger>
-                            <TabsTrigger className={`py-4 px-6 text-sm font-medium ${theme === 'dark' ? 'text-gray-200 hover:bg-gray-700' : 'text-gray-800 hover:bg-gray-100'}`} value="discussion">Discussão Interna ({comments.length})</TabsTrigger>
+                            <TabsTrigger className={`py-4 px-6 text-sm font-medium ${theme === 'dark' ? 'text-gray-200 hover:bg-gray-700' : 'text-gray-800 hover:bg-gray-100'}`} value="discussion">{challenge.type === 'PUBLICO' ? 'Discussão' : 'Discussão Interna'}({comments.length})</TabsTrigger>
                         </TabsList>
 
                         {/* Tab de Submissões de Ideias */}
@@ -394,7 +394,8 @@ export function ChallengeDetails({ user, challenge, onNavigate }: ChallengeDetai
                         {/* Tab de Discussão */}
                         <TabsContent value="discussion">
                             <Card className={`bg-white mt-4 ${theme === 'dark' ? 'bg-gray-800 text-white' : ''}`}>
-                                <CardHeader><CardTitle>Discussão Interna</CardTitle></CardHeader>
+
+                                <CardHeader><CardTitle>{challenge.type === 'PUBLICO' ? 'Discussão' : 'Discussão Interna'}</CardTitle></CardHeader>
                                 <CardContent className="space-y-6">
                                     <div className="flex items-start gap-4">
                                         <Avatar className={theme === 'dark' ? 'bg-gray-700' : ''}><AvatarFallback>{user.name.charAt(0)}</AvatarFallback></Avatar>

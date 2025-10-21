@@ -32,7 +32,7 @@ export default function Contact() {
     setErrorMessage('');
 
     const { name, email, empresa, phone, message } = formData;
-    const emailTarget = 'josenilsonsousa366@gmail.com';
+    const emailTarget = 'ninnahub@gmail.com'; // <-- E-MAIL ALTERADO AQUI
 
     const body = `
 Olá, meu nome é ${name}.
@@ -55,11 +55,11 @@ ${name}
 
     try {
       window.location.href = mailtoLink;
-      setSuccessMessage('Mensagem enviada com sucesso!');
+      setSuccessMessage('Seu cliente de e-mail será aberto para enviar a mensagem!');
       setFormData({ name: '', email: '', empresa: '', phone: '', message: '' });
     } catch (error) {
       setErrorMessage(
-        'Ocorreu um erro ao tentar enviar a mensagem.' + error
+        'Ocorreu um erro ao tentar abrir seu cliente de e-mail.'
       );
     } finally {
       setIsSubmitting(false);
