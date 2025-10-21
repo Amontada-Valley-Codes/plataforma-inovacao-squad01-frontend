@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useUser } from "../context/UserContext";
-import { Login } from "../../components/Login";
+import Login from "../../components/Login";
 
 export default function LoginPage() {
   const { setUser } = useUser();

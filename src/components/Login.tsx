@@ -1,165 +1,167 @@
+'use client';
+
 import React, { useState } from 'react';
-import { CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
+import { CardContent, CardHeader } from './ui/card';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { User, UserRole } from '../app/context/UserContext';
 import Image from 'next/image';
 import api from '../lib/api';
+import { User, UserRole } from '../app/context/UserContext';
 
 interface LoginProps {
   onLogin: (user: User) => void;
 }
 
-export function Login({ onLogin }: LoginProps) {
+export default function Login({ onLogin }: LoginProps) {
   const [email, setEmail] = useState('');
   const [role, setRole] = useState<UserRole>('GESTOR');
   const [company, setCompany] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
 
-  const quickLogin = (userRole: UserRole, userName: string, userCompany: string) => {
-    const mockUser: User = {
-      id: Date.now().toString(),
-      name: userName,
-      email: `${userName.toLowerCase()}@${userCompany.toLowerCase().replace(/\s+/g, '')}.com`,
-      role: userRole,
-      company: userCompany
-    };
-    onLogin(mockUser);
-  };
-
-const handleSubmit = async (e: React.FormEvent) => {
+  // 🔹 Login real com API
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
     try {
-        const response = await api.post('/auth/login', {
-            email: email,
-            password: password,
-        });
+      const response = await api.post('/auth/login', {
+        email,
+        password,
+      });
 
-        // 1. Verificar se a resposta contém o token E os dados do usuário
-        if (response.data.access_token && response.data.user) {
+      if (response.data.access_token && response.data.user) {
+        const loggedInUser: User = {
+          ...response.data.user,
+          access_token: response.data.access_token,
+        };
 
-            // 2. Criar o objeto final do usuário, combinando o token e os dados recebidos
-            const loggedInUser: User = {
-                ...response.data.user, // Todos os dados do usuário vindos do backend
-                access_token: response.data.access_token, // Adiciona o token ao objeto
-            };
-
-            // 3. Chamar a função onLogin com o objeto de usuário completo
-            console.log('Usuário logado:', loggedInUser);
-            onLogin(loggedInUser);
-
-        } else {
-            setError('Resposta inválida do servidor.');
-        }
+        console.log('Usuário logado:', loggedInUser);
+        onLogin(loggedInUser);
+      } else {
+        setError('Resposta inválida do servidor.');
+      }
     } catch (err: any) {
-        console.error('Falha no login:', err);
-        if (err.response && err.response.data) {
-            setError(err.response.data.message || 'Credenciais inválidas.');
-        } else {
-            setError('Não foi possível conectar ao servidor.');
-        }
+      console.error('Falha no login:', err);
+      if (err.response && err.response.data) {
+        setError(err.response.data.message || 'Credenciais inválidas.');
+      } else {
+        setError('Não foi possível conectar ao servidor.');
+      }
     }
-};
-
+  };
 
   return (
-    <div className="h-screen flex flex-col w-auto md:flex-row items-center justify-center bg-[url(/img/fundo-login.jpg)] bg-center bg-cover ">
-      <div className='absolute top-0 bottom-0 left-0 right-0 bg-[#011677]/40 '></div>
-      <div className="w-full space-y-6 flex justify-between z-10">
-        <div className="md:text- justify-center flex-col md:ml-24 hidden md:flex">
-          <div className="mx-auto w-12 h-12 bg-primary rounded-xl flex items-center justify-center mb-4">
+    <div className="relative flex flex-col md:flex-row min-h-screen items-center justify-center bg-gradient-to-br from-[#001f61] to-[#003285] text-white">
+      {/* 🔹 Imagem de fundo geral */}
+      <div className="absolute inset-0">
+        <Image
+          src="/img/fundo-login.jpg"
+          alt="Fundo login"
+          fill
+          priority
+          className="object-cover opacity-30"
+        />
+      </div>
+
+      {/* 🔹 Container principal */}
+      <div className="relative z-10 flex flex-col md:flex-row w-full max-w-6xl rounded-2xl shadow-2xl overflow-hidden backdrop-blur-sm">
+        
+        {/* 🔹 Seção esquerda com imagem translúcida (a mesma do fundo) */}
+        <div className="hidden md:flex relative flex-col justify-center items-start w-1/2 p-12 text-white overflow-hidden">
+          {/* Mesma imagem usada no fundo */}
+          <Image
+            src="/img/fundo-login.jpg"
+            alt="Imagem decorativa lateral"
+            fill
+            className="object-cover opacity-20"
+          />
+
+          {/* Sobreposição escura para contraste e legibilidade */}
+          <div className="absolute inset-0 bg-[#001f61]/70 backdrop-blur-sm" />
+
+          {/* Conteúdo sobre a imagem */}
+          <div className="relative z-10">
+            <h1 className="text-5xl font-bold mb-4 leading-tight drop-shadow-md">
+              Plataforma de Inovação Aberta
+            </h1>
+            <p className="text-gray-200 text-lg max-w-md">
+              Conectando corporações e startups para acelerar a inovação e impulsionar ideias de impacto.
+            </p>
           </div>
-          <h1 className="text-6xl  w-1/2 font-bold text-white">Plataforma de Inovação Aberta</h1>
-          <p className="text-white mt-4">Conectando corporações e startups para acelerar a inovação</p>
         </div>
 
-        <div className='h-screen md:w-1/3 w-full pt-10 flex space-y-2.5 md:px-4 flex-col justify-center  bg-[#011677] text-white shadow'>
-          <CardHeader>
-            <div className='flex justify-center'>
+        {/* 🔹 Seção direita - Formulário de Login */}
+        <div className="flex-1 bg-white text-gray-800 flex flex-col justify-center px-10 py-12 md:py-16">
+          <CardHeader className="text-center mb-6">
+            <div className="flex justify-center">
               <Image
-              width={100}
-              height={10}
-              quality={100}
-              priority
-              src='/img/logo1.svg'
-              alt="logo co.inova"
-              className='w-[250px] pb-10 object-contain'
+                width={200}
+                height={60}
+                quality={100}
+                priority
+                src="/img/logo2.png"
+                alt="Logo co.inova"
+                className="object-contain mb-4"
               />
             </div>
+            <h2 className="text-2xl font-semibold text-[#001f61]">
+              Acesse sua conta
+            </h2>
+            <p className="text-gray-500 text-sm mt-1">
+              Entre com seu e-mail e senha para continuar
+            </p>
           </CardHeader>
-          <CardContent className='mb-20'>
-            <form onSubmit={handleSubmit} className="space-y-4">
+
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
                 <Label htmlFor="email">E-mail</Label>
                 <Input
-                  className='bg-white border-none py-6 text-gray-700 focus:ring-blue-900'
-                  id="email"  
+                  id="email"
                   type="email"
                   placeholder="seu@email.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
+                  className="py-6 bg-gray-100 focus:ring-2 focus:ring-[#001f61] border-none text-gray-800"
                 />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="password">Senha</Label>
                 <Input
-                  className='bg-white border-none py-6 text-gray-700 focus:ring-blue-900'
-                id="password"
+                  id="password"
                   type="password"
                   placeholder="********"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
+                  className="py-6 bg-gray-100 focus:ring-2 focus:ring-[#001f61] border-none text-gray-800"
                 />
               </div>
 
-              {error && <p className="text-red-500 text-sm">{error}</p>}
-              
-              {/* <div className="space-y-2">
-                <Label htmlFor="company">Empresa</Label>
-                <Input
-                  className='bg-white border-none py-6 text-gray-700 focus:ring-blue-900'
-                  id="company"
-                  placeholder="Nome da sua empresa"
-                  value={company}
-                  onChange={(e) => setCompany(e.target.value)}
-                />
-              </div>
+              {error && (
+                <p className="text-center text-sm text-red-500 mt-2">{error}</p>
+              )}
 
-              <div className="space-y-2">
-                <Label htmlFor="role">Nível de Acesso</Label>
-                <Select value={role} onValueChange={(value: UserRole) => setRole(value)}>
-                  <SelectTrigger className='bg-white border-none text-[#686a6e] py-6'>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className='bg-gray-300 text-[#686a6e] border-none'>
-                    <SelectItem value="comum">Usuário Comum - Submete ideias</SelectItem>
-                    <SelectItem value="avaliador">Avaliador - Analisa ideias</SelectItem>
-                    <SelectItem value="gestor">Gestor de Inovação - Visão completa</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div> */}
-              <hr className='text-[#93889d] my-7'/>
-
-              {/* <Button 
-                variant="outline" 
-                className="w-full justify-center cursor-pointer py-4 hover:bg-white hover:text-[#011677] text-white"
-                onClick={() => quickLogin('admin', 'Admin', 'Ninna Hub')}
+              <Button
+                type="submit"
+                className="w-full py-6 bg-[#001f61] text-white hover:bg-[#002a7a] transition-all duration-200 rounded-xl font-semibold"
               >
-                ⚙️ Admin - Super Usuário (Hub)
-              </Button> */}
-
-              <Button type="submit" className="w-full bg-white text-[#011677] hover:bg-[#011677] hover:border-white hover:border   hover:text-white cursor-pointer py-6">
                 Entrar na Plataforma
               </Button>
-              
+
+              <p className="text-center text-sm text-gray-500 mt-4">
+                Esqueceu sua senha?{' '}
+                <a
+                  href="#"
+                  className="text-[#001f61] hover:underline font-medium"
+                >
+                  Recuperar acesso
+                </a>
+              </p>
             </form>
           </CardContent>
         </div>
