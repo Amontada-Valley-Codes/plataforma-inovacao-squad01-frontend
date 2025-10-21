@@ -15,7 +15,7 @@ import CardList from "./CardList";
 import React from "react";
 import api from "../../lib/api"; // Importando a instância da API
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination } from "swiper";
+import { Navigation, Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination"; 
@@ -51,6 +51,7 @@ export default function CarroselHome() {
       setIsLoading(true);
       try {
         const response = await api.get<Challenge[]>('/challenges/findByPublic');
+        console.log("Desafios públicos recebidos:", response);
         const formattedChallenges = response.data.map(challenge => ({
           id: challenge.id,
           title: challenge.name,

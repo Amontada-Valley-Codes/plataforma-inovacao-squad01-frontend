@@ -1,8 +1,8 @@
-// /plat_inovacao/src/components/Collaborators.tsx
+// /plat_inovacao/src/components/Dashboard.tsx
 
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
     Card,
     CardContent,
@@ -11,312 +11,354 @@ import {
     CardTitle,
 } from "./ui/card";
 import { Button } from "./ui/button";
-import { UserPlus, Users, Loader2, CheckCircle } from "lucide-react";
+import { Badge } from "./ui/badge";
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "./ui/table";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+    XAxis,
+    YAxis,
+    CartesianGrid,
+    Tooltip,
+    ResponsiveContainer,
+    PieChart,
+    Pie,
+    Cell,
+    LineChart,
+    Line,
+} from "recharts";
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "./ui/select";
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-    DialogClose
-} from "./ui/dialog";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
-import { User, UserRole } from "../app/context/UserContext";
+    Lightbulb,
+    Rocket,
+    Users,
+    Clock,
+    Plus,
+    LogOut,
+    Target,
+    User as UserIcon,
+} from "lucide-react";
+import { User, Challenge, Startup } from "../app/context/UserContext";
 import { Sidebar } from "./SideBar";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import api from "../lib/api";
+import Loading from "../app/loading";
 
-interface CollaboratorsProps {
+interface DashboardProps {
     user: User;
+    onLogout: () => void;
 }
 
-// Tipo para o estado do convite, vindo da 'main'
-type InviteStatus = 'idle' | 'loading' | 'success' | 'error';
+// Interface para os dados agregados do dashboard (da sua branch HEAD)
+interface DashboardData {
+    ideasCount: number;
+    connectionsCount: number;
+    pocsCount: number;
+    avgTime: number;
+    funnelData: { stage: string; count: number; color: string }[];
+    kpiData: { name: string; ideas: number }[];
+    pieData: { name: string; value: number; color: string }[];
+    recentChallenges: Challenge[];
+    startupsCount: number;
+}
 
-export function Collaborators({ user }: CollaboratorsProps) {
-    const router = useRouter();
+export function Dashboard({ user, onLogout }: DashboardProps) {
+    // Estados da 'main' para UI
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const menuRef = useRef<HTMLDivElement>(null);
     const [theme, setTheme] = useState<string>(typeof window !== 'undefined' ? (sessionStorage.getItem('theme') || 'light') : 'light');
+    const router = useRouter();
 
-    // Estados da sua branch (HEAD)
-    const [collaborators, setCollaborators] = useState<User[]>([]);
-    const [isLoading, setIsLoading] = useState(true); // Para o carregamento da tabela
-    const [companies, setCompanies] = useState<{ id: string; name: string }[]>([]);
-    const [selectedCompanyId, setSelectedCompanyId] = useState<string>('');
+    // Estados da sua branch HEAD para dados
+    const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
 
-    // Estados do formulário (mistura de ambos)
-    const [inviteEmail, setInviteEmail] = useState('');
-    const [inviteRole, setInviteRole] = useState<UserRole>('COMUM');
-    const [formError, setFormError] = useState('');
+    // Mapeamentos de dados da sua branch HEAD
+    const stageLabels: { [key: string]: string } = {
+        GERACAO: "Geração/Captura",
+        PRE_TRIAGEM: "Pré-Triagem",
+        IDEACAO: "Ideação",
+        TRIAGEM_DETALHADA: "Triagem Detalhada",
+        EXPERIMENTACAO: "Experimentação (POC)",
+    };
+    const funnelColors = {
+        "Geração/Captura": "#3B82F6",
+        "Pré-Triagem": "#8B5CF6",
+        "Ideação": "#06B6D4",
+        "Triagem Detalhada": "#10B981",
+        "Experimentação (POC)": "#F59E0B",
+    };
 
-    // Novos estados de UI da 'main'
-    const [inviteStatus, setInviteStatus] = useState<InviteStatus>('idle');
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    // useEffect combinado para buscar dados e gerir o menu dropdown
+    // /plat_inovacao/src/components/Dashboard.tsx
 
-    // Lógica de busca de dados da sua branch (HEAD)
-    useEffect(() => {
-        const fetchCollaborators = async () => {
-            if (!user.companyId) {
-                setIsLoading(false);
-                return;
-            };
-            setIsLoading(true);
-            try {
-                const response = await api.get(`/user/${user.companyId}`);
-                setCollaborators(response.data);
-            } catch (error: any) {
-                if (error.response && error.response.status === 404) {
-                    setCollaborators([]);
-                } else {
-                    console.error("Falha ao buscar colaboradores:", error);
-                }
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        const fetchCompanies = async () => {
-            if (user.role === 'ADMIN') {
-                try {
-                    const response = await api.get('/companies/list');
-                    setCompanies(response.data);
-                } catch (error) {
-                    console.error("Falha ao buscar empresas:", error);
-                }
-            }
-        };
-        
-        fetchCollaborators();
-        fetchCompanies();
-    }, [user.companyId, user.role]);
-
-    // Função de submit combinada: Lógica da sua branch com os estados de UI da 'main'
-    const handleInviteSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setFormError('');
-        setInviteStatus('loading');
-
-        if (!inviteEmail || !inviteRole) {
-            setFormError('Por favor, preencha todos os campos.');
-            setInviteStatus('error');
-            return;
-        }
-
+useEffect(() => {
+    const fetchData = async () => {
+        setIsLoading(true);
         try {
-            const roleForBackend = inviteRole.toUpperCase();
-            const payload: { email: string; role: string; companyId?: string } = {
-                email: inviteEmail,
-                role: roleForBackend,
-            };
+            // Define os endpoints com base na função do usuário
+            const challengesEndpoint = user.role === 'ADMIN' || user.role === 'STARTUP'
+                ? '/challenges/findByPublic' 
+                : `/challenges/findByCompany/${user.companyId}`;
 
-            if (user.role === 'ADMIN') {
-                if (!selectedCompanyId) {
-                    setFormError('Admin deve selecionar uma empresa.');
-                    setInviteStatus('error');
-                    return;
-                }
-                payload.companyId = selectedCompanyId;
+            const ideasEndpoint = user.role === 'ADMIN' || user.role === 'STARTUP'
+                ? '/idea'
+                : `/idea/company/${user.companyId}`;
+			
+			const startupsEndpoint = '/startups'; 
+
+
+            // Para o admin, alguns endpoints podem não ser necessários ou podem ser diferentes
+            const connectionsEndpoint = user.role === 'ADMIN' ? '/companies/list' : '/connections';
+            const pocsEndpoint = user.role === 'ADMIN' ? null : '/poc'; // Admin não vê POCs por enquanto
+
+            // Monta as chamadas da API
+            const apiCalls = [
+                api.get(ideasEndpoint),
+                api.get(startupsEndpoint), // Supondo que startups são sempre globais
+                api.get(challengesEndpoint),
+                api.get(connectionsEndpoint),
+            ];
+
+            if (pocsEndpoint) {
+                apiCalls.push(api.get(pocsEndpoint));
             }
-			console.log('Payload do convite:', payload);
-            await api.post('/invitations', payload);
-            setInviteStatus('success');
 
-            // Fecha o modal e reseta o estado após o sucesso
-            setTimeout(() => {
-                setIsDialogOpen(false);
-            }, 2000);
+            const [ideasRes, startupsRes, challengesRes, connectionsRes, pocsRes] = await Promise.all(apiCalls);
 
-        } catch (err: any) {
-            console.error('Falha ao enviar convite:', err);
-            setFormError(err.response?.data?.message || 'Ocorreu um erro.');
-            setInviteStatus('error');
+			console.log('Dados recebidos:', { ideasRes, startupsRes, challengesRes, connectionsRes, pocsRes });
+
+            // --- Processamento dos dados ---
+
+            // O resto da sua lógica de processamento continua igual,
+            // mas agora ela receberá os dados corretos para cada tipo de usuário.
+
+            const ideasCount = ideasRes.data.length;
+            const startupsCount = startupsRes.data.length;
+            const challengesCount = challengesRes.data.length;
+            // Para o admin, 'connections' são as empresas; para outros, são as conexões reais
+            const connectionsCount = connectionsRes.data.length; 
+
+
+            // pocsRes pode não existir para o admin
+            const pocsCount = pocsRes ? pocsRes.data.length : 0; 
+
+            const funnelCounts = ideasRes.data.reduce((acc: any, idea: any) => {
+                    const stageName = stageLabels[idea.stage] || 'Outro';
+                    acc[stageName] = (acc[stageName] || 0) + 1;
+                    return acc;
+                }, {});
+                const funnelData = Object.entries(funnelCounts).map(([stage, count]) => ({
+                    stage,
+                    count: count as number,
+                    color: funnelColors[stage as keyof typeof funnelColors] || '#ccc'
+                }));
+
+                const segmentCounts = startupsRes.data.reduce((acc: any, startup: any) => {
+                    acc[startup.segment] = (acc[startup.segment] || 0) + 1;
+                    return acc;
+                }, {});
+                const pieData = Object.entries(segmentCounts).map(([name, value], index) => ({
+                    name,
+                    value: value as number,
+                    color: ['#3B82F6', '#10B981', '#F59E0B', '#8B5CF6'][index % 4]
+                }));
+
+            setDashboardData({
+                ideasCount,
+                startupsCount,
+                connectionsCount,
+                pocsCount,
+                recentChallenges: challengesRes.data.data || challengesRes.data, 
+                pieData,
+                kpiData: [
+                    { name: "Jan", ideas: 10 }, { name: "Fev", ideas: 20 },
+                    { name: "Mar", ideas: 15 }, { name: "Abr", ideas: 25 },
+                    { name: "Mai", ideas: ideasCount },
+                ],
+                avgTime: 0, 
+                funnelData,
+            });
+
+        } catch (error) {
+            console.error("Falha ao carregar dados do dashboard:", error);
+            // Vericar se o status de erro for 403 colocar lista vazias nas poc ideias e connections
+            if (error.response?.status === 403) {
+                setDashboardData({
+                    ideasCount: 0,
+                    startupsCount: 0,
+                    connectionsCount: 0,
+                    pocsCount: 0,
+                    recentChallenges: [],
+                    pieData: [],
+                    kpiData: [],
+                    avgTime: 0,
+                    funnelData: [],
+                });
+            } else {
+                throw error;
+            }
+        } finally {
+            setIsLoading(false);
         }
     };
 
-    // Função de controlo do Dialog da 'main'
-    const handleDialogChange = (open: boolean) => {
-        setIsDialogOpen(open);
-        if (!open) {
-            // Reseta o formulário ao fechar
-            setInviteStatus('idle');
-            setFormError('');
-            setInviteEmail('');
-            setInviteRole('COMUM');
-            setSelectedCompanyId('');
-        }
+    // Adiciona uma verificação para não executar se não houver usuário
+    if (user) {
+        fetchData();
+    } else {
+        setIsLoading(false);
+    }
+
+}, [user]); // Depende do objeto user inteiro
+
+    // Handlers combinados de ambas as branches
+    const handleChallengeClick = (challenge: Challenge) => {
+        sessionStorage.setItem("selectedChallenge", JSON.stringify(challenge));
+        router.push(`/funnel/${challenge.id}`);
+    };
+    const handleThemeChange = (newTheme: string) => {
+        sessionStorage.setItem('theme', newTheme);
+        setTheme(newTheme);
     };
 
-    const getRoleLabel = (role: UserRole) => {
-        const labels: { [key: string]: string } = {
-            COMUM: "Usuário Comum",
-            AVALIADOR: "Avaliador",
-            GESTOR: "Gestor de Inovação",
-        };
-        return labels[role] || role;
-      };
+    if (isLoading || !dashboardData) {
+        return <Loading />;
+    }
 
     return (
-        <div className={`min-h-screen bg-gray-50 flex ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'}`}>
+        <div className={`flex h-screen bg-background text-white ${theme === 'dark' ? 'bg-gray-900 text-white' : ''}`}>
             <Sidebar theme={theme} user={user} />
 
-            <div className="flex-1">
-                {/* Header com o estilo da 'main' */}
-                <div className={`bg-[#001f61] sticky top-0 z-10 shadow-md ${theme === 'dark' ? 'bg-gray-800' : ''}`}>
-                    <div className="container mx-auto px-6 py-4">
+            <div className={`flex-1 overflow-y-auto bg-gray-50 text-gray-900 ${theme === 'dark' ? 'bg-gray-900 text-white' : ''}`}>
+                <div className="p-6 md:p-8 space-y-8">
+                    {/* Header do Dashboard da 'main', com menu de perfil e tema */}
+                    <div className="flex items-center justify-between">
+                        <div className="flex flex-col">
+                            <h1 className={`font-extrabold text-3xl text-[#011677] mb-1 ${theme === 'dark' ? 'text-white' : ''}`}>Dashboard</h1>
+                            <p className={`text-gray-500 text-base ${theme === 'dark' ? 'text-gray-200' : ''}`}>
+                                Visão geral dos indicadores e atividades de <span className="uppercase">{user.company}</span>
+                            </p>
+                        </div>
+
                         <div className="flex items-center gap-4">
-                            <div className="flex items-center gap-2">
-                                <Users className="w-5 h-5 text-white" />
-                                <h1 className="text-lg font-bold text-white tracking-wide">
-                                    Gestão de Colaboradores
-                                </h1>
+                            <button
+                                className={`w-14 cursor-pointer h-10 flex items-center justify-center rounded-full bg-gray-200 text-gray-800 hover:bg-gray-300 transition-colors shadow-md ${theme === 'dark' ? 'bg-gray-700 text-white hover:bg-gray-600' : ''}`}
+                                onClick={() => handleThemeChange(theme === 'light' ? 'dark' : 'light')}
+                                aria-label="Mudar tema"
+                            >
+                                {theme === 'light' ? (
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="5" stroke="currentColor" strokeWidth="2" fill="currentColor" /><path stroke="currentColor" strokeWidth="2" d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" /></svg>
+                                ) : (
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke="currentColor" strokeWidth="2" d="M21 12.79A9 9 0 1111.21 3a7 7 0 109.79 9.79z" fill="currentColor" /></svg>
+                                )}
+                            </button>
+
+                            <div className="relative" ref={menuRef}>
+                                <div
+                                    className="w-10 h-10 bg-[#011677] rounded-full flex items-center justify-center cursor-pointer shadow-md hover:ring-2 ring-offset-2 ring-[#011677] transition-all"
+                                    onClick={() => setIsMenuOpen(!isMenuOpen)}
+                                >
+                                    {user.image_url ? (
+                                        <Image src={user.image_url} alt="Perfil" width={40} height={40} className="rounded-full object-cover" />
+                                    ) : (
+                                        <span className="text-lg font-bold text-white">{user.name[0].toUpperCase()}</span>
+                                    )}
+                                </div>
+                                {isMenuOpen && (
+                                    <Card className={`absolute right-0 mt-3 w-72 rounded-xl shadow-2xl z-20 bg-white p-0 overflow-hidden ${theme === 'dark' ? 'bg-gray-900' : ''}`}>
+                                        <div className="bg-[#011677]/95 p-4 text-center "><p className="text-base font-semibold text-white">{user.name}</p><p className="text-sm text-gray-200 truncate">{user.email}</p></div>
+                                        <CardContent className={`p-2 space-y-1 ${theme === 'dark' ? 'bg-gray-900' : ''}`}>
+                                            <div className={`flex items-center p-3 rounded-lg cursor-pointer transition-colors ${theme === 'dark' ? 'text-gray-200 hover:bg-gray-800' : 'text-gray-700 hover:bg-gray-100'}`} onClick={() => { router.push("/profile"); setIsMenuOpen(false); }}>
+                                                <UserIcon className={`mr-3 h-4 w-4 ${theme === 'dark' ? 'text-gray-200' : 'text-[#011677]'}`} />
+                                                <span className="text-sm font-medium">Ver Perfil</span>
+                                            </div>
+                                            <hr className={`my-1 ${theme === 'dark' ? 'border-gray-700' : 'border-gray-100'}`} />
+                                            <div className={`flex items-center p-3 rounded-lg cursor-pointer transition-colors ${theme === 'dark' ? 'text-red-400 hover:bg-gray-800' : 'text-red-600 hover:bg-red-50'}`} onClick={onLogout}>
+                                                <LogOut className={`mr-3 h-4 w-4 ${theme === 'dark' ? 'text-red-400' : 'text-red-600'}`} />
+                                                <span className="text-sm font-semibold">Sair da Plataforma</span>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                )}
                             </div>
                         </div>
                     </div>
-                </div>
 
-                {/* Content com o estilo da 'main' */}
-                <div className="container mx-auto px-6 py-8">
-                    <Card className={`bg-white border-0 rounded-xl shadow-lg ${theme === 'dark' ? 'bg-gray-800 border-gray-700' : ''}`}>
-                        <CardHeader className="flex flex-row items-center justify-between">
-                            <div>
-                                <CardTitle className={`text-2xl font-extrabold ${theme === 'dark' ? 'text-gray-200' : 'text-gray-900'}`}>
-                                    Equipa e Acessos
-                                </CardTitle>
-                                <CardDescription className={`text-md text-gray-500 mt-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                                    Gerencie os acessos e permissões da sua equipa na plataforma.
-                                </CardDescription>
-                            </div>
-                            <Dialog open={isDialogOpen} onOpenChange={handleDialogChange}>
-                                <DialogTrigger asChild>
-                                    <Button
-                                        className={`cursor-pointer bg-[#001f61] text-white hover:bg-[#002a7a] transition-all duration-300 transform hover:scale-[1.02] font-semibold ${theme === 'dark' ? 'bg-gray-700 hover:bg-gray-600' : ''}`}
-                                        onClick={() => setIsDialogOpen(true)}
-                                    >
-                                        <UserPlus className="w-4 h-4 mr-2" />
-                                        Convidar Colaborador
-                                    </Button>
-                                </DialogTrigger>
-
-                                <DialogContent className={`bg-white p-6 rounded-xl shadow-2xl max-w-lg ${theme === 'dark' ? 'bg-gray-800' : ''}`}>
-                                    <DialogHeader>
-                                        <DialogTitle className={`text-2xl font-extrabold text-center text-[#001f61] ${theme === 'dark' ? 'text-gray-200' : ''}`}>
-                                            Adicionar Novo Colaborador
-                                        </DialogTitle>
-                                        <DialogDescription className={`text-gray-500 text-center mt-2 ${theme === 'dark' ? 'text-gray-400' : ''}`}>
-                                            Preencha os dados e envie o convite com o nível de acesso apropriado.
-                                        </DialogDescription>
-                                    </DialogHeader>
-
-                                    <form onSubmit={handleInviteSubmit} className="space-y-6 py-4">
-                                        {user.role === "ADMIN" && (
-                                            <div className="space-y-2">
-                                                <Label htmlFor="company" className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Empresa</Label>
-                                                <Select value={selectedCompanyId} onValueChange={setSelectedCompanyId} required>
-                                                    <SelectTrigger className={`focus:ring-[#001f61]/30 ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-gray-200' : 'border-gray-300'}`}>
-                                                        <SelectValue placeholder="Selecione a empresa" />
-                                                    </SelectTrigger>
-                                                    <SelectContent className={`${theme === 'dark' ? 'bg-gray-700 border-gray-600' : ''}`}>
-                                                        {companies.map((company) => (
-                                                            <SelectItem key={company.id} value={company.id} className={`cursor-pointer ${theme === 'dark' ? 'text-gray-200 hover:bg-gray-600' : 'hover:bg-gray-100'}`}>{company.name}</SelectItem>
-                                                        ))}
-                                                    </SelectContent>
-                                                </Select>
-                                            </div>
-                                        )}
-                                        <div className="space-y-2">
-                                            <Label htmlFor="email" className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>E-mail</Label>
-                                            <Input id="email" type="email" placeholder="email@empresa.com" required value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} className={`focus:ring-2 focus:ring-[#001f61]/30 focus:border-[#001f61] transition-colors ${theme === 'dark' ? 'bg-gray-700 text-gray-200 border-gray-600' : 'border-gray-300'}`} />
+                    {/* KPI Cards populados com dados da API e estilizados pela 'main' */}
+                    {user.role === "GESTOR" && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            <Card className={`shadow-lg hover:shadow-xl transition-shadow duration-300 ${theme === 'dark' ? 'bg-gray-800 text-white' : ''}`}>
+                                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><CardTitle className={`text-sm font-medium text-gray-500 ${theme === 'dark' ? 'text-gray-200' : ''}`}>Ideias Submetidas</CardTitle><Lightbulb className={`h-4 w-4 text-[#011677] ${theme === 'dark' ? 'text-gray-200' : ''}`} /></CardHeader>
+                                <CardContent><div className={`text-3xl font-bold ${theme === 'dark' ? 'text-gray-200' : 'text-gray-900'}`}>{dashboardData.ideasCount}</div><p className="text-xs text-green-600 mt-1">+12% em relação ao mês anterior</p></CardContent>
+                            </Card>
+                            <Card className={`shadow-lg hover:shadow-xl transition-shadow duration-300 ${theme === 'dark' ? 'bg-gray-800 text-white' : ''}`}>
+                                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><CardTitle className={`text-sm font-medium text-gray-500 ${theme === 'dark' ? 'text-gray-200' : ''}`}>Startups Conectadas</CardTitle><Users className="h-4 w-4 text-[#06B6D4]" /></CardHeader>
+                                <CardContent><div className={`text-3xl font-bold ${theme === 'dark' ? 'text-gray-200' : 'text-gray-900'}`}>{dashboardData.startupsCount}</div><p className="text-xs text-green-600 mt-1">+8% em relação ao mês anterior</p></CardContent>
+                            </Card>
+                            <Card className={`shadow-lg hover:shadow-xl transition-shadow duration-300 ${theme === 'dark' ? 'bg-gray-800 text-white' : ''}`}>
+                                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><CardTitle className={`text-sm font-medium text-gray-500 ${theme === 'dark' ? 'text-gray-200' : ''}`}>POCs Realizadas</CardTitle><Rocket className="h-4 w-4 text-[#F59E0B]" /></CardHeader>
+                                <CardContent><div className={`text-3xl font-bold ${theme === 'dark' ? 'text-gray-200' : 'text-gray-900'}`}>{dashboardData.pocsCount}</div><p className="text-xs text-green-600 mt-1">+25% em relação ao mês anterior</p></CardContent>
+                            </Card>
+                            <Card className={`shadow-lg hover:shadow-xl transition-shadow duration-300 ${theme === 'dark' ? 'bg-gray-800 text-white' : ''}`}>
+                                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><CardTitle className={`text-sm font-medium text-gray-500 ${theme === 'dark' ? 'text-gray-200' : ''}`}>Tempo Médio por Etapa</CardTitle><Clock className="h-4 w-4 text-red-500" /></CardHeader>
+                                <CardContent><div className={`text-3xl font-bold ${theme === 'dark' ? 'text-gray-200' : 'text-gray-900'}`}>{dashboardData.avgTime} dias</div><p className="text-xs text-red-600 mt-1">-15% em relação ao mês anterior</p></CardContent>
+                            </Card>
+                        </div>
+                    )}
+                    
+                    {/* Restante do JSX combinado, usando dashboardData e estilos da 'main' */}
+                    {(user.role === "AVALIADOR" || user.role === "GESTOR") && (
+                        <Card className={`lg:col-span-2 shadow-lg ${theme === 'dark' ? 'bg-gray-800 text-white' : ''}`}>
+                            <CardHeader><CardTitle className="text-xl font-bold">Funil de Inovação</CardTitle><CardDescription>Distribuição de projetos por etapa do processo de inovação.</CardDescription></CardHeader>
+                            <CardContent className="pt-2">
+                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+                                    {dashboardData.funnelData.map((stage) => (
+                                        <div key={stage.stage} className="text-center">
+                                            <div className="h-20 rounded-xl mb-2 flex flex-col items-center justify-center text-white font-bold text-2xl transition-all duration-300 hover:scale-[1.03]" style={{ backgroundColor: stage.color }}>{stage.count}</div>
+                                            <h4 className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-200' : 'text-gray-700'}`}>{stage.stage}</h4>
+                                            <p className={`text-xs text-gray-500 ${theme === 'dark' ? 'text-gray-400' : ''}`}>projetos</p>
                                         </div>
-                                        <div className="space-y-2">
-                                            <Label htmlFor="role" className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Nível de Acesso</Label>
-                                            <Select value={inviteRole} onValueChange={(value: UserRole) => setInviteRole(value)} required>
-                                                <SelectTrigger className={`focus:ring-[#001f61]/30 ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-gray-200' : 'border-gray-300'}`}>
-                                                    <SelectValue placeholder="Selecione um nível" />
-                                                </SelectTrigger>
-                                                <SelectContent className={`${theme === 'dark' ? 'bg-gray-700 border-gray-600' : ''}`}>
-                                                    <SelectItem value="COMUM" className={`cursor-pointer ${theme === 'dark' ? 'text-gray-200 hover:bg-gray-600' : 'hover:bg-gray-100'}`}>Usuário Comum</SelectItem>
-                                                    <SelectItem value="AVALIADOR" className={`cursor-pointer ${theme === 'dark' ? 'text-gray-200 hover:bg-gray-600' : 'hover:bg-gray-100'}`}>Avaliador</SelectItem>
-                                                    {user.role === 'ADMIN' && <SelectItem value="GESTOR" className={`cursor-pointer ${theme === 'dark' ? 'text-gray-200 hover:bg-gray-600' : 'hover:bg-gray-100'}`}>Gestor de Inovação</SelectItem>}
-                                                </SelectContent>
-                                            </Select>
-                                        </div>
-                                        {formError && <p className="text-sm text-red-500 text-center">{formError}</p>}
-                                        <Button type="submit" disabled={inviteStatus === 'loading' || inviteStatus === 'success'} className={`w-full cursor-pointer font-bold h-10 transition-all duration-300 ${inviteStatus === 'idle' || inviteStatus === 'error' ? 'bg-[#001f61] hover:bg-[#002a7a] text-white' : inviteStatus === 'loading' ? 'bg-blue-500 cursor-not-allowed text-white' : 'bg-green-600 hover:bg-green-700 text-white'}`}>
-                                            {inviteStatus === 'loading' && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                            {inviteStatus === 'success' && <CheckCircle className="mr-2 h-4 w-4" />}
-                                            {(inviteStatus === 'idle' || inviteStatus === 'error') && 'Enviar Convite'}
-                                            {inviteStatus === 'loading' && 'A Enviar...'}
-                                            {inviteStatus === 'success' && 'Convidado com Sucesso!'}
-                                        </Button>
-                                    </form>
-                                </DialogContent>
-                            </Dialog>
+                                    ))}
+                                </div>
+                            </CardContent>
+                        </Card>
+                    )}
+
+                    {(user.role === "AVALIADOR" || user.role === "GESTOR") && (
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <Card className={`shadow-lg ${theme === 'dark' ? 'bg-gray-800 text-white' : ''}`}>
+                                <CardHeader><CardTitle className="text-xl font-bold">Tendência de Ideias</CardTitle><CardDescription>Evolução mensal de submissões.</CardDescription></CardHeader>
+                                <CardContent>
+                                    <ResponsiveContainer width="100%" height={300}>
+                                        <LineChart data={dashboardData.kpiData} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}><CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" /><XAxis dataKey="name" stroke="#6b7280" /><YAxis stroke="#6b7280" /><Tooltip contentStyle={{ borderRadius: "8px", border: "1px solid #e0e0e0" }} /><Line type="monotone" dataKey="ideas" stroke="#011677" strokeWidth={3} activeDot={{ r: 8 }} /></LineChart>
+                                    </ResponsiveContainer>
+                                </CardContent>
+                            </Card>
+                            <Card className={`shadow-lg ${theme === 'dark' ? 'bg-gray-800 text-white' : ''}`}>
+                                <CardHeader><CardTitle className="text-xl font-bold">Distribuição por Segmento</CardTitle><CardDescription>Startups por área de atuação.</CardDescription></CardHeader>
+                                <CardContent className="pt-0">
+                                    <ResponsiveContainer width="100%" height={300}>
+                                        <PieChart><Pie data={dashboardData.pieData} cx="50%" cy="50%" outerRadius={100} dataKey="value" labelLine={false} label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}>{dashboardData.pieData.map((entry, index) => (<Cell key={`cell-${index}`} fill={entry.color} stroke="#fff" strokeWidth={2} />))}</Pie><Tooltip /></PieChart>
+                                    </ResponsiveContainer>
+                                </CardContent>
+                            </Card>
+                        </div>
+                    )}
+
+                    <Card className={`shadow-lg ${theme === 'dark' ? 'bg-gray-800 text-white' : ''}`}>
+                        <CardHeader className="flex md:flex-row flex-col md:items-center justify-between pb-4">
+                            <div><CardTitle className="text-xl font-bold">Desafios Ativos</CardTitle><CardDescription>Desafios em andamento na plataforma que você pode atuar.</CardDescription></div>
+                            <Button className={`bg-[#011677] cursor-pointer text-white hover:bg-[#020ebd] mt-4 md:mt-0 font-semibold transition-colorsv ${theme === 'dark' ? 'bg-gray-700 hover:bg-gray-600' : ''}`} onClick={() => router.push("/challenges/new")}><Plus className="w-4 h-4 mr-2" />Criar Novo Desafio</Button>
                         </CardHeader>
-                        <CardContent className="pt-6">
-                            <div className="overflow-x-auto">
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow className={`${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
-                                            <TableHead className={`text-sm font-semibold uppercase tracking-wider ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Colaborador</TableHead>
-                                            <TableHead className={`text-sm font-semibold uppercase tracking-wider ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Nível de Acesso</TableHead>
-                                            <TableHead className={`text-right text-sm font-semibold uppercase tracking-wider ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Ações</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {collaborators.length === 0 ? (
-                                            <TableRow><TableCell colSpan={3} className="text-center py-10 text-gray-500">{isLoading ? 'A carregar colaboradores...' : 'Nenhum colaborador encontrado.'}</TableCell></TableRow>
-                                        ) : (
-                                            collaborators.map((collab) => (
-                                                <TableRow key={collab.id} className={`${theme === 'dark' ? 'border-gray-700 hover:bg-gray-700/50' : 'border-gray-100 hover:bg-gray-50'}`}>
-                                                    <TableCell className="py-4">
-                                                        <div className="flex items-center gap-4">
-                                                            <Avatar className="h-10 w-10">
-                                                                <AvatarImage src={`https://i.pravatar.cc/40?u=${collab.email}`} alt={collab.name} />
-                                                                <AvatarFallback className="bg-[#001f61] text-white font-semibold">{collab.name.charAt(0)}</AvatarFallback>
-                                                            </Avatar>
-                                                            <div>
-                                                                <p className={`font-semibold text-base ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'}`}>{collab.name}</p>
-                                                                <p className={`text-sm text-gray-500 ${theme === 'dark' ? 'text-gray-400' : ''}`}>{collab.email}</p>
-                                                            </div>
-                                                        </div>
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <Select defaultValue={collab.role} disabled={user.id === collab.id || user.role !== "GESTOR"}>
-                                                            <SelectTrigger className={`w-48 cursor-pointer border-gray-300 focus:ring-[#001f61]/30 ${theme === 'dark' ? 'bg-gray-700 text-gray-200 border-gray-600' : ''}`}>
-                                                                <SelectValue />
-                                                            </SelectTrigger>
-                                                            <SelectContent className={`shadow-lg ${theme === 'dark' ? 'bg-gray-800 border-gray-600' : ''}`}>
-                                                                <SelectItem className={`cursor-pointer ${theme === 'dark' ? 'text-gray-200 hover:bg-gray-700' : 'hover:bg-gray-100'}`} value="COMUM">Usuário Comum</SelectItem>
-                                                                <SelectItem className={`cursor-pointer ${theme === 'dark' ? 'text-gray-200 hover:bg-gray-700' : 'hover:bg-gray-100'}`} value="AVALIADOR">Avaliador</SelectItem>
-                                                                <SelectItem className={`cursor-pointer ${theme === 'dark' ? 'text-gray-200 hover:bg-gray-700' : 'hover:bg-gray-100'}`} value="GESTOR">Gestor de Inovação</SelectItem>
-                                                            </SelectContent>
-                                                        </Select>
-                                                    </TableCell>
-                                                    <TableCell className="text-right">
-                                                        <Button variant="default" size="sm" disabled={user.id === collab.id} className={`text-white bg-red-600 cursor-pointer hover:bg-red-700 transition-colors font-semibold ${user.id === collab.id ? 'opacity-50 cursor-not-allowed' : ''} ${theme === 'dark' ? 'bg-red-700 hover:bg-red-600' : ''}`}>Remover</Button>
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))
-                                        )}
-                                    </TableBody>
-                                </Table>
+                        <CardContent>
+                            <div className="space-y-4">
+                                {dashboardData.recentChallenges.map((challenge) => (
+                                    <div key={challenge.id} className={`flex md:items-center md:flex-row flex-col justify-between p-4 border border-gray-200 rounded-xl hover:bg-gray-100 cursor-pointer transition-colors ${theme === 'dark' ? 'border-gray-700 hover:bg-gray-600' : ''}`}>
+                                        <div className="space-y-1"><h4 className={`font-semibold text-lg ${theme === 'dark' ? 'text-gray-200' : 'text-[#011677]'}`}>{challenge.name}</h4><div className="flex items-center gap-3 flex-wrap"><Badge variant="outline" className="border-[#011677] text-[#011677] bg-blue-50/50 hover:bg-blue-100 transition-colors">{challenge.area}</Badge><Badge className={challenge.type === "PUBLICO" ? "bg-green-500 text-white hover:bg-green-600" : "bg-yellow-500 text-white hover:bg-yellow-600"}>{challenge.type === "PUBLICO" ? "Público" : "Interno"}</Badge><span className="text-sm text-gray-500 flex items-center gap-1"><Clock className="w-4 h-4" />{new Date(challenge.startDate).toLocaleDateString("pt-BR")} - {new Date(challenge.endDate).toLocaleDateString("pt-BR")}</span></div></div>
+                                        <div className="flex flex-col md:flex-row md:space-x-3 space-y-2 md:space-y-0 mt-4 md:mt-0">
+                                            <Button className="bg-gray-200 text-gray-700 h-9 hover:bg-gray-300 transition-colors font-medium cursor-pointer" size="sm" onClick={(e) => { e.stopPropagation(); sessionStorage.setItem("selectedChallenge", JSON.stringify(challenge)); router.push(`/challenges/${challenge.id}`); }}><Lightbulb className="w-4 h-4 mr-2" />Ver Detalhes</Button>
+                                            <Button className="bg-[#011677] text-white hover:bg-[#020ebd] h-9 font-medium transition-colors cursor-pointer" onClick={(e) => { e.stopPropagation(); handleChallengeClick(challenge); }}><Target className="w-4 h-4 mr-2" />Funil de Ideias</Button>
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
                         </CardContent>
                     </Card>

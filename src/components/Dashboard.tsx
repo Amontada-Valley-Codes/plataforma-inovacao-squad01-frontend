@@ -33,20 +33,25 @@ import {
     LogOut,
     Target,
     User as UserIcon,
+    ChevronRight,
 } from "lucide-react";
-import { User, Challenge, Startup } from "../app/context/UserContext";
+import { User, Challenge, Startup, Idea } from "../app/context/UserContext";
 import { Sidebar } from "./SideBar";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import api from "../lib/api";
 import Loading from "../app/loading";
+// 💡 NOVAS IMPORTAÇÕES PARA O MODAL
+import { Dialog, DialogContent } from "./ui/dialog";
+import { IdeaForm } from "./IdeaForm";
+import { Separator } from "./ui/separator";
+
 
 interface DashboardProps {
     user: User;
     onLogout: () => void;
 }
 
-// Interface para os dados agregados do dashboard (da sua branch HEAD)
 interface DashboardData {
     ideasCount: number;
     connectionsCount: number;
@@ -59,157 +64,146 @@ interface DashboardData {
     startupsCount: number;
 }
 
+// 💡 NOVA INTERFACE PARA IDEIAS DE STARTUP
+interface StartupIdea extends Idea {
+    challengeName?: string;
+}
+
 export function Dashboard({ user, onLogout }: DashboardProps) {
-    // Estados da 'main' para UI
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
     const [theme, setTheme] = useState<string>(typeof window !== 'undefined' ? (sessionStorage.getItem('theme') || 'light') : 'light');
     const router = useRouter();
-
-    // Estados da sua branch HEAD para dados
     const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    
+    // 💡 NOVOS ESTADOS PARA O MODAL E DADOS DA STARTUP
+    const [startupIdeas, setStartupIdeas] = useState<StartupIdea[]>([]);
+    const [isIdeaModalOpen, setIsIdeaModalOpen] = useState(false);
+    const [selectedChallengeForIdea, setSelectedChallengeForIdea] = useState<Challenge | null>(null);
 
-    // Mapeamentos de dados da sua branch HEAD
+
     const stageLabels: { [key: string]: string } = {
-        GERACAO: "Geração/Captura",
-        PRE_TRIAGEM: "Pré-Triagem",
-        IDEACAO: "Ideação",
-        TRIAGEM_DETALHADA: "Triagem Detalhada",
-        EXPERIMENTACAO: "Experimentação (POC)",
+        GERACAO: "Geração/Captura", PRE_TRIAGEM: "Pré-Triagem", IDEACAO: "Ideação",
+        TRIAGEM_DETALHADA: "Triagem Detalhada", EXPERIMENTACAO: "Experimentação (POC)",
     };
     const funnelColors = {
-        "Geração/Captura": "#3B82F6",
-        "Pré-Triagem": "#8B5CF6",
-        "Ideação": "#06B6D4",
-        "Triagem Detalhada": "#10B981",
-        "Experimentação (POC)": "#F59E0B",
+        "Geração/Captura": "#3B82F6", "Pré-Triagem": "#8B5CF6", "Ideação": "#06B6D4",
+        "Triagem Detalhada": "#10B981", "Experimentação (POC)": "#F59E0B",
     };
 
-    // useEffect combinado para buscar dados e gerir o menu dropdown
-    // /plat_inovacao/src/components/Dashboard.tsx
-
-useEffect(() => {
     const fetchData = async () => {
         setIsLoading(true);
         try {
-            // Define os endpoints com base na função do usuário
             const challengesEndpoint = user.role === 'ADMIN' || user.role === 'STARTUP'
-                ? '/challenges/findAllPaginated?limit=5&page=1' 
+                ? '/challenges/findByPublic'
                 : `/challenges/findByCompany/${user.companyId}`;
 
-            const ideasEndpoint = user.role === 'ADMIN' || user.role === 'STARTUP'
-                ? '/idea'
-                : `/idea/company/${user.companyId}`;
-			
-			const startupsEndpoint = '/startups'; 
-
-
-            // Para o admin, alguns endpoints podem não ser necessários ou podem ser diferentes
+            const ideasEndpoint = `/idea/company/${user.companyId}`; // Usado para Startup
+            const startupsEndpoint = '/startups';
             const connectionsEndpoint = user.role === 'ADMIN' ? '/companies/list' : '/connections';
-            const pocsEndpoint = user.role === 'ADMIN' ? null : '/poc'; // Admin não vê POCs por enquanto
+            const pocsEndpoint = user.role === 'ADMIN' ? null : '/poc';
 
-            // Monta as chamadas da API
             const apiCalls = [
-                api.get(ideasEndpoint),
-                api.get(startupsEndpoint), // Supondo que startups são sempre globais
+                api.get(startupsEndpoint),
                 api.get(challengesEndpoint),
                 api.get(connectionsEndpoint),
             ];
 
-            if (pocsEndpoint) {
-                apiCalls.push(api.get(pocsEndpoint));
+            // 💡 Adiciona chamadas específicas
+            if (pocsEndpoint) apiCalls.push(api.get(pocsEndpoint));
+            if (user.role === 'STARTUP') apiCalls.push(api.get(ideasEndpoint));
+            else apiCalls.push(api.get(user.role === 'ADMIN' ? '/idea' : `/idea/company/${user.companyId}`));
+
+
+            const [startupsRes, challengesRes, connectionsRes, pocsResOrIdeasRes, startupIdeasRes] = await Promise.all(apiCalls);
+            
+            const challenges = challengesRes.data.data || challengesRes.data;
+            console.log("Desafios carregados:", challengesRes);
+
+            // 💡 Lógica para carregar as ideias da startup
+            if (user.role === 'STARTUP') {
+                 const ideasWithChallengeName = startupIdeasRes.data.map((idea: Idea) => {
+                    const challenge = challenges.find((c: Challenge) => c.id === idea.challengeId);
+                    return {
+                        ...idea,
+                        challengeName: challenge ? challenge.name : 'Desafio não encontrado'
+                    };
+                });
+                setStartupIdeas(ideasWithChallengeName);
             }
-
-            const [ideasRes, startupsRes, challengesRes, connectionsRes, pocsRes] = await Promise.all(apiCalls);
-
-			console.log('Dados recebidos:', { ideasRes, startupsRes, challengesRes, connectionsRes, pocsRes });
-
-            // --- Processamento dos dados ---
-
-            // O resto da sua lógica de processamento continua igual,
-            // mas agora ela receberá os dados corretos para cada tipo de usuário.
-
+            
+            // Lógica para os outros roles
+            const ideasRes = user.role === 'STARTUP' ? { data: [] } : startupIdeasRes || pocsResOrIdeasRes;
+            const pocsRes = user.role === 'STARTUP' ? undefined : pocsResOrIdeasRes;
+            
             const ideasCount = ideasRes.data.length;
             const startupsCount = startupsRes.data.length;
-            const challengesCount = challengesRes.data.length;
-            // Para o admin, 'connections' são as empresas; para outros, são as conexões reais
-            const connectionsCount = connectionsRes.data.length; 
-
-
-            // pocsRes pode não existir para o admin
-            const pocsCount = pocsRes ? pocsRes.data.length : 0; 
+            const connectionsCount = connectionsRes.data.length;
+            const pocsCount = pocsRes ? pocsRes.data.length : 0;
 
             const funnelCounts = ideasRes.data.reduce((acc: any, idea: any) => {
-                    const stageName = stageLabels[idea.stage] || 'Outro';
-                    acc[stageName] = (acc[stageName] || 0) + 1;
-                    return acc;
-                }, {});
-                const funnelData = Object.entries(funnelCounts).map(([stage, count]) => ({
-                    stage,
-                    count: count as number,
-                    color: funnelColors[stage as keyof typeof funnelColors] || '#ccc'
-                }));
+                const stageName = stageLabels[idea.stage] || 'Outro';
+                acc[stageName] = (acc[stageName] || 0) + 1;
+                return acc;
+            }, {});
+            const funnelData = Object.entries(funnelCounts).map(([stage, count]) => ({
+                stage, count: count as number, color: funnelColors[stage as keyof typeof funnelColors] || '#ccc'
+            }));
 
-                const segmentCounts = startupsRes.data.reduce((acc: any, startup: any) => {
-                    acc[startup.segment] = (acc[startup.segment] || 0) + 1;
-                    return acc;
-                }, {});
-                const pieData = Object.entries(segmentCounts).map(([name, value], index) => ({
-                    name,
-                    value: value as number,
-                    color: ['#3B82F6', '#10B981', '#F59E0B', '#8B5CF6'][index % 4]
-                }));
+            const segmentCounts = startupsRes.data.reduce((acc: any, startup: any) => {
+                acc[startup.segment] = (acc[startup.segment] || 0) + 1;
+                return acc;
+            }, {});
+            const pieData = Object.entries(segmentCounts).map(([name, value], index) => ({
+                name, value: value as number, color: ['#3B82F6', '#10B981', '#F59E0B', '#8B5CF6'][index % 4]
+            }));
 
             setDashboardData({
-                ideasCount,
-                startupsCount,
-                connectionsCount,
-                pocsCount,
-                recentChallenges: challengesRes.data.data || challengesRes.data, 
-                pieData,
-                kpiData: [
-                    { name: "Jan", ideas: 10 }, { name: "Fev", ideas: 20 },
-                    { name: "Mar", ideas: 15 }, { name: "Abr", ideas: 25 },
-                    { name: "Mai", ideas: ideasCount },
-                ],
-                avgTime: 0, 
-                funnelData,
+                ideasCount, startupsCount, connectionsCount, pocsCount,
+                recentChallenges: challenges, pieData,
+                kpiData: [{ name: "Jan", ideas: 10 }, { name: "Mar", ideas: 15 }, { name: "Mai", ideas: ideasCount }],
+                avgTime: 0, funnelData,
             });
 
         } catch (error) {
             console.error("Falha ao carregar dados do dashboard:", error);
-            // Vericar se o status de erro for 403 colocar lista vazias nas poc ideias e connections
-            if (error.response?.status === 403) {
-                setDashboardData({
-                    ideasCount: 0,
-                    startupsCount: 0,
-                    connectionsCount: 0,
-                    pocsCount: 0,
-                    recentChallenges: [],
-                    pieData: [],
-                    kpiData: [],
-                    avgTime: 0,
-                    funnelData: [],
-                });
-            } else {
-                throw error;
-            }
         } finally {
             setIsLoading(false);
         }
     };
 
-    // Adiciona uma verificação para não executar se não houver usuário
-    if (user) {
-        fetchData();
-    } else {
-        setIsLoading(false);
-    }
+    useEffect(() => {
+        if (user) {
+            fetchData();
+        } else {
+            setIsLoading(false);
+        }
+    }, [user]);
 
-}, [user]); // Depende do objeto user inteiro
+    // 💡 NOVA FUNÇÃO PARA SUBMETER IDEIA
+    const handleIdeaSubmit = async (formData: { title: string, description: string }) => {
+        if (!selectedChallengeForIdea) return;
+        try {
+            const newIdeaData = {
+                title: formData.title,
+                description: formData.description,
+                challengeId: selectedChallengeForIdea.id,
+                authorId: user.id,
+                companyId: user.companyId, // startupId
+                stage: 'GERACAO',
+                priority: 'BAIXA',
+            };
+            await api.post('/idea', newIdeaData);
+            setIsIdeaModalOpen(false);
+            fetchData(); // Recarrega os dados do dashboard
+        } catch (error) {
+            console.error('Falha ao criar ideia:', error);
+            alert('Não foi possível criar a ideia. Tente novamente.');
+        }
+    };
 
-    // Handlers combinados de ambas as branches
+
     const handleChallengeClick = (challenge: Challenge) => {
         sessionStorage.setItem("selectedChallenge", JSON.stringify(challenge));
         router.push(`/funnel/${challenge.id}`);
@@ -222,6 +216,13 @@ useEffect(() => {
     if (isLoading || !dashboardData) {
         return <Loading />;
     }
+    
+    const ideasByChallenge = startupIdeas.reduce((acc, idea) => {
+        const key = idea.challengeName || "Desconhecido";
+        if (!acc[key]) acc[key] = [];
+        acc[key].push(idea);
+        return acc;
+    }, {} as Record<string, StartupIdea[]>);
 
     return (
         <div className={`flex h-screen bg-background text-white ${theme === 'dark' ? 'bg-gray-900 text-white' : ''}`}>
@@ -229,16 +230,16 @@ useEffect(() => {
 
             <div className={`flex-1 overflow-y-auto bg-gray-50 text-gray-900 ${theme === 'dark' ? 'bg-gray-900 text-white' : ''}`}>
                 <div className="p-6 md:p-8 space-y-8">
-                    {/* Header do Dashboard da 'main', com menu de perfil e tema */}
+                    {/* Header */}
                     <div className="flex items-center justify-between">
                         <div className="flex flex-col">
                             <h1 className={`font-extrabold text-3xl text-[#011677] mb-1 ${theme === 'dark' ? 'text-white' : ''}`}>Dashboard</h1>
                             <p className={`text-gray-500 text-base ${theme === 'dark' ? 'text-gray-200' : ''}`}>
-                                Visão geral dos indicadores e atividades de <span className="uppercase">{user.company}</span>
+                                {user.role === 'STARTUP' ? `Bem-vindo(a), ${user.name}!` : `Visão geral dos indicadores de ${user.company}`}
                             </p>
                         </div>
-
-                        <div className="flex items-center gap-4">
+                        {/* Menu de Perfil */}
+                         <div className="flex items-center gap-4">
                             <button
                                 className={`w-14 cursor-pointer h-10 flex items-center justify-center rounded-full bg-gray-200 text-gray-800 hover:bg-gray-300 transition-colors shadow-md ${theme === 'dark' ? 'bg-gray-700 text-white hover:bg-gray-600' : ''}`}
                                 onClick={() => handleThemeChange(theme === 'light' ? 'dark' : 'light')}
@@ -282,8 +283,37 @@ useEffect(() => {
                         </div>
                     </div>
 
-                    {/* KPI Cards populados com dados da API e estilizados pela 'main' */}
-                    {user.role === "GESTOR" && (
+                    {/* 💡 RENDERIZAÇÃO CONDICIONAL DO CONTEÚDO */}
+                    {user.role === 'STARTUP' ? (
+                        // Card de Minhas Ideias para Startups
+                        <Card className={`shadow-lg ${theme === 'dark' ? 'bg-gray-800 text-white' : ''}`}>
+                            <CardHeader>
+                                <CardTitle className="text-xl font-bold">Minhas Ideias Submetidas</CardTitle>
+                                <CardDescription>Acompanhe o status das suas propostas para os desafios.</CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                {Object.keys(ideasByChallenge).length > 0 ? Object.entries(ideasByChallenge).map(([challengeName, ideas]) => (
+                                    <div key={challengeName}>
+                                        <h3 className="font-semibold text-lg mb-2">{challengeName}</h3>
+                                        <div className="space-y-3">
+                                            {ideas.map(idea => (
+                                                <div key={idea.id} className={`flex items-center justify-between p-3 border rounded-lg ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
+                                                    <p>{idea.title}</p>
+                                                    <Badge variant="outline">{stageLabels[idea.stage as keyof typeof stageLabels] || idea.stage}</Badge>
+                                                </div>
+                                            ))}
+                                        </div>
+                                        <Separator className="my-4" />
+                                    </div>
+                                )) : (
+                                    <p className="text-center text-gray-500 py-4">Você ainda não submeteu nenhuma ideia.</p>
+                                )}
+                            </CardContent>
+                        </Card>
+                    ) : (
+                        // Dashboard padrão para outros roles
+                        <>
+                           {user.role === "GESTOR" && (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                             <Card className={`shadow-lg hover:shadow-xl transition-shadow duration-300 ${theme === 'dark' ? 'bg-gray-800 text-white' : ''}`}>
                                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><CardTitle className={`text-sm font-medium text-gray-500 ${theme === 'dark' ? 'text-gray-200' : ''}`}>Ideias Submetidas</CardTitle><Lightbulb className={`h-4 w-4 text-[#011677] ${theme === 'dark' ? 'text-gray-200' : ''}`} /></CardHeader>
@@ -304,8 +334,7 @@ useEffect(() => {
                         </div>
                     )}
                     
-                    {/* Restante do JSX combinado, usando dashboardData e estilos da 'main' */}
-                    {(user.role === "AVALIADOR" || user.role === "GESTOR") && (
+                            {(user.role === "AVALIADOR" || user.role === "GESTOR") && (
                         <Card className={`lg:col-span-2 shadow-lg ${theme === 'dark' ? 'bg-gray-800 text-white' : ''}`}>
                             <CardHeader><CardTitle className="text-xl font-bold">Funil de Inovação</CardTitle><CardDescription>Distribuição de projetos por etapa do processo de inovação.</CardDescription></CardHeader>
                             <CardContent className="pt-2">
@@ -321,8 +350,8 @@ useEffect(() => {
                             </CardContent>
                         </Card>
                     )}
-
-                    {(user.role === "AVALIADOR" || user.role === "GESTOR") && (
+                    
+                            {(user.role === "AVALIADOR" || user.role === "GESTOR") && (
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                             <Card className={`shadow-lg ${theme === 'dark' ? 'bg-gray-800 text-white' : ''}`}>
                                 <CardHeader><CardTitle className="text-xl font-bold">Tendência de Ideias</CardTitle><CardDescription>Evolução mensal de submissões.</CardDescription></CardHeader>
@@ -343,19 +372,66 @@ useEffect(() => {
                         </div>
                     )}
 
+                        </>
+                    )}
+
+                    {/* Lista de Desafios Ativos (com botões condicionais) */}
                     <Card className={`shadow-lg ${theme === 'dark' ? 'bg-gray-800 text-white' : ''}`}>
                         <CardHeader className="flex md:flex-row flex-col md:items-center justify-between pb-4">
-                            <div><CardTitle className="text-xl font-bold">Desafios Ativos</CardTitle><CardDescription>Desafios em andamento na plataforma que você pode atuar.</CardDescription></div>
-                            <Button className={`bg-[#011677] cursor-pointer text-white hover:bg-[#020ebd] mt-4 md:mt-0 font-semibold transition-colorsv ${theme === 'dark' ? 'bg-gray-700 hover:bg-gray-600' : ''}`} onClick={() => router.push("/challenges/new")}><Plus className="w-4 h-4 mr-2" />Criar Novo Desafio</Button>
+                            <div>
+                                <CardTitle className="text-xl font-bold">Desafios Ativos</CardTitle>
+                                <CardDescription>
+                                    {user.role === 'STARTUP' ? 'Oportunidades para você aplicar sua solução.' : 'Desafios em andamento na plataforma.'}
+                                </CardDescription>
+                            </div>
+                            {user.role !== 'STARTUP' && (
+                                <Button className={`bg-[#011677] cursor-pointer text-white hover:bg-[#020ebd] mt-4 md:mt-0 font-semibold transition-colorsv ${theme === 'dark' ? 'bg-gray-700 hover:bg-gray-600' : ''}`} onClick={() => router.push("/challenges/new")}>
+                                    <Plus className="w-4 h-4 mr-2" />
+                                    Criar Novo Desafio
+                                </Button>
+                            )}
                         </CardHeader>
                         <CardContent>
                             <div className="space-y-4">
                                 {dashboardData.recentChallenges.map((challenge) => (
-                                    <div key={challenge.id} className={`flex md:items-center md:flex-row flex-col justify-between p-4 border border-gray-200 rounded-xl hover:bg-gray-100 cursor-pointer transition-colors ${theme === 'dark' ? 'border-gray-700 hover:bg-gray-600' : ''}`}>
-                                        <div className="space-y-1"><h4 className={`font-semibold text-lg ${theme === 'dark' ? 'text-gray-200' : 'text-[#011677]'}`}>{challenge.name}</h4><div className="flex items-center gap-3 flex-wrap"><Badge variant="outline" className="border-[#011677] text-[#011677] bg-blue-50/50 hover:bg-blue-100 transition-colors">{challenge.area}</Badge><Badge className={challenge.type === "PUBLICO" ? "bg-green-500 text-white hover:bg-green-600" : "bg-yellow-500 text-white hover:bg-yellow-600"}>{challenge.type === "PUBLICO" ? "Público" : "Interno"}</Badge><span className="text-sm text-gray-500 flex items-center gap-1"><Clock className="w-4 h-4" />{new Date(challenge.startDate).toLocaleDateString("pt-BR")} - {new Date(challenge.endDate).toLocaleDateString("pt-BR")}</span></div></div>
+                                    <div key={challenge.id} className={`flex md:items-center md:flex-row flex-col justify-between p-4 border rounded-xl hover:bg-gray-100/50 cursor-pointer transition-colors ${theme === 'dark' ? 'border-gray-700 hover:bg-gray-800/50' : 'border-gray-200'}`}>
+                                        <div className="space-y-1" onClick={() => router.push(`/challenges/${challenge.id}`)}>
+                                            <h4 className={`font-semibold text-lg ${theme === 'dark' ? 'text-gray-200' : 'text-[#011677]'}`}>{challenge.name}</h4>
+                                            <div className="flex items-center gap-3 flex-wrap">
+                                                <Badge variant="outline" className="border-[#011677] text-[#011677] bg-blue-50/50">{challenge.area}</Badge>
+                                                <Badge className={challenge.type === "PUBLICO" ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}>
+                                                    {challenge.type === "PUBLICO" ? "Público" : "Interno"}
+                                                </Badge>
+                                                <span className="text-sm text-gray-500 flex items-center gap-1">
+                                                    <Clock className="w-4 h-4" />
+                                                    {new Date(challenge.startDate).toLocaleDateString("pt-BR")} - {new Date(challenge.endDate).toLocaleDateString("pt-BR")}
+                                                </span>
+                                            </div>
+                                        </div>
                                         <div className="flex flex-col md:flex-row md:space-x-3 space-y-2 md:space-y-0 mt-4 md:mt-0">
-                                            <Button className="bg-gray-200 text-gray-700 h-9 hover:bg-gray-300 transition-colors font-medium cursor-pointer" size="sm" onClick={(e) => { e.stopPropagation(); sessionStorage.setItem("selectedChallenge", JSON.stringify(challenge)); router.push(`/challenges/${challenge.id}`); }}><Lightbulb className="w-4 h-4 mr-2" />Ver Detalhes</Button>
-                                            <Button className="bg-[#011677] text-white hover:bg-[#020ebd] h-9 font-medium transition-colors cursor-pointer" onClick={(e) => { e.stopPropagation(); handleChallengeClick(challenge); }}><Target className="w-4 h-4 mr-2" />Funil de Ideias</Button>
+                                            <Button className="bg-gray-200 text-gray-700 h-9 hover:bg-gray-300 font-medium" size="sm" onClick={(e) => { e.stopPropagation(); router.push(`/challenges/${challenge.id}`); }}>
+                                                <ChevronRight className="w-4 h-4 mr-2" />Ver Detalhes
+                                            </Button>
+                                            
+                                            {/* 💡 LÓGICA DE BOTÕES CONDICIONAL */}
+                                            {user.role === 'STARTUP' ? (
+                                                <Button
+                                                    className="bg-green-600 text-white hover:bg-green-700 h-9 font-medium"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setSelectedChallengeForIdea(challenge);
+                                                        setIsIdeaModalOpen(true);
+                                                    }}
+                                                >
+                                                    <Plus className="w-4 h-4 mr-2" />
+                                                    Adicionar Ideia
+                                                </Button>
+                                            ) : (
+                                                <Button className="bg-[#011677] text-white hover:bg-[#020ebd] h-9 font-medium" onClick={(e) => { e.stopPropagation(); handleChallengeClick(challenge); }}>
+                                                    <Target className="w-4 h-4 mr-2" />
+                                                    Funil de Ideias
+                                                </Button>
+                                            )}
                                         </div>
                                     </div>
                                 ))}
@@ -364,6 +440,17 @@ useEffect(() => {
                     </Card>
                 </div>
             </div>
+            {/* 💡 RENDERIZAÇÃO DO MODAL */}
+            <Dialog open={isIdeaModalOpen} onOpenChange={setIsIdeaModalOpen}>
+                <DialogContent className={`bg-white ${theme === 'dark' ? 'bg-gray-800' : ''}`}>
+                    {selectedChallengeForIdea && (
+                        <IdeaForm
+                            stageTitle={`para "${selectedChallengeForIdea.name}"`}
+                            onSubmit={handleIdeaSubmit}
+                        />
+                    )}
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }
