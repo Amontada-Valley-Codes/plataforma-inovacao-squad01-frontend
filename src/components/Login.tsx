@@ -124,7 +124,7 @@ export default function Login({ onLogin }: LoginProps) {
                   id="email"
                   type="email"
                   placeholder="seu@email.com"
-                  value={email}
+                  value={email} 
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   className="py-6 bg-gray-100 focus:ring-2 focus:ring-[#001f61] border-none text-gray-800"
