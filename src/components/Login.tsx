@@ -68,7 +68,7 @@ export default function Login({ onLogin }: LoginProps) {
       </div>
 
       {/* 🔹 Container principal */}
-      <div className="relative z-10 flex flex-col md:flex-row w-full max-w-6xl rounded-2xl shadow-2xl overflow-hidden backdrop-blur-sm">
+      <div className="relative z-10 flex flex-col md:flex-row w-full max-w-6xl sm:rounded-2xl rounded-none shadow-2xl overflow-hidden backdrop-blur-sm">
         
         {/* 🔹 Seção esquerda com imagem translúcida (a mesma do fundo) */}
         <div className="hidden md:flex relative flex-col justify-center items-start w-1/2 p-12 text-white overflow-hidden">
