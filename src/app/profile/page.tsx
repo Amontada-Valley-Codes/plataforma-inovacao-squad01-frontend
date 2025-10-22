@@ -117,10 +117,10 @@ export default function ProfilePage() {
     return (
         <div className={`flex flex-col min-h-screen ${theme === "dark" ? "bg-gray-900 text-white" : "bg-gray-50"}`}>
             {/* Navbar */}
-            <div className="bg-[#011677] sticky top-0 z-10 shadow-md">
+            <div className={`${theme === 'dark' ? 'bg-gray-800' : 'bg-[#011677]'} sticky top-0 z-10 shadow-md`}>
                 <div className="container mx-auto px-6 py-4">
                     <div className="flex items-center gap-4">
-                        <Button variant="ghost" size="sm" className="text-white hovers-exit-dash transition-colors duration-200" onClick={() => router.push("/dashboard")}>
+                        <Button variant="ghost" size="sm" className={`text-white ${theme === 'dark' ? 'hover:bg-gray-600' : ''} hovers-exit-dash transition-colors duration-200`} onClick={() => router.push("/dashboard")}>
                             <ArrowLeft className="w-4 h-4 mr-2" />
                             Voltar ao Dashboard
                         </Button>

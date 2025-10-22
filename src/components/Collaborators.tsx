@@ -1,339 +1,373 @@
-// /plat_inovacao/src/components/Collaborators.tsx
-
-"use client";
+'use client';
 
 import React, { useEffect, useState, useCallback } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
+import {
+  Card, CardContent, CardDescription, CardHeader, CardTitle,
+} from "./ui/card";
 import { Button } from "./ui/button";
-import { UserPlus, Users, Loader2, CheckCircle, Trash2 } from "lucide-react"; // Importe o Trash2
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
+import {
+  UserPlus, Loader2, CheckCircle, Trash2,
+} from "lucide-react";
+import {
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
+} from "./ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from "./ui/select";
+import {
+  Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger,
+} from "./ui/dialog";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { User, UserRole } from "../app/context/UserContext";
 import { Sidebar } from "./SideBar";
 import api from "../lib/api";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs"; // Importe os Tabs
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 
 interface CollaboratorsProps { user: User; }
 type InviteStatus = 'idle' | 'loading' | 'success' | 'error';
 
-// Novo tipo para os convites pendentes
 interface PendingInvite {
-	id: string;
-	email: string;
-	role: UserRole;
-	createdAt: string;
-	companyId: string;
-	status: 'PENDENTE' | 'ACCEPTED' | 'REJECTED';
+  id: string;
+  email: string;
+  role: UserRole;
+  createdAt: string;
+  companyId: string;
+  status: 'PENDENTE' | 'ACCEPTED' | 'REJECTED';
 }
 
-export function Collaborators({ user }: CollaboratorsProps) {
-	const [theme, setTheme] = useState<string>(typeof window !== 'undefined' ? (sessionStorage.getItem('theme') || 'light') : 'light');
-	const [collaborators, setCollaborators] = useState<User[]>([]);
-	const [pendingInvites, setPendingInvites] = useState<PendingInvite[]>([]); // Estado para convites
-	const [isLoading, setIsLoading] = useState(true);
-	const [companies, setCompanies] = useState<{ id: string; name: string }[]>([]);
-	const [selectedCompanyId, setSelectedCompanyId] = useState<string>('');
-	const [inviteEmail, setInviteEmail] = useState('');
-	const [inviteRole, setInviteRole] = useState<UserRole>('COMUM');
-	const [formError, setFormError] = useState('');
-	const [inviteStatus, setInviteStatus] = useState<InviteStatus>('idle');
-	const [isDialogOpen, setIsDialogOpen] = useState(false);
-	const [activeTab, setActiveTab] = useState("collaborators");
+export default function Collaborators({ user }: CollaboratorsProps) {
+  const [theme, setTheme] = useState<string>(
+    typeof window !== 'undefined' ? (sessionStorage.getItem('theme') || 'light') : 'light'
+  );
+  const [collaborators, setCollaborators] = useState<User[]>([]);
+  const [pendingInvites, setPendingInvites] = useState<PendingInvite[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [companies, setCompanies] = useState<{ id: string; name: string }[]>([]);
+  const [selectedCompanyId, setSelectedCompanyId] = useState<string>('');
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [inviteRole, setInviteRole] = useState<UserRole>('COMUM');
+  const [formError, setFormError] = useState('');
+  const [inviteStatus, setInviteStatus] = useState<InviteStatus>('idle');
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState("collaborators");
 
-	// Função de busca de dados refatorada para filtrar no frontend
-	const fetchData = useCallback(async () => {
-		setIsLoading(true);
+  const fetchData = useCallback(async () => {
+    setIsLoading(true);
+    const companyIdToFilter = user.role === 'ADMIN' ? selectedCompanyId : user.companyId;
 
-		const companyIdToFilter = user.role === 'ADMIN' ? selectedCompanyId : user.companyId;
+    try {
+      const [collaboratorsRes, allInvitesRes] = await Promise.all([
+        companyIdToFilter ? api.get(`/user/${companyIdToFilter}`) : Promise.resolve({ data: [] }),
+        api.get('/invitations')
+      ]);
+      setCollaborators(collaboratorsRes.data || []);
+      const filteredInvites = (allInvitesRes.data || []).filter(
+        (invite: PendingInvite) =>
+          invite.companyId === companyIdToFilter && invite.status === 'PENDENTE'
+      );
+      setPendingInvites(filteredInvites);
+    } catch (error: any) {
+      console.error("Falha ao buscar dados:", error);
+      setCollaborators([]);
+      setPendingInvites([]);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [user.companyId, user.role, selectedCompanyId]);
 
-		try {
-			// Busca todos os colaboradores e todos os convites em paralelo
-			const [collaboratorsRes, allInvitesRes] = await Promise.all([
-				companyIdToFilter ? api.get(`/user/${companyIdToFilter}`) : Promise.resolve({ data: [] }),
-				api.get('/invitations') // Busca TODOS os convites
-			]);
+  useEffect(() => {
+    fetchData();
+    if (user.role === 'ADMIN') {
+      api.get('/companies/list')
+        .then(res => setCompanies(res.data))
+        .catch(err => console.error("Falha ao buscar empresas", err));
+    }
+  }, [fetchData, user.role]);
 
-			setCollaborators(collaboratorsRes.data);
+  const handleInviteSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setFormError('');
+    setInviteStatus('loading');
 
-			// --- FILTRO NO FRONTEND ---
-			const filteredInvites = allInvitesRes.data.filter(
-				(invite: PendingInvite) => invite.companyId === companyIdToFilter && invite.status === 'PENDENTE'
-			);
-			setPendingInvites(filteredInvites);
+    if (!inviteEmail || !inviteRole) {
+      setFormError('Por favor, preencha todos os campos.');
+      setInviteStatus('error');
+      return;
+    }
+    try {
+      const payload: { email: string; role: string; companyId?: string } = {
+        email: inviteEmail,
+        role: inviteRole.toUpperCase(),
+      };
+      if (user.role === 'ADMIN') {
+        if (!selectedCompanyId) {
+          setFormError('Admin deve selecionar uma empresa.');
+          setInviteStatus('error');
+          return;
+        }
+        payload.companyId = selectedCompanyId;
+      }
+      await api.post('/invitations', payload);
+      setInviteStatus('success');
+      setTimeout(() => {
+        setIsDialogOpen(false);
+        fetchData();
+      }, 2000);
+    } catch (err: any) {
+      console.error('Falha ao enviar convite:', err);
+      setFormError(err.response?.data?.message || 'Ocorreu um erro.');
+      setInviteStatus('error');
+    }
+  };
 
-		} catch (error: any) {
-			console.error("Falha ao buscar dados:", error);
-			setCollaborators([]);
-			setPendingInvites([]);
-		} finally {
-			setIsLoading(false);
-		}
-	}, [user.companyId, user.role, selectedCompanyId]);
+  const handleRemoveInvite = async (inviteId: string) => {
+    if (!window.confirm('Tem certeza que deseja remover este convite?')) return;
+    try {
+      await api.delete(`/invitations/${inviteId}`);
+      setPendingInvites(prev => prev.filter(invite => invite.id !== inviteId));
+      alert('Convite removido com sucesso!');
+    } catch (error) {
+      console.error('Falha ao remover convite:', error);
+      alert('Ocorreu um erro ao remover o convite.');
+    }
+  };
 
-	useEffect(() => {
-		fetchData();
-		if (user.role === 'ADMIN') {
-			api.get('/companies/list').then(res => setCompanies(res.data)).catch(err => console.error("Falha ao buscar empresas", err));
-		}
-	}, [fetchData, user.role]);
+  const getRoleLabel = (role: UserRole) => {
+    const labels: Record<string, string> = {
+      COMUM: "Usuário Comum",
+      AVALIADOR: "Avaliador",
+      GESTOR: "Gestor de Inovação",
+    };
+    return labels[role] || role;
+  };
 
-	const handleInviteSubmit = async (e: React.FormEvent) => {
-		e.preventDefault();
-		setFormError('');
-		setInviteStatus('loading');
+  return (
+    <div
+      className={`min-h-screen flex relative transition-colors ${
+        theme === 'dark'
+          ? 'bg-gradient-to-br from-gray-950 via-gray-900 to-gray-800 text-gray-100'
+          : 'bg-gradient-to-br from-gray-50 via-blue-50 to-gray-100 text-gray-900'
+      }`}
+    >
+      <Sidebar theme={theme} user={user} />
 
-		if (!inviteEmail || !inviteRole) {
-			setFormError('Por favor, preencha todos os campos.');
-			setInviteStatus('error');
-			return;
-		}
-		try {
-			const roleForBackend = inviteRole.toUpperCase();
-			const payload: { email: string; role: string; companyId?: string } = {
-				email: inviteEmail,
-				role: roleForBackend,
-			};
+      {/* Cabeçalho fixo */}
+      <header className={`fixed top-0 left-64 right-0 z-40 bg-[#011677] dark:  flex items-center justify-between px-8 py-4 bg-opacity-70 backdrop-blur-md shadow-sm ${theme === 'dark' ? 'bg-gray-800' : 'bg-[#011677]'}`}>
+        <h1 className="text-lg font-semibold text-white">
+          Bem-vindo, <span className="text-white">{user.name}</span>
+        </h1>
+        <p className="text-sm text-gray-500 dark:text-gray-400">
+          {new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })}
+        </p>
+      </header>
 
-			if (user.role === 'ADMIN') {
-				if (!selectedCompanyId) {
-					setFormError('Admin deve selecionar uma empresa.');
-					setInviteStatus('error');
-					return;
-				}
-				payload.companyId = selectedCompanyId;
-			}
-			console.log('Payload do convite:', payload);
-			await api.post('/invitations', payload);
-			setInviteStatus('success');
+      <main className="flex-1 w-full px-6 py-28">
+        <Card
+          className={`shadow-xl rounded-2xl transition-all duration-300 ${
+            theme === 'dark' ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'
+          }`}
+        >
+          <CardHeader className="flex flex-row items-center justify-between pb-4 border-b border-gray-200 dark:border-gray-800">
+            <div>
+              <CardTitle className="text-2xl font-bold">Equipe e Acessos</CardTitle>
+              <CardDescription className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                Gerencie colaboradores e permissões da sua equipe.
+              </CardDescription>
+            </div>
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogTrigger asChild>
+                <Button
+                  onClick={() => setIsDialogOpen(true)}
+                  className={`cursor-pointer flex items-center gap-2 font-semibold px-4 py-2 rounded-md shadow-sm hover:shadow-md transition-all
+                    ${theme === 'dark'
+                      ? 'bg-[#011677] hover:bg-blue-800 text-white'
+                      : 'bg-[#011677] hover:bg-[#002a7a] text-white'}`}
+                >
+                  <UserPlus size={18} /> Convidar
+                </Button>
+              </DialogTrigger>
 
-			// Fecha o modal e reseta o estado após o sucesso
-			setTimeout(() => {
-				setIsDialogOpen(false);
-			}, 2000);
+              {/* Modal */}
+              <DialogContent className={`${theme === 'dark' ? 'bg-gray-900 text-gray-100' : 'bg-white'} rounded-xl shadow-2xl`}>
+                <DialogHeader className="text-center">
+                  <DialogTitle className="text-xl font-semibold">Convidar Novo Colaborador</DialogTitle>
+                  <DialogDescription className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    Preencha os dados para enviar o convite.
+                  </DialogDescription>
+                </DialogHeader>
 
-		} catch (err: any) {
-			console.error('Falha ao enviar convite:', err);
-			setFormError(err.response?.data?.message || 'Ocorreu um erro.');
-			setInviteStatus('error');
-		}
-	};
+                <form onSubmit={handleInviteSubmit} className="space-y-5 mt-4">
+                  {user.role === "ADMIN" && (
+                    <div className="space-y-1">
+                      <Label>Empresa</Label>
+                      <Select value={selectedCompanyId} onValueChange={setSelectedCompanyId} required>
+                        <SelectTrigger className={`${theme === 'dark' ? 'bg-gray-800 border-gray-700' : ''}`}>
+                          <SelectValue placeholder="Selecione a empresa" />
+                        </SelectTrigger>
+                        <SelectContent className={`${theme === 'dark' ? 'bg-gray-800 border-gray-700' : ''}`}>
+                          {companies.map((company) => (
+                            <SelectItem key={company.id} value={company.id}>{company.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
 
-	const handleRemoveInvite = async (inviteId: string) => {
-		if (!window.confirm('Tem a certeza que quer remover este convite?')) return;
+                  <div>
+                    <Label>E-mail</Label>
+                    <Input
+                      type="email"
+                      placeholder="email@empresa.com"
+                      required
+                      value={inviteEmail}
+                      onChange={(e) => setInviteEmail(e.target.value)}
+                      className={`${theme === 'dark' ? 'bg-gray-800 border-gray-700 text-gray-100' : ''}`}
+                    />
+                  </div>
 
-		try {
-			await api.delete(`/invitations/${inviteId}`);
-			// Atualiza o estado localmente para feedback instantâneo
-			setPendingInvites(prev => prev.filter(invite => invite.id !== inviteId));
-			alert('Convite removido com sucesso!');
-		} catch (error) {
-			console.error('Falha ao remover convite:', error);
-			alert('Ocorreu um erro ao remover o convite.');
-		}
-	};
+                  <div>
+                    <Label>Nível de Acesso</Label>
+                    <Select value={inviteRole} onValueChange={(value: UserRole) => setInviteRole(value)}>
+                      <SelectTrigger className={`${theme === 'dark' ? 'bg-gray-800 border-gray-700' : ''}`}>
+                        <SelectValue placeholder="Selecione um nível" />
+                      </SelectTrigger>
+                      <SelectContent className={`${theme === 'dark' ? 'bg-gray-800 border-gray-700' : ''}`}>
+                        <SelectItem value="COMUM">Usuário Comum</SelectItem>
+                        <SelectItem value="AVALIADOR">Avaliador</SelectItem>
+                        {user.role === 'ADMIN' && <SelectItem value="GESTOR">Gestor de Inovação</SelectItem>}
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-	// Função de controlo do Dialog da 'main'
-	const handleDialogChange = (open: boolean) => {
-		setIsDialogOpen(open);
-		if (!open) {
-			// Reseta o formulário ao fechar
-			setInviteStatus('idle');
-			setFormError('');
-			setInviteEmail('');
-			setInviteRole('COMUM');
-			setSelectedCompanyId('');
-		}
-	};
+                  {formError && <p className="text-red-500 text-sm text-center">{formError}</p>}
 
-	const getRoleLabel = (role: UserRole) => {
-		const labels: { [key: string]: string } = {
-			COMUM: "Usuário Comum",
-			AVALIADOR: "Avaliador",
-			GESTOR: "Gestor de Inovação",
-		};
-		return labels[role] || role;
-	};
+                  <Button
+                    type="submit"
+                    disabled={inviteStatus === 'loading' || inviteStatus === 'success'}
+                    className={`w-full cursor-pointer font-semibold py-2 rounded-md transition-all
+                      ${inviteStatus === 'loading' ? 'bg-blue-500 animate-pulse' :
+                        inviteStatus === 'success' ? 'bg-green-600 hover:bg-green-700' :
+                        theme === 'dark' ? 'bg-blue-700 hover:bg-blue-600' : 'bg-[#001f61] hover:bg-[#002a7a]'} text-white`}
+                  >
+                    {inviteStatus === 'loading' && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    {inviteStatus === 'success' && <CheckCircle className="mr-2 h-4 w-4" />}
+                    {inviteStatus === 'loading' ? 'Enviando...' :
+                      inviteStatus === 'success' ? 'Enviado!' : 'Enviar Convite'}
+                  </Button>
+                </form>
+              </DialogContent>
+            </Dialog>
+          </CardHeader>
 
-	return (
-		<div className={`min-h-screen bg-gray-50 flex ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'}`}>
-			<Sidebar theme={theme} user={user} />
-			<div className="flex-1">
-				<div className={`bg-[#001f61] sticky top-0 z-10 shadow-md ${theme === 'dark' ? 'bg-gray-800' : ''}`}> {/* Header */} </div>
-				<div className="container mx-auto px-6 py-8">
-					<Card className={`bg-white border-0 rounded-xl shadow-lg ${theme === 'dark' ? 'bg-gray-800 border-gray-700' : ''}`}>
-						<CardHeader className="flex flex-row items-center justify-between">
-							<div>
-								<CardTitle className={`text-2xl font-extrabold ${theme === 'dark' ? 'text-gray-200' : 'text-gray-900'}`}>
-									Equipa e Acessos
-								</CardTitle>
-								<CardDescription className={`text-md text-gray-500 mt-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-									Gerencie os acessos e permissões da sua equipa na plataforma.
-								</CardDescription>
-							</div>
-							<Dialog open={isDialogOpen} onOpenChange={handleDialogChange}>
-								<DialogTrigger asChild>
-									<Button
-										className={`cursor-pointer bg-[#001f61] text-white hover:bg-[#002a7a] transition-all duration-300 transform hover:scale-[1.02] font-semibold ${theme === 'dark' ? 'bg-gray-700 hover:bg-gray-600' : ''}`}
-										onClick={() => setIsDialogOpen(true)}
-									>
-										<UserPlus className="w-4 h-4 mr-2" />
-										Convidar Colaborador
-									</Button>
-								</DialogTrigger>
+          <CardContent className="pt-6">
+            <Tabs value={activeTab} onValueChange={setActiveTab}>
+              <TabsList className="grid grid-cols-2 w-full rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
+                <TabsTrigger
+                  value="collaborators"
+                  className={`cursor-pointer py-2 text-sm font-medium transition-all ${
+                    activeTab === 'collaborators'
+                      ? 'bg-[#011677] text-white shadow-md scale-[1.02]'
+                      : ''
+                  }`}
+                >
+                  Colaboradores ({collaborators.length})
+                </TabsTrigger>
 
-								<DialogContent className={`bg-white p-6 rounded-xl shadow-2xl max-w-lg ${theme === 'dark' ? 'bg-gray-800' : ''}`}>
-									<DialogHeader>
-										<DialogTitle className={`text-2xl font-extrabold text-center text-[#001f61] ${theme === 'dark' ? 'text-gray-200' : ''}`}>
-											Adicionar Novo Colaborador
-										</DialogTitle>
-										<DialogDescription className={`text-gray-500 text-center mt-2 ${theme === 'dark' ? 'text-gray-400' : ''}`}>
-											Preencha os dados e envie o convite com o nível de acesso apropriado.
-										</DialogDescription>
-									</DialogHeader>
+                <TabsTrigger
+                  value="pending"
+                  className={`cursor-pointer py-2 text-sm font-medium transition-all ${
+                    activeTab === 'pending'
+                      ? 'bg-[#011677] text-white shadow-md scale-[1.02]'
+                      : ''
+                  }`}
+                >
+                  Pendentes ({pendingInvites.length})
+                </TabsTrigger>
+              </TabsList>
 
-									<form onSubmit={handleInviteSubmit} className="space-y-6 py-4">
-										{user.role === "ADMIN" && (
-											<div className="space-y-2">
-												<Label htmlFor="company" className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Empresa</Label>
-												<Select value={selectedCompanyId} onValueChange={setSelectedCompanyId} required>
-													<SelectTrigger className={`focus:ring-[#001f61]/30 ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-gray-200' : 'border-gray-300'}`}>
-														<SelectValue placeholder="Selecione a empresa" />
-													</SelectTrigger>
-													<SelectContent className={`${theme === 'dark' ? 'bg-gray-700 border-gray-600' : ''}`}>
-														{companies.map((company) => (
-															<SelectItem key={company.id} value={company.id} className={`cursor-pointer ${theme === 'dark' ? 'text-gray-200 hover:bg-gray-600' : 'hover:bg-gray-100'}`}>{company.name}</SelectItem>
-														))}
-													</SelectContent>
-												</Select>
-											</div>
-										)}
-										<div className="space-y-2">
-											<Label htmlFor="email" className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>E-mail</Label>
-											<Input id="email" type="email" placeholder="email@empresa.com" required value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} className={`focus:ring-2 focus:ring-[#001f61]/30 focus:border-[#001f61] transition-colors ${theme === 'dark' ? 'bg-gray-700 text-gray-200 border-gray-600' : 'border-gray-300'}`} />
-										</div>
-										<div className="space-y-2">
-											<Label htmlFor="role" className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Nível de Acesso</Label>
-											<Select value={inviteRole} onValueChange={(value: UserRole) => setInviteRole(value)} required>
-												<SelectTrigger className={`focus:ring-[#001f61]/30 ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-gray-200' : 'border-gray-300'}`}>
-													<SelectValue placeholder="Selecione um nível" />
-												</SelectTrigger>
-												<SelectContent className={`${theme === 'dark' ? 'bg-gray-700 border-gray-600' : ''}`}>
-													<SelectItem value="COMUM" className={`cursor-pointer ${theme === 'dark' ? 'text-gray-200 hover:bg-gray-600' : 'hover:bg-gray-100'}`}>Usuário Comum</SelectItem>
-													<SelectItem value="AVALIADOR" className={`cursor-pointer ${theme === 'dark' ? 'text-gray-200 hover:bg-gray-600' : 'hover:bg-gray-100'}`}>Avaliador</SelectItem>
-													{user.role === 'ADMIN' && <SelectItem value="GESTOR" className={`cursor-pointer ${theme === 'dark' ? 'text-gray-200 hover:bg-gray-600' : 'hover:bg-gray-100'}`}>Gestor de Inovação</SelectItem>}
-												</SelectContent>
-											</Select>
-										</div>
-										{formError && <p className="text-sm text-red-500 text-center">{formError}</p>}
-										<Button type="submit" disabled={inviteStatus === 'loading' || inviteStatus === 'success'} className={`w-full cursor-pointer font-bold h-10 transition-all duration-300 ${inviteStatus === 'idle' || inviteStatus === 'error' ? 'bg-[#001f61] hover:bg-[#002a7a] text-white' : inviteStatus === 'loading' ? 'bg-blue-500 cursor-not-allowed text-white' : 'bg-green-600 hover:bg-green-700 text-white'}`}>
-											{inviteStatus === 'loading' && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-											{inviteStatus === 'success' && <CheckCircle className="mr-2 h-4 w-4" />}
-											{(inviteStatus === 'idle' || inviteStatus === 'error') && 'Enviar Convite'}
-											{inviteStatus === 'loading' && 'A Enviar...'}
-											{inviteStatus === 'success' && 'Convidado com Sucesso!'}
-										</Button>
-									</form>
-								</DialogContent>
-							</Dialog>
-						</CardHeader>
-						<CardContent className="pt-6">
-							{/* Componente de Tabs adicionado */}
-							<Tabs value={activeTab} onValueChange={setActiveTab}>
-								<TabsList className="grid w-full grid-cols-2">
-									<TabsTrigger value="collaborators">Colaboradores ({collaborators.length})</TabsTrigger>
-									<TabsTrigger value="pending">Convites Pendentes ({pendingInvites.length})</TabsTrigger>
-								</TabsList>
+              {/* ✅ Tabela de Colaboradores */}
+              <TabsContent value="collaborators" className="mt-6">
+                {isLoading ? (
+                  <p className="text-center text-gray-500">Carregando...</p>
+                ) : collaborators.length === 0 ? (
+                  <p className="text-center text-gray-500">Nenhum colaborador encontrado.</p>
+                ) : (
+                  <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Nome</TableHead>
+                          <TableHead>Email</TableHead>
+                          <TableHead>Função</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {collaborators.map((colab) => (
+                          <TableRow key={colab.id}>
+                            <TableCell>
+                              <div className="flex items-center gap-3">
+                                <Avatar>
+                                  <AvatarImage src={colab.avatarUrl || undefined} />
+                                  <AvatarFallback className="border-[#011677] border-2">{colab.name?.[0]}</AvatarFallback>
+                                </Avatar>
+                                {colab.name}
+                              </div>
+                            </TableCell>
+                            <TableCell>{colab.email}</TableCell>
+                            <TableCell>{getRoleLabel(colab.role)}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
+              </TabsContent>
 
-								<TabsContent value="collaborators" className="mt-4">
-									<div className="overflow-x-auto">
-										<Table>
-											<TableHeader>
-												<TableRow className={`${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
-													<TableHead className={`text-sm font-semibold uppercase tracking-wider ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Colaborador</TableHead>
-													<TableHead className={`text-sm font-semibold uppercase tracking-wider ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Nível de Acesso</TableHead>
-													<TableHead className={`text-right text-sm font-semibold uppercase tracking-wider ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Ações</TableHead>
-												</TableRow>
-											</TableHeader>
-											<TableBody>
-												{collaborators.length === 0 ? (
-													<TableRow><TableCell colSpan={3} className="text-center py-10 text-gray-500">{isLoading ? 'A carregar colaboradores...' : 'Nenhum colaborador encontrado.'}</TableCell></TableRow>
-												) : (
-													collaborators.map((collab) => (
-														<TableRow key={collab.id} className={`${theme === 'dark' ? 'border-gray-700 hover:bg-gray-700/50' : 'border-gray-100 hover:bg-gray-50'}`}>
-															<TableCell className="py-4">
-																<div className="flex items-center gap-4">
-																	<Avatar className="h-10 w-10">
-																		<AvatarImage src={`https://i.pravatar.cc/40?u=${collab.email}`} alt={collab.name} />
-																		<AvatarFallback className="bg-[#001f61] text-white font-semibold">{collab.name.charAt(0)}</AvatarFallback>
-																	</Avatar>
-																	<div>
-																		<p className={`font-semibold text-base ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'}`}>{collab.name}</p>
-																		<p className={`text-sm text-gray-500 ${theme === 'dark' ? 'text-gray-400' : ''}`}>{collab.email}</p>
-																	</div>
-																</div>
-															</TableCell>
-															<TableCell>
-																<Select defaultValue={collab.role} disabled={user.id === collab.id || user.role !== "GESTOR"}>
-																	<SelectTrigger className={`w-48 cursor-pointer border-gray-300 focus:ring-[#001f61]/30 ${theme === 'dark' ? 'bg-gray-700 text-gray-200 border-gray-600' : ''}`}>
-																		<SelectValue />
-																	</SelectTrigger>
-																	<SelectContent className={`shadow-lg ${theme === 'dark' ? 'bg-gray-800 border-gray-600' : ''}`}>
-																		<SelectItem className={`cursor-pointer ${theme === 'dark' ? 'text-gray-200 hover:bg-gray-700' : 'hover:bg-gray-100'}`} value="COMUM">Usuário Comum</SelectItem>
-																		<SelectItem className={`cursor-pointer ${theme === 'dark' ? 'text-gray-200 hover:bg-gray-700' : 'hover:bg-gray-100'}`} value="AVALIADOR">Avaliador</SelectItem>
-																		<SelectItem className={`cursor-pointer ${theme === 'dark' ? 'text-gray-200 hover:bg-gray-700' : 'hover:bg-gray-100'}`} value="GESTOR">Gestor de Inovação</SelectItem>
-																	</SelectContent>
-																</Select>
-															</TableCell>
-															<TableCell className="text-right">
-																<Button variant="default" size="sm" disabled={user.id === collab.id} className={`text-white bg-red-600 cursor-pointer hover:bg-red-700 transition-colors font-semibold ${user.id === collab.id ? 'opacity-50 cursor-not-allowed' : ''} ${theme === 'dark' ? 'bg-red-700 hover:bg-red-600' : ''}`}>Remover</Button>
-															</TableCell>
-														</TableRow>
-													))
-												)}
-											</TableBody>
-										</Table>
-									</div>
-								</TabsContent>
-
-								<TabsContent value="pending" className="mt-4">
-									<div className="overflow-x-auto">
-										<Table>
-											<TableHeader>
-												<TableRow>
-													<TableHead>Email Convidado</TableHead>
-													<TableHead>Nível de Acesso</TableHead>
-													<TableHead>Data do Convite</TableHead>
-													<TableHead className="text-right">Ações</TableHead>
-												</TableRow>
-											</TableHeader>
-											<TableBody>
-												{isLoading && <TableRow><TableCell colSpan={4} className="text-center py-10 text-gray-500">A carregar convites...</TableCell></TableRow>}
-												{!isLoading && pendingInvites.length === 0 && <TableRow><TableCell colSpan={4} className="text-center py-10 text-gray-500">Nenhum convite pendente encontrado.</TableCell></TableRow>}
-												{pendingInvites.map((invite) => (
-													<TableRow key={invite.id}>
-														<TableCell className="font-medium">{invite.email}</TableCell>
-														<TableCell>{getRoleLabel(invite.role)}</TableCell>
-														<TableCell>{new Date(invite.createdAt).toLocaleDateString('pt-BR')}</TableCell>
-														<TableCell className="text-right">
-															<Button variant="ghost" size="sm" onClick={() => handleRemoveInvite(invite.id)} className="text-red-600 hover:text-red-700 hover:bg-red-100">
-																<Trash2 className="w-4 h-4 mr-2" /> Remover
-															</Button>
-														</TableCell>
-													</TableRow>
-												))}
-											</TableBody>
-										</Table>
-									</div>
-								</TabsContent>
-							</Tabs>
-						</CardContent>
-					</Card>
-				</div>
-			</div>
-		</div>
-	);
+              {/* ✅ Tabela de Pendentes */}
+              <TabsContent value="pending" className="mt-6">
+                {isLoading ? (
+                  <p className="text-center text-gray-500">Carregando...</p>
+                ) : pendingInvites.length === 0 ? (
+                  <p className="text-center text-gray-500">Nenhum convite pendente.</p>
+                ) : (
+                  <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Email</TableHead>
+                          <TableHead>Função</TableHead>
+                          <TableHead>Data</TableHead>
+                          <TableHead>Ações</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {pendingInvites.map((invite) => (
+                          <TableRow key={invite.id}>
+                            <TableCell>{invite.email}</TableCell>
+                            <TableCell>{getRoleLabel(invite.role)}</TableCell>
+                            <TableCell>{new Date(invite.createdAt).toLocaleDateString('pt-BR')}</TableCell>
+                            <TableCell>
+                              <Button
+                                variant="destructive"
+                                className="cursor-pointer flex items-center gap-1 text-sm px-2 py-1"
+                                onClick={() => handleRemoveInvite(invite.id)}
+                              >
+                                <Trash2 size={14} /> Remover
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
+              </TabsContent>
+            </Tabs>
+          </CardContent>
+        </Card>
+      </main>
+    </div>
+  );
 }

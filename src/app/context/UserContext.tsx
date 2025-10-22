@@ -4,6 +4,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 export type UserRole = 'COMUM' | 'AVALIADOR' | 'GESTOR' | 'ADMIN'| 'STARTUP';
 
 export interface User {
+  avatarUrl: any;
   id: string;
   name: string;
   email: string;
