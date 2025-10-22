@@ -199,21 +199,22 @@ export default function Collaborators({ user }: CollaboratorsProps) {
                 </DialogHeader>
 
                 <form onSubmit={handleInviteSubmit} className="space-y-5 mt-4">
-                  {user.role === "ADMIN" && (
-                    <div className="space-y-1">
-                      <Label>Empresa</Label>
-                      <Select value={selectedCompanyId} onValueChange={setSelectedCompanyId} required>
-                        <SelectTrigger className={`${theme === 'dark' ? 'bg-gray-800 border-gray-700' : ''}`}>
-                          <SelectValue placeholder="Selecione a empresa" />
-                        </SelectTrigger>
-                        <SelectContent className={`${theme === 'dark' ? 'bg-gray-800 border-gray-700' : ''}`}>
-                          {companies.map((company) => (
-                            <SelectItem key={company.id} value={company.id}>{company.name}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  )}
+                  {user.role === "ADMIN" && (
+                    <div className="space-y-1">
+                      <Label>Empresa</Label>
+                      <Select value={selectedCompanyId} onValueChange={setSelectedCompanyId} required>
+                        <SelectTrigger className={`${theme === 'dark' ? 'bg-gray-800 border-gray-700' : ''}`}>
+                          <SelectValue placeholder="Selecione a empresa" />
+                        </SelectTrigger>
+                        <SelectContent className={`${theme === 'dark' ? 'bg-gray-800 border-gray-700' : ''}`}>
+                          {/* 🚨 CORREÇÃO AQUI: Garante que 'companies' é um array antes de usar .map() */}
+                          {Array.isArray(companies) && companies.map((company) => (
+                            <SelectItem key={company.id} value={company.id}>{company.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
 
                   <div>
                     <Label>E-mail</Label>
