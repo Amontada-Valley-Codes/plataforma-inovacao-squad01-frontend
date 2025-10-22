@@ -1,367 +1,430 @@
-// /plat_inovacao/src/components/Dashboard.tsx
+// /plat_inovacao/src/components/ChallengeDetails.tsx
+'use client';
 
-"use client";
-
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
+import { Label } from './ui/label';
+import { Button } from './ui/button';
+import { Badge } from './ui/badge';
+import { Separator } from './ui/separator';
+import { Progress } from './ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import { Textarea } from './ui/textarea';
 import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from "./ui/card";
-import { Button } from "./ui/button";
-import { Badge } from "./ui/badge";
-import {
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    Tooltip,
-    ResponsiveContainer,
-    PieChart,
-    Pie,
-    Cell,
-    LineChart,
-    Line,
-} from "recharts";
-import {
-    Lightbulb,
-    Rocket,
-    Users,
-    Clock,
-    Plus,
-    LogOut,
+    ArrowLeft,
+    Calendar,
     Target,
-    User as UserIcon,
-} from "lucide-react";
-import { User, Challenge, Startup } from "../app/context/UserContext";
-import { Sidebar } from "./SideBar";
-import { useRouter } from "next/navigation";
-import Image from "next/image";
-import api from "../lib/api";
-import Loading from "../app/loading";
+    Users,
+    Building2,
+    Heart,
+    MessageCircle,
+    Send,
+    Clock,
+    CheckCircle,
+    AlertCircle,
+    Star,
+    TrendingUp,
+    Paperclip,
+    Lightbulb,
+    ThumbsUp,
+    Plus
+} from 'lucide-react';
+import { User, Challenge, Startup, Idea } from '../app/context/UserContext';
+import { useRouter } from 'next/navigation';
+import api from '../lib/api';
 
-interface DashboardProps {
+// Tipos de dados específicos para esta página
+interface Comment {
+    id: string;
+    author: { name: string; avatar?: string };
+    text: string;
+    createdAt: string;
+}
+
+interface RecommendedStartup extends Startup {
+    matchScore: number;
+    connectionStatus: 'nenhum' | 'interesse' | 'convidada' | 'poc' | 'rejeitada';
+    lastInteraction?: string;
+}
+
+interface ChallengeDetailsProps {
     user: User;
-    onLogout: () => void;
+    challenge: Challenge;
+    onNavigate: (page: 'dashboard' | 'startup-database') => void;
 }
 
-// Interface para os dados agregados do dashboard (da sua branch HEAD)
-interface DashboardData {
-    ideasCount: number;
-    connectionsCount: number;
-    pocsCount: number;
-    avgTime: number;
-    funnelData: { stage: string; count: number; color: string }[];
-    kpiData: { name: string; ideas: number }[];
-    pieData: { name: string; value: number; color: string }[];
-    recentChallenges: Challenge[];
-    startupsCount: number;
-}
-
-export function Dashboard({ user, onLogout }: DashboardProps) {
-    // Estados da 'main' para UI
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const menuRef = useRef<HTMLDivElement>(null);
+export function ChallengeDetails({ user, challenge, onNavigate }: ChallengeDetailsProps) {
     const [theme, setTheme] = useState<string>(typeof window !== 'undefined' ? (sessionStorage.getItem('theme') || 'light') : 'light');
     const router = useRouter();
 
-    // Estados da sua branch HEAD para dados
-    const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
+    // Estados para os dados dinâmicos
+    const [submissions, setSubmissions] = useState<Idea[]>([]);
+    const [recommendedStartups, setRecommendedStartups] = useState<RecommendedStartup[]>([]);
+    const [comments, setComments] = useState<Comment[]>([]);
+    const [newComment, setNewComment] = useState('');
+    const [isSubmittingComment, setIsSubmittingComment] = useState(false);
 
-    // Mapeamentos de dados da sua branch HEAD
-    const stageLabels: { [key: string]: string } = {
-        GERACAO: "Geração/Captura",
-        PRE_TRIAGEM: "Pré-Triagem",
-        IDEACAO: "Ideação",
-        TRIAGEM_DETALHADA: "Triagem Detalhada",
-        EXPERIMENTACAO: "Experimentação (POC)",
-    };
-    const funnelColors = {
-        "Geração/Captura": "#3B82F6",
-        "Pré-Triagem": "#8B5CF6",
-        "Ideação": "#06B6D4",
-        "Triagem Detalhada": "#10B981",
-        "Experimentação (POC)": "#F59E0B",
-    };
+    // useEffect para buscar os dados secundários
+    useEffect(() => {
+        if (!challenge.id) return;
 
-    // useEffect combinado para buscar dados e gerir o menu dropdown
-    // /plat_inovacao/src/components/Dashboard.tsx
+        const fetchRelatedData = async () => {
+            try {
+                // Buscar tudo em paralelo
+                const [ideasRes, startupsRes, commentsRes] = await Promise.all([
+                    api.get('/idea'),
+                    api.get('/startups'),
+                    api.get(`/comments/${challenge.id}/CHALLENGE`)
+                ]);
 
-useEffect(() => {
-    const fetchData = async () => {
-        setIsLoading(true);
-        try {
-            // Define os endpoints com base na função do usuário
-            const challengesEndpoint = user.role === 'ADMIN' || user.role === 'STARTUP'
-                ? '/challenges/findByPublic' 
-                : `/challenges/findByCompany/${user.companyId}`;
+                // Filtrar ideias por challengeId
+                const challengeIdeas = ideasRes.data.filter((idea: any) => idea.challengeId === challenge.id);
+                setSubmissions(challengeIdeas);
 
-            const ideasEndpoint = user.role === 'ADMIN' || user.role === 'STARTUP'
-                ? '/idea'
-                : `/idea/company/${user.companyId}`;
-			
-			const startupsEndpoint = '/startups'; 
+                // Simular lógica de recomendação de startups
+                const recommendations = startupsRes.data.slice(0, 3).map((startup: Startup, index: number) => ({
+                    ...startup,
+                    matchScore: 95 - (index * 5), // Lógica de score simples
+                    connectionStatus: 'nenhum' as const, // Adicionado para corresponder ao novo tipo
+                }));
+                setRecommendedStartups(recommendations);
 
+                // Mapear comentários para o formato do frontend
+                const formattedComments = commentsRes.data.map((comment: any) => ({
+                    id: comment.id,
+                    author: { name: comment.author.name || 'Usuário' },
+                    text: comment.text,
+                    createdAt: new Date(comment.createdAt).toLocaleDateString('pt-BR'),
+                }));
+                setComments(formattedComments);
 
-            // Para o admin, alguns endpoints podem não ser necessários ou podem ser diferentes
-            const connectionsEndpoint = user.role === 'ADMIN' ? '/companies/list' : '/connections';
-            const pocsEndpoint = user.role === 'ADMIN' ? null : '/poc'; // Admin não vê POCs por enquanto
-
-            // Monta as chamadas da API
-            const apiCalls = [
-                api.get(ideasEndpoint),
-                api.get(startupsEndpoint), // Supondo que startups são sempre globais
-                api.get(challengesEndpoint),
-                api.get(connectionsEndpoint),
-            ];
-
-            if (pocsEndpoint) {
-                apiCalls.push(api.get(pocsEndpoint));
+            } catch (error) {
+                console.error("Falha ao buscar dados relacionados ao desafio:", error);
             }
+        };
 
-            const [ideasRes, startupsRes, challengesRes, connectionsRes, pocsRes] = await Promise.all(apiCalls);
+        fetchRelatedData();
+    }, [challenge.id]);
 
-			console.log('Dados recebidos:', { ideasRes, startupsRes, challengesRes, connectionsRes, pocsRes });
-
-            // --- Processamento dos dados ---
-
-            // O resto da sua lógica de processamento continua igual,
-            // mas agora ela receberá os dados corretos para cada tipo de usuário.
-
-            const ideasCount = ideasRes.data.length;
-            const startupsCount = startupsRes.data.length;
-            const challengesCount = challengesRes.data.length;
-            // Para o admin, 'connections' são as empresas; para outros, são as conexões reais
-            const connectionsCount = connectionsRes.data.length; 
-
-
-            // pocsRes pode não existir para o admin
-            const pocsCount = pocsRes ? pocsRes.data.length : 0; 
-
-            const funnelCounts = ideasRes.data.reduce((acc: any, idea: any) => {
-                    const stageName = stageLabels[idea.stage] || 'Outro';
-                    acc[stageName] = (acc[stageName] || 0) + 1;
-                    return acc;
-                }, {});
-                const funnelData = Object.entries(funnelCounts).map(([stage, count]) => ({
-                    stage,
-                    count: count as number,
-                    color: funnelColors[stage as keyof typeof funnelColors] || '#ccc'
-                }));
-
-                const segmentCounts = startupsRes.data.reduce((acc: any, startup: any) => {
-                    acc[startup.segment] = (acc[startup.segment] || 0) + 1;
-                    return acc;
-                }, {});
-                const pieData = Object.entries(segmentCounts).map(([name, value], index) => ({
-                    name,
-                    value: value as number,
-                    color: ['#3B82F6', '#10B981', '#F59E0B', '#8B5CF6'][index % 4]
-                }));
-
-            setDashboardData({
-                ideasCount,
-                startupsCount,
-                connectionsCount,
-                pocsCount,
-                recentChallenges: challengesRes.data.data || challengesRes.data, 
-                pieData,
-                kpiData: [
-                    { name: "Jan", ideas: 10 }, { name: "Fev", ideas: 20 },
-                    { name: "Mar", ideas: 15 }, { name: "Abr", ideas: 25 },
-                    { name: "Mai", ideas: ideasCount },
-                ],
-                avgTime: 0, 
-                funnelData,
+    const handlePostComment = async () => {
+        if (!newComment.trim()) return;
+        setIsSubmittingComment(true);
+        try {
+            const response = await api.post('/comments', {
+                text: newComment,
+                commentableType: 'CHALLENGE',
+                commentableId: challenge.id,
             });
 
+            // Adicionar o novo comentário à lista para atualização da UI
+            const newCommentData: Comment = {
+                id: response.data.id,
+                author: { name: user.name },
+                text: response.data.text,
+                createdAt: new Date().toLocaleDateString('pt-BR'),
+            };
+            setComments(prev => [newCommentData, ...prev]);
+            setNewComment('');
+
         } catch (error) {
-            console.error("Falha ao carregar dados do dashboard:", error);
-            // Vericar se o status de erro for 403 colocar lista vazias nas poc ideias e connections
-            if (error.response?.status === 403) {
-                setDashboardData({
-                    ideasCount: 0,
-                    startupsCount: 0,
-                    connectionsCount: 0,
-                    pocsCount: 0,
-                    recentChallenges: [],
-                    pieData: [],
-                    kpiData: [],
-                    avgTime: 0,
-                    funnelData: [],
-                });
-            } else {
-                throw error;
-            }
+            console.error("Falha ao publicar comentário:", error);
+            alert("Não foi possível publicar o seu comentário.");
         } finally {
-            setIsLoading(false);
+            setIsSubmittingComment(false);
         }
     };
 
-    // Adiciona uma verificação para não executar se não houver usuário
-    if (user) {
-        fetchData();
-    } else {
-        setIsLoading(false);
-    }
-
-}, [user]); // Depende do objeto user inteiro
-
-    // Handlers combinados de ambas as branches
-    const handleChallengeClick = (challenge: Challenge) => {
-        sessionStorage.setItem("selectedChallenge", JSON.stringify(challenge));
-        router.push(`/funnel/${challenge.id}`);
-    };
-    const handleThemeChange = (newTheme: string) => {
-        sessionStorage.setItem('theme', newTheme);
-        setTheme(newTheme);
+    // Funções auxiliares (progress, etc.)
+    const calculateProgress = () => {
+        const startDate = new Date(challenge.startDate);
+        const endDate = new Date(challenge.endDate);
+        const now = new Date();
+        const total = endDate.getTime() - startDate.getTime();
+        const elapsed = now.getTime() - startDate.getTime();
+        return Math.min(100, Math.max(0, (elapsed / total) * 100));
     };
 
-    if (isLoading || !dashboardData) {
-        return <Loading />;
-    }
+    const getStatusColor = (status: string) => {
+        const colors: { [key: string]: string } = {
+            nenhum: 'bg-gray-100 text-gray-800', interesse: 'bg-blue-100 text-blue-800',
+            convidada: 'bg-yellow-100 text-yellow-800', poc: 'bg-green-100 text-green-800',
+            rejeitada: 'bg-red-100 text-red-800'
+        };
+        return colors[status] || 'bg-gray-100 text-gray-800';
+    };
+    const getStatusLabel = (status: string) => {
+        const labels: { [key: string]: string } = {
+            nenhum: 'Não Contatada', interesse: 'Interesse Registrado', convidada: 'Convidada para POC',
+            poc: 'POC em Andamento', rejeitada: 'Rejeitada'
+        };
+        return labels[status] || status;
+    };
+    const getStatusIcon = (status: string) => {
+        switch (status) {
+            case 'interesse': return <Heart className="w-4 h-4" />;
+            case 'convidada': return <Send className="w-4 h-4" />;
+            case 'poc': return <CheckCircle className="w-4 h-4" />;
+            case 'rejeitada': return <AlertCircle className="w-4 h-4" />;
+            default: return null;
+        }
+    };
+
 
     return (
-        <div className={`flex h-screen bg-background text-white ${theme === 'dark' ? 'bg-gray-900 text-white' : ''}`}>
-            <Sidebar theme={theme} user={user} />
-
-            <div className={`flex-1 overflow-y-auto bg-gray-50 text-gray-900 ${theme === 'dark' ? 'bg-gray-900 text-white' : ''}`}>
-                <div className="p-6 md:p-8 space-y-8">
-                    {/* Header do Dashboard da 'main', com menu de perfil e tema */}
-                    <div className="flex items-center justify-between">
-                        <div className="flex flex-col">
-                            <h1 className={`font-extrabold text-3xl text-[#011677] mb-1 ${theme === 'dark' ? 'text-white' : ''}`}>Dashboard</h1>
-                            <p className={`text-gray-500 text-base ${theme === 'dark' ? 'text-gray-200' : ''}`}>
-                                Visão geral dos indicadores e atividades de <span className="uppercase">{user.company}</span>
-                            </p>
-                        </div>
-
-                        <div className="flex items-center gap-4">
-                            <button
-                                className={`w-14 cursor-pointer h-10 flex items-center justify-center rounded-full bg-gray-200 text-gray-800 hover:bg-gray-300 transition-colors shadow-md ${theme === 'dark' ? 'bg-gray-700 text-white hover:bg-gray-600' : ''}`}
-                                onClick={() => handleThemeChange(theme === 'light' ? 'dark' : 'light')}
-                                aria-label="Mudar tema"
-                            >
-                                {theme === 'light' ? (
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="5" stroke="currentColor" strokeWidth="2" fill="currentColor" /><path stroke="currentColor" strokeWidth="2" d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" /></svg>
-                                ) : (
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke="currentColor" strokeWidth="2" d="M21 12.79A9 9 0 1111.21 3a7 7 0 109.79 9.79z" fill="currentColor" /></svg>
-                                )}
-                            </button>
-
-                            <div className="relative" ref={menuRef}>
-                                <div
-                                    className="w-10 h-10 bg-[#011677] rounded-full flex items-center justify-center cursor-pointer shadow-md hover:ring-2 ring-offset-2 ring-[#011677] transition-all"
-                                    onClick={() => setIsMenuOpen(!isMenuOpen)}
-                                >
-                                    {user.image_url ? (
-                                        <Image src={user.image_url} alt="Perfil" width={40} height={40} className="rounded-full object-cover" />
-                                    ) : (
-                                        <span className="text-lg font-bold text-white">{user.name[0].toUpperCase()}</span>
-                                    )}
-                                </div>
-                                {isMenuOpen && (
-                                    <Card className={`absolute right-0 mt-3 w-72 rounded-xl shadow-2xl z-20 bg-white p-0 overflow-hidden ${theme === 'dark' ? 'bg-gray-900' : ''}`}>
-                                        <div className="bg-[#011677]/95 p-4 text-center "><p className="text-base font-semibold text-white">{user.name}</p><p className="text-sm text-gray-200 truncate">{user.email}</p></div>
-                                        <CardContent className={`p-2 space-y-1 ${theme === 'dark' ? 'bg-gray-900' : ''}`}>
-                                            <div className={`flex items-center p-3 rounded-lg cursor-pointer transition-colors ${theme === 'dark' ? 'text-gray-200 hover:bg-gray-800' : 'text-gray-700 hover:bg-gray-100'}`} onClick={() => { router.push("/profile"); setIsMenuOpen(false); }}>
-                                                <UserIcon className={`mr-3 h-4 w-4 ${theme === 'dark' ? 'text-gray-200' : 'text-[#011677]'}`} />
-                                                <span className="text-sm font-medium">Ver Perfil</span>
-                                            </div>
-                                            <hr className={`my-1 ${theme === 'dark' ? 'border-gray-700' : 'border-gray-100'}`} />
-                                            <div className={`flex items-center p-3 rounded-lg cursor-pointer transition-colors ${theme === 'dark' ? 'text-red-400 hover:bg-gray-800' : 'text-red-600 hover:bg-red-50'}`} onClick={onLogout}>
-                                                <LogOut className={`mr-3 h-4 w-4 ${theme === 'dark' ? 'text-red-400' : 'text-red-600'}`} />
-                                                <span className="text-sm font-semibold">Sair da Plataforma</span>
-                                            </div>
-                                        </CardContent>
-                                    </Card>
-                                )}
-                            </div>
+        <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'}`}>
+            {/* Header */}
+            <div className={`  ${theme === 'dark' ? 'bg-gray-700 text-white' : ' text-white border-b border-gray-200 bg-[#011677]'}`}>
+                <div className="container mx-auto px-6 py-4">
+                    <div className="flex items-center gap-4">
+                        <Button className={`hovers-exit-dash ${theme === 'dark' ? 'hover:bg-gray-600' : ''}`} variant="ghost" size="sm" onClick={() => onNavigate('dashboard')}>
+                            <ArrowLeft className="w-4 h-4 mr-2" />
+                            Voltar ao Dashboard
+                        </Button>
+                        <Separator orientation="vertical" className="h-6" />
+                        <div className="flex items-center gap-2">
+                            <Target className="w-5 h-5" />
+                            <h1 className="font-semibold">Detalhes do Desafio</h1>
                         </div>
                     </div>
+                </div>
+            </div>
 
-                    {/* KPI Cards populados com dados da API e estilizados pela 'main' */}
-                    {user.role === "GESTOR" && (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                            <Card className={`shadow-lg hover:shadow-xl transition-shadow duration-300 ${theme === 'dark' ? 'bg-gray-800 text-white' : ''}`}>
-                                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><CardTitle className={`text-sm font-medium text-gray-500 ${theme === 'dark' ? 'text-gray-200' : ''}`}>Ideias Submetidas</CardTitle><Lightbulb className={`h-4 w-4 text-[#011677] ${theme === 'dark' ? 'text-gray-200' : ''}`} /></CardHeader>
-                                <CardContent><div className={`text-3xl font-bold ${theme === 'dark' ? 'text-gray-200' : 'text-gray-900'}`}>{dashboardData.ideasCount}</div><p className="text-xs text-green-600 mt-1">+12% em relação ao mês anterior</p></CardContent>
-                            </Card>
-                            <Card className={`shadow-lg hover:shadow-xl transition-shadow duration-300 ${theme === 'dark' ? 'bg-gray-800 text-white' : ''}`}>
-                                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><CardTitle className={`text-sm font-medium text-gray-500 ${theme === 'dark' ? 'text-gray-200' : ''}`}>Startups Conectadas</CardTitle><Users className="h-4 w-4 text-[#06B6D4]" /></CardHeader>
-                                <CardContent><div className={`text-3xl font-bold ${theme === 'dark' ? 'text-gray-200' : 'text-gray-900'}`}>{dashboardData.startupsCount}</div><p className="text-xs text-green-600 mt-1">+8% em relação ao mês anterior</p></CardContent>
-                            </Card>
-                            <Card className={`shadow-lg hover:shadow-xl transition-shadow duration-300 ${theme === 'dark' ? 'bg-gray-800 text-white' : ''}`}>
-                                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><CardTitle className={`text-sm font-medium text-gray-500 ${theme === 'dark' ? 'text-gray-200' : ''}`}>POCs Realizadas</CardTitle><Rocket className="h-4 w-4 text-[#F59E0B]" /></CardHeader>
-                                <CardContent><div className={`text-3xl font-bold ${theme === 'dark' ? 'text-gray-200' : 'text-gray-900'}`}>{dashboardData.pocsCount}</div><p className="text-xs text-green-600 mt-1">+25% em relação ao mês anterior</p></CardContent>
-                            </Card>
-                            <Card className={`shadow-lg hover:shadow-xl transition-shadow duration-300 ${theme === 'dark' ? 'bg-gray-800 text-white' : ''}`}>
-                                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><CardTitle className={`text-sm font-medium text-gray-500 ${theme === 'dark' ? 'text-gray-200' : ''}`}>Tempo Médio por Etapa</CardTitle><Clock className="h-4 w-4 text-red-500" /></CardHeader>
-                                <CardContent><div className={`text-3xl font-bold ${theme === 'dark' ? 'text-gray-200' : 'text-gray-900'}`}>{dashboardData.avgTime} dias</div><p className="text-xs text-red-600 mt-1">-15% em relação ao mês anterior</p></CardContent>
-                            </Card>
-                        </div>
-                    )}
-                    
-                    {/* Restante do JSX combinado, usando dashboardData e estilos da 'main' */}
-                    {(user.role === "AVALIADOR" || user.role === "GESTOR") && (
-                        <Card className={`lg:col-span-2 shadow-lg ${theme === 'dark' ? 'bg-gray-800 text-white' : ''}`}>
-                            <CardHeader><CardTitle className="text-xl font-bold">Funil de Inovação</CardTitle><CardDescription>Distribuição de projetos por etapa do processo de inovação.</CardDescription></CardHeader>
-                            <CardContent className="pt-2">
-                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-                                    {dashboardData.funnelData.map((stage) => (
-                                        <div key={stage.stage} className="text-center">
-                                            <div className="h-20 rounded-xl mb-2 flex flex-col items-center justify-center text-white font-bold text-2xl transition-all duration-300 hover:scale-[1.03]" style={{ backgroundColor: stage.color }}>{stage.count}</div>
-                                            <h4 className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-200' : 'text-gray-700'}`}>{stage.stage}</h4>
-                                            <p className={`text-xs text-gray-500 ${theme === 'dark' ? 'text-gray-400' : ''}`}>projetos</p>
+            {/* Content */}
+            <div className="container mx-auto px-6 py-8">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    {/* Left Column - Challenge Details */}
+                    <div className="lg:col-span-2 space-y-6">
+                        <Card className={`bg-white ${theme === 'dark' ? 'bg-gray-800 text-white' : ''}`}>
+                            <CardHeader>
+                                <div className="flex items-start justify-between">
+                                    <div className="space-y-2">
+                                        <CardTitle className="text-xl">{challenge.name}</CardTitle>
+                                        <div className="flex items-center gap-2">
+                                            <Badge variant="outline">{challenge.area}</Badge>
+                                            <Badge variant={challenge.type === 'PUBLICO' ? 'default' : 'secondary'}>
+                                                {challenge.type === 'PUBLICO' ? 'Público' : 'Interno'}
+                                            </Badge>
+                                            <Badge variant="outline">{challenge.company}</Badge>
                                         </div>
-                                    ))}
+                                    </div>
+                                </div>
+                            </CardHeader>
+                            <CardContent className="space-y-6">
+                                <div>
+                                    <h3 className="font-semibold">Descrição do Problema</h3>
+                                    <p className={` mt-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>{challenge.description}</p>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <div className={`flex items-center gap-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                                            <Calendar className="w-4 h-4" />
+                                            Data de Início: {new Date(challenge.startDate).toLocaleDateString('pt-BR')}
+                                        </div>
+                                        <div className={`flex items-center gap-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                                            <Calendar className="w-4 h-4" />
+                                            Data de Fim: {new Date(challenge.endDate).toLocaleDateString('pt-BR')}
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label className="text-sm font-medium">Progresso do Desafio</Label>
+                                        <Progress value={calculateProgress()} className="w-full" />
+                                        <p className="text-xs text-gray-500">
+                                            {Math.round(calculateProgress())}% concluído
+                                        </p>
+                                    </div>
                                 </div>
                             </CardContent>
                         </Card>
-                    )}
 
-                    {(user.role === "AVALIADOR" || user.role === "GESTOR") && (
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            <Card className={`shadow-lg ${theme === 'dark' ? 'bg-gray-800 text-white' : ''}`}>
-                                <CardHeader><CardTitle className="text-xl font-bold">Tendência de Ideias</CardTitle><CardDescription>Evolução mensal de submissões.</CardDescription></CardHeader>
-                                <CardContent>
-                                    <ResponsiveContainer width="100%" height={300}>
-                                        <LineChart data={dashboardData.kpiData} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}><CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" /><XAxis dataKey="name" stroke="#6b7280" /><YAxis stroke="#6b7280" /><Tooltip contentStyle={{ borderRadius: "8px", border: "1px solid #e0e0e0" }} /><Line type="monotone" dataKey="ideas" stroke="#011677" strokeWidth={3} activeDot={{ r: 8 }} /></LineChart>
-                                    </ResponsiveContainer>
+                        <Card className={`bg-white ${theme === 'dark' ? 'bg-gray-800 text-white' : ''}`}>
+                            <CardHeader>
+                                <CardTitle>Métricas do Desafio</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                    <div className="text-center">
+                                        <div className={`text-2xl font-bold ${theme === 'dark' ? 'text-gray-400' : 'text-gray-800'}`}>{submissions.length}</div>
+                                        <p className={`text-sm ${theme === 'dark' ? 'text-gray-200' : 'text-gray-500'}`}>Ideias Submetidas</p>
+                                    </div>
+                                    <div className="text-center">
+                                        <div className={`text-2xl font-bold ${theme === 'dark' ? 'text-gray-400' : 'text-green-600'}`}>4</div>
+                                        <p className={`text-sm ${theme === 'dark' ? 'text-gray-200' : 'text-gray-500'}`}>Startups Interessadas</p>
+                                    </div>
+                                    <div className="text-center">
+                                        <div className={`text-2xl font-bold ${theme === 'dark' ? 'text-gray-400' : 'text-blue-600'}`}>2</div>
+                                        <p className={`text-sm ${theme === 'dark' ? 'text-gray-200' : 'text-gray-500'}`}>POCs Iniciadas</p>
+                                    </div>
+                                    <div className="text-center">
+                                        <div className={`text-2xl font-bold ${theme === 'dark' ? 'text-gray-400' : 'text-yellow-600'}`}>87%</div>
+                                        <p className={`text-sm ${theme === 'dark' ? 'text-gray-200' : 'text-gray-500'}`}>Score Médio</p>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
+
+                    {/* Right Column - Actions */}
+                    <div className="space-y-6">
+                        <Card className={`bg-white ${theme === 'dark' ? 'bg-gray-800 text-white' : ''}`}>
+                            <CardHeader>
+                                <CardTitle>Ações Rápidas</CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-3">
+                                <Button className={`w-full justify-start cursor-pointer  ${theme === 'dark' ? 'text-gray-200 hover:bg-gray-500' : 'text-gray-800 hover:bg-gray-100'}`} variant='outline'>
+                                    <Users className="w-4 h-4 mr-2" />
+                                    Gerenciar Participantes
+                                </Button>
+
+                                <Button variant="outline" className={`w-full justify-start cursor-pointer  ${theme === 'dark' ? 'text-gray-200 hover:bg-gray-500' : 'text-gray-800 hover:bg-gray-100'}`}>
+                                    <TrendingUp className="w-4 h-4 mr-2" />
+                                    Relatório Detalhado
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    className={`w-full justify-start cursor-pointer  ${theme === 'dark' ? 'text-gray-200 hover:bg-gray-500' : 'text-gray-800 hover:bg-gray-100'}`}
+                                    onClick={() => onNavigate('startup-database')}
+                                >
+                                    <Building2 className="w-4 h-4 mr-2" />
+                                    Buscar Mais Startups
+                                </Button>
+                                <Button
+                                    className={`w-full justify-start bg-[#011677] text-white hover:bg-[#0121af] cursor-pointer ${theme === 'dark' ? 'bg-gray-600 hover:bg-gray-700 ' : ''}`}
+                                    onClick={() => router.push(`/funnel/${challenge.id}`)}
+                                >
+                                    <Target className="w-4 h-4 mr-2" />
+                                    Aceder ao Funil de Ideias
+                                </Button>
+                            </CardContent>
+                        </Card>
+                    </div>
+                </div>
+
+                {/* Tabs */}
+                <div className="mt-8">
+                    <Tabs defaultValue="submissions">
+                        <TabsList className={`bg-white border-b ${theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'border-gray-200'}`}>
+                            <TabsTrigger className={`py-4 px-6 text-sm font-medium ${theme === 'dark' ? 'text-gray-200 hover:bg-gray-700' : 'text-gray-800 hover:bg-gray-100'}`} value="submissions">Submissões ({submissions.length})</TabsTrigger>
+                            <TabsTrigger className={`py-4 px-6 text-sm font-medium ${theme === 'dark' ? 'text-gray-200 hover:bg-gray-700' : 'text-gray-800 hover:bg-gray-100'}`} value="startups">Startups Recomendadas ({recommendedStartups.length})</TabsTrigger>
+                            <TabsTrigger className={`py-4 px-6 text-sm font-medium ${theme === 'dark' ? 'text-gray-200 hover:bg-gray-700' : 'text-gray-800 hover:bg-gray-100'}`} value="discussion">{challenge.type === 'PUBLICO' ? 'Discussão' : 'Discussão Interna'}({comments.length})</TabsTrigger>
+                        </TabsList>
+
+                        {/* Tab de Submissões de Ideias */}
+                        <TabsContent value="submissions">
+                            <Card className={`bg-white mt-4 ${theme === 'dark' ? 'bg-gray-800 text-white' : ''}`}>
+                                <CardHeader>
+                                    <CardTitle>Ideias Submetidas</CardTitle>
+                                </CardHeader>
+                                <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {submissions.map((idea) => (
+                                        <Card key={idea.id} className={`flex flex-col ${theme === 'dark' ? 'bg-gray-700 text-white' : ''}`}>
+                                            <CardHeader>
+                                                <CardTitle className="text-base">{idea.title}</CardTitle>
+                                                <CardDescription>por {idea.authorId}</CardDescription>
+                                            </CardHeader>
+                                            <CardContent className="flex-1 flex items-end justify-between text-sm text-gray-500">
+                                                <div className="flex items-center gap-4">
+                                                    <span className="flex items-center gap-1"><ThumbsUp className="w-4 h-4" /> {idea.votes || 0}</span>
+                                                    <span className="flex items-center gap-1"><MessageCircle className="w-4 h-4" /> {idea.comments || 0}</span>
+                                                </div>
+                                                <Badge className={` ${theme === 'dark' ? 'bg-gray-600 text-gray-200' : 'bg-gray-100 text-gray-800'}`} variant="outline">{idea.stage}</Badge>
+                                            </CardContent>
+                                        </Card>
+                                    ))}
                                 </CardContent>
                             </Card>
-                            <Card className={`shadow-lg ${theme === 'dark' ? 'bg-gray-800 text-white' : ''}`}>
-                                <CardHeader><CardTitle className="text-xl font-bold">Distribuição por Segmento</CardTitle><CardDescription>Startups por área de atuação.</CardDescription></CardHeader>
-                                <CardContent className="pt-0">
-                                    <ResponsiveContainer width="100%" height={300}>
-                                        <PieChart><Pie data={dashboardData.pieData} cx="50%" cy="50%" outerRadius={100} dataKey="value" labelLine={false} label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}>{dashboardData.pieData.map((entry, index) => (<Cell key={`cell-${index}`} fill={entry.color} stroke="#fff" strokeWidth={2} />))}</Pie><Tooltip /></PieChart>
-                                    </ResponsiveContainer>
+                        </TabsContent>
+
+                        {/* Tab de Startups */}
+                        <TabsContent value="startups">
+                            <Card className={`bg-white mt-4 ${theme === 'dark' ? 'bg-gray-800 text-white' : ''}`}>
+                                <CardHeader><CardTitle>Recomendações Automáticas</CardTitle></CardHeader>
+                                <CardContent className="space-y-4">
+                                    {recommendedStartups.map((startup) => (
+                                        <div key={startup.id} className={` rounded-lg p-4 ${theme === 'dark' ? 'bg-gray-700' : 'border border-gray-200'}`}>
+                                            <div className="flex items-start justify-between mb-4">
+                                                <div className="space-y-2">
+                                                    <div className="flex items-center gap-2">
+                                                        <h4 className="font-medium">{startup.name}</h4>
+                                                        <Badge variant="outline">{startup.segment}</Badge>
+                                                        <Badge className="bg-green-100 text-green-800">{startup.matchScore}% Match</Badge>
+                                                    </div>
+                                                    <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>{startup.description}</p>
+                                                    <div className={`flex items-center gap-4 text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
+                                                        <span>Estágio: {startup.stage}</span>
+                                                        <span>Tecnologia: {startup.technology}</span>
+                                                    </div>
+                                                </div>
+                                                <div className="text-right">
+                                                    <div className="text-2xl font-bold text-green-600">{startup.matchScore}%</div>
+                                                    <p className="text-xs text-gray-500">Compatibilidade</p>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center justify-between pt-4 border-t border-gray-200">
+                                                <div className="flex items-center gap-2">
+                                                    <Badge className={getStatusColor(startup.connectionStatus)}>
+                                                        {getStatusIcon(startup.connectionStatus)}
+                                                        <span className="ml-1">{getStatusLabel(startup.connectionStatus)}</span>
+                                                    </Badge>
+                                                </div>
+                                                <div className="flex gap-2">
+                                                    {/* Botões de Ação */}
+                                                    <Button variant="ghost" size="sm" onClick={() => router.push(`/startup/${startup.id}`)}>
+                                                        <Building2 className="w-4 h-4 mr-2" />
+                                                        Ver Perfil
+                                                    </Button>
+                                                    <Button variant="ghost" size="sm" onClick={() => router.push(`/startup/${startup.id}`)}>
+                                                        <Plus className="w-4 h-4 mr-2" />
+                                                        Adicionar
+                                                    </Button>
+                                                    <Button variant="ghost" size="sm" onClick={() => router.push(`/startup/${startup.id}`)}>
+                                                        <ThumbsUp className="w-4 h-4 mr-2" />
+                                                        Conectar
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
                                 </CardContent>
                             </Card>
-                        </div>
-                    )}
+                        </TabsContent>
 
-                    <Card className={`shadow-lg ${theme === 'dark' ? 'bg-gray-800 text-white' : ''}`}>
-                        <CardHeader className="flex md:flex-row flex-col md:items-center justify-between pb-4">
-                            <div><CardTitle className="text-xl font-bold">Desafios Ativos</CardTitle><CardDescription>Desafios em andamento na plataforma que você pode atuar.</CardDescription></div>
-                            <Button className={`bg-[#011677] cursor-pointer text-white hover:bg-[#020ebd] mt-4 md:mt-0 font-semibold transition-colorsv ${theme === 'dark' ? 'bg-gray-700 hover:bg-gray-600' : ''}`} onClick={() => router.push("/challenges/new")}><Plus className="w-4 h-4 mr-2" />Criar Novo Desafio</Button>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="space-y-4">
-                                {dashboardData.recentChallenges.map((challenge) => (
-                                    <div key={challenge.id} className={`flex md:items-center md:flex-row flex-col justify-between p-4 border border-gray-200 rounded-xl hover:bg-gray-100 cursor-pointer transition-colors ${theme === 'dark' ? 'border-gray-700 hover:bg-gray-600' : ''}`}>
-                                        <div className="space-y-1"><h4 className={`font-semibold text-lg ${theme === 'dark' ? 'text-gray-200' : 'text-[#011677]'}`}>{challenge.name}</h4><div className="flex items-center gap-3 flex-wrap"><Badge variant="outline" className="border-[#011677] text-[#011677] bg-blue-50/50 hover:bg-blue-100 transition-colors">{challenge.area}</Badge><Badge className={challenge.type === "PUBLICO" ? "bg-green-500 text-white hover:bg-green-600" : "bg-yellow-500 text-white hover:bg-yellow-600"}>{challenge.type === "PUBLICO" ? "Público" : "Interno"}</Badge><span className="text-sm text-gray-500 flex items-center gap-1"><Clock className="w-4 h-4" />{new Date(challenge.startDate).toLocaleDateString("pt-BR")} - {new Date(challenge.endDate).toLocaleDateString("pt-BR")}</span></div></div>
-                                        <div className="flex flex-col md:flex-row md:space-x-3 space-y-2 md:space-y-0 mt-4 md:mt-0">
-                                            <Button className="bg-gray-200 text-gray-700 h-9 hover:bg-gray-300 transition-colors font-medium cursor-pointer" size="sm" onClick={(e) => { e.stopPropagation(); sessionStorage.setItem("selectedChallenge", JSON.stringify(challenge)); router.push(`/challenges/${challenge.id}`); }}><Lightbulb className="w-4 h-4 mr-2" />Ver Detalhes</Button>
-                                            <Button className="bg-[#011677] text-white hover:bg-[#020ebd] h-9 font-medium transition-colors cursor-pointer" onClick={(e) => { e.stopPropagation(); handleChallengeClick(challenge); }}><Target className="w-4 h-4 mr-2" />Funil de Ideias</Button>
+                        {/* Tab de Discussão */}
+                        <TabsContent value="discussion">
+                            <Card className={`bg-white mt-4 ${theme === 'dark' ? 'bg-gray-800 text-white' : ''}`}>
+
+                                <CardHeader><CardTitle>{challenge.type === 'PUBLICO' ? 'Discussão' : 'Discussão Interna'}</CardTitle></CardHeader>
+                                <CardContent className="space-y-6">
+                                    <div className="flex items-start gap-4">
+                                        <Avatar className={theme === 'dark' ? 'bg-gray-700' : ''}><AvatarFallback>{user.name.charAt(0)}</AvatarFallback></Avatar>
+                                        <div className="w-full space-y-2">
+                                            <Textarea className='focus:border-[#001f61] focus:ring focus:ring-[#001f61]/30 transition-colors' placeholder="Adicione um comentário..." value={newComment} onChange={(e) => setNewComment(e.target.value)} />
+                                            <div className="flex justify-between items-center">
+                                                <Button className={`hover:bg-gray-300 cursor-pointer ${theme === 'dark' ? 'hover:bg-gray-600' : '' }`} variant="outline" size="sm"><Paperclip className="w-4 h-4 mr-2" />Anexar</Button>
+                                                <Button className={`hover:bg-gray-300 cursor-pointer ${theme === 'dark' ? 'hover:bg-gray-600' : ''}`} onClick={handlePostComment} size="sm" disabled={isSubmittingComment}>
+                                                    {isSubmittingComment ? 'A publicar...' : <><Send className="w-4 h-4 mr-2 " />Publicar</>}
+                                                </Button>
+                                            </div>
                                         </div>
                                     </div>
-                                ))}
-                            </div>
-                        </CardContent>
-                    </Card>
+                                    <Separator />
+                                    <div className="space-y-6">
+                                        {comments.map((comment) => (
+                                            <div key={comment.id} className="flex items-start gap-4">
+                                                <Avatar><AvatarFallback>{comment.author.name.charAt(0)}</AvatarFallback></Avatar>
+                                                <div>
+                                                    <p className="font-medium text-sm">{comment.author.name}</p>
+                                                    <p className={`text-sm ${theme === 'dark' ? 'text-gray-200' : 'text-gray-500'}`}>{comment.text}</p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </TabsContent>
+                    </Tabs>
                 </div>
             </div>
         </div>

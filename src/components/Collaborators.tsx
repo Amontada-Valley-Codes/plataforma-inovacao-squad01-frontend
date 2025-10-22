@@ -100,6 +100,7 @@ export default function Collaborators({ user }: CollaboratorsProps) {
       const payload: { email: string; role: string; companyId?: string } = {
         email: inviteEmail,
         role: inviteRole.toUpperCase(),
+        companyId: user.companyId,
       };
       if (user.role === 'ADMIN') {
         if (!selectedCompanyId) {
