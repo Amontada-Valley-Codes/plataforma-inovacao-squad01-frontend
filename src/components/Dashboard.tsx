@@ -34,6 +34,8 @@ import {
     Target,
     User as UserIcon,
     ChevronRight,
+    Handshake,
+    Building,
 } from "lucide-react";
 import { User, Challenge, Startup, Idea } from "../app/context/UserContext";
 import { Sidebar } from "./SideBar";
@@ -42,9 +44,13 @@ import Image from "next/image";
 import api from "../lib/api";
 import Loading from "../app/loading";
 // 💡 NOVAS IMPORTAÇÕES PARA O MODAL
-import { Dialog, DialogContent } from "./ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from "./ui/dialog";
 import { IdeaForm } from "./IdeaForm";
 import { Separator } from "./ui/separator";
+import { Label } from "./ui/label";
+import { Input } from "./ui/input";
+import { Textarea } from "./ui/textarea";
+import { DialogDescription } from "./ui/dialog";
 
 
 interface DashboardProps {
@@ -69,6 +75,21 @@ interface StartupIdea extends Idea {
     challengeName?: string;
 }
 
+interface PocFormData {
+    responsavel: string;
+    custo: number;
+    startDate: string;
+    endDate: string;
+
+}
+
+interface StartupConnection {
+  id: string;
+  status: string;
+  challenge: { name: string };
+  company: { name: string };
+  createdAt: string;
+}
 export function Dashboard({ user, onLogout }: DashboardProps) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
@@ -81,6 +102,18 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
     const [startupIdeas, setStartupIdeas] = useState<StartupIdea[]>([]);
     const [isIdeaModalOpen, setIsIdeaModalOpen] = useState(false);
     const [selectedChallengeForIdea, setSelectedChallengeForIdea] = useState<Challenge | null>(null);
+
+    // 💡 NOVOS ESTADOS PARA O MODAL DE POC
+    const [isPocModalOpen, setIsPocModalOpen] = useState(false);
+    const [selectedIdeaForPoc, setSelectedIdeaForPoc] = useState<StartupIdea | null>(null);
+    const [pocFormData, setPocFormData] = useState<PocFormData>({
+        responsavel: '',
+        custo: 0,
+        startDate: '',
+        endDate: '',
+    });
+
+    const [startupConnections, setStartupConnections] = useState<StartupConnection[]>([]);
 
 
     const stageLabels: { [key: string]: string } = {
@@ -95,6 +128,8 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
     const fetchData = async () => {
         setIsLoading(true);
         try {
+
+
             const challengesEndpoint = user.role === 'ADMIN' || user.role === 'STARTUP'
                 ? '/challenges/findByPublic'
                 : `/challenges/findByCompany/${user.companyId}`;
@@ -129,6 +164,9 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
             const ideasFilter = startupIdeasRes?.data.filter((idea: Idea) => idea.authorId === user.id) || [];
             // 💡 Lógica para carregar as ideias da startup
             if (user.role === 'STARTUP') {
+                const connectionsRes = await api.get<StartupConnection[]>(`/connections/startup/${user.startupId}`);
+                console.log("Conexões carregadas:", connectionsRes);
+                setStartupConnections(connectionsRes.data);
                  const ideasWithChallengeName = ideasFilter.map((idea: Idea) => {
                     const challenge = challenges.find((c: Challenge) => c.id === idea.challengeId);
                     return {
@@ -231,6 +269,28 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
         return acc;
     }, {} as Record<string, StartupIdea[]>);
 
+    // 💡 NOVA FUNÇÃO PARA SUBMETER A POC
+    const handlePocSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!selectedIdeaForPoc || !user.startupId) return;
+
+        try {
+            const pocData = {
+                ...pocFormData,
+                ideaId: selectedIdeaForPoc.id,
+                startupId: user.startupId,
+                status: 'EM_ANDAMENTO', // Status inicial
+            };
+            await api.post('/poc', pocData);
+            alert('Prova de Conceito registrada com sucesso!');
+            setIsPocModalOpen(false);
+            fetchData(); // Recarrega os dados para refletir a nova POC
+        } catch (error) {
+            console.error("Falha ao registrar POC:", error);
+            alert("Não foi possível registrar a Prova de Conceito.");
+        }
+    };
+
     return (
         <div className={`flex h-screen bg-background text-white ${theme === 'dark' ? 'bg-gray-900 text-white' : ''}`}>
             <Sidebar theme={theme} user={user} />
@@ -293,6 +353,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                     {/* 💡 RENDERIZAÇÃO CONDICIONAL DO CONTEÚDO */}
                     {user.role === 'STARTUP' ? (
                         // Card de Minhas Ideias para Startups
+                        <>
                         <Card className={`shadow-lg ${theme === 'dark' ? 'bg-gray-800 text-white' : ''}`}>
                             <CardHeader>
                                 <CardTitle className="text-xl font-bold">Minhas Ideias Submetidas</CardTitle>
@@ -306,7 +367,22 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                                             {ideas.map(idea => (
                                                 <div key={idea.id} className={`flex items-center justify-between p-3 border rounded-lg ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
                                                     <p>{idea.title}</p>
-                                                    <Badge variant="outline">{stageLabels[idea.stage as keyof typeof stageLabels] || idea.stage}</Badge>
+                                                    {/* 💡 LÓGICA DO BOTÃO CONDICIONAL */}
+                                                    {idea.stage === 'EXPERIMENTACAO' ? (
+                                                        <Button
+                                                            size="sm"
+                                                            className="bg-blue-600 hover:bg-blue-700 text-white"
+                                                            onClick={() => {
+                                                                setSelectedIdeaForPoc(idea);
+                                                                setIsPocModalOpen(true);
+                                                            }}
+                                                        >
+                                                            <Rocket className="w-4 h-4 mr-2" />
+                                                            Registrar POC
+                                                        </Button>
+                                                    ) : (
+                                                        <Badge variant="outline">{stageLabels[idea.stage as keyof typeof stageLabels] || idea.stage}</Badge>
+                                                    )}
                                                 </div>
                                             ))}
                                         </div>
@@ -317,6 +393,39 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                                 )}
                             </CardContent>
                         </Card>
+
+                        <Card className={`shadow-lg ${theme === 'dark' ? 'bg-gray-800 text-white' : ''}`}>
+                                <CardHeader>
+                                    <CardTitle className="text-xl font-bold flex items-center">
+                                        <Handshake className="w-6 h-6 mr-2 text-[#011677]"/>
+                                        Conexões Recebidas
+                                    </CardTitle>
+                                    <CardDescription>Empresas que demonstraram interesse em sua startup.</CardDescription>
+                                </CardHeader>
+                                <CardContent className="space-y-4">
+                                    {startupConnections.length > 0 ? (
+                                        startupConnections.map((conn) => (
+                                            <div key={conn.id} className={`flex flex-col md:flex-row md:items-center justify-between p-3 border rounded-lg ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
+                                                <div>
+                                                    <p className="font-semibold text-base flex items-center">
+                                                        <Building className="w-4 h-4 mr-2 text-gray-500"/>
+                                                        {conn.company?.name}
+                                                    </p>
+                                                    <p className="text-sm text-gray-500 ml-6">
+                                                        Interesse no desafio: "{conn.challenge?.name}"
+                                                    </p>
+                                                </div>
+                                                <Badge className="mt-2 md:mt-0" variant={conn.status === 'INTERESSE' ? 'default' : 'secondary'}>
+                                                    {conn.status}
+                                                </Badge>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <p className="text-center text-gray-500 py-4">Nenhuma conexão recebida ainda.</p>
+                                    )}
+                                </CardContent>
+                            </Card>
+                            </>
                     ) : (
                         // Dashboard padrão para outros roles
                         <>
@@ -456,6 +565,44 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                             onSubmit={handleIdeaSubmit}
                         />
                     )}
+                </DialogContent>
+            </Dialog>
+
+            {/* 💡 NOVO MODAL PARA CRIAR POC */}
+            <Dialog open={isPocModalOpen} onOpenChange={setIsPocModalOpen}>
+                <DialogContent className={`bg-white ${theme === 'dark' ? 'bg-gray-800' : ''}`}>
+                    <DialogHeader>
+                        <DialogTitle>Registrar Prova de Conceito (POC)</DialogTitle>
+                        <DialogDescription>
+                            Preencha os detalhes para a ideia "{selectedIdeaForPoc?.title}".
+                        </DialogDescription>
+                    </DialogHeader>
+                    <form onSubmit={handlePocSubmit} className="space-y-4">
+                        <div>
+                            <Label htmlFor="responsavel">Responsável pela POC</Label>
+                            <Input id="responsavel" value={pocFormData.responsavel} onChange={(e) => setPocFormData({...pocFormData, responsavel: e.target.value})} required />
+                        </div>
+                        <div>
+                            <Label htmlFor="custo">Custo Estimado (R$)</Label>
+                            <Input id="custo" type="number" value={pocFormData.custo} onChange={(e) => setPocFormData({...pocFormData, custo: parseFloat(e.target.value)})} required />
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                           <div>
+                                <Label htmlFor="startDate">Data de Início</Label>
+                                <Input id="startDate" type="date" value={pocFormData.startDate} onChange={(e) => setPocFormData({...pocFormData, startDate: e.target.value})} required />
+                            </div>
+                            <div>
+                                <Label htmlFor="endDate">Data de Término</Label>
+                                <Input id="endDate" type="date" value={pocFormData.endDate} onChange={(e) => setPocFormData({...pocFormData, endDate: e.target.value})} required />
+                            </div>
+                        </div>
+                         <DialogFooter>
+                            <DialogClose asChild>
+                                <Button type="button" variant="secondary">Cancelar</Button>
+                            </DialogClose>
+                            <Button type="submit">Registrar POC</Button>
+                        </DialogFooter>
+                    </form>
                 </DialogContent>
             </Dialog>
         </div>
