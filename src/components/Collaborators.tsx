@@ -86,6 +86,7 @@ export default function Collaborators({ user }: CollaboratorsProps) {
     }
   }, [fetchData, user.role]);
 
+  // 🚀 Enviar convite (com prevenção de duplicados e múltiplos envios)
   const handleInviteSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormError('');
@@ -96,12 +97,25 @@ export default function Collaborators({ user }: CollaboratorsProps) {
       setInviteStatus('error');
       return;
     }
+
+    const emailLower = inviteEmail.trim().toLowerCase();
+    const emailJaExiste =
+      collaborators.some(c => c.email.toLowerCase() === emailLower) ||
+      pendingInvites.some(i => i.email.toLowerCase() === emailLower);
+
+    if (emailJaExiste) {
+      setFormError('Este e-mail já foi convidado ou já faz parte da equipe.');
+      setInviteStatus('error');
+      return;
+    }
+
     try {
       const payload: { email: string; role: string; companyId?: string } = {
         email: inviteEmail,
         role: inviteRole.toUpperCase(),
         companyId: user.companyId,
       };
+
       if (user.role === 'ADMIN') {
         if (!selectedCompanyId) {
           setFormError('Admin deve selecionar uma empresa.');
@@ -110,18 +124,30 @@ export default function Collaborators({ user }: CollaboratorsProps) {
         }
         payload.companyId = selectedCompanyId;
       }
+
       await api.post('/invitations', payload);
       setInviteStatus('success');
-      setTimeout(() => {
-        setIsDialogOpen(false);
-        fetchData();
-      }, 2000);
+
+      fetchData();
+      setInviteEmail('');
+      setInviteRole('COMUM');
+
+      // Retorna para "idle" depois de 1.5s (permite novo envio)
+      setTimeout(() => setInviteStatus('idle'), 1500);
     } catch (err: any) {
       console.error('Falha ao enviar convite:', err);
       setFormError(err.response?.data?.message || 'Ocorreu um erro.');
       setInviteStatus('error');
     }
   };
+
+  // Reseta status quando modal abrir
+  useEffect(() => {
+    if (isDialogOpen) {
+      setInviteStatus('idle');
+      setFormError('');
+    }
+  }, [isDialogOpen]);
 
   const handleRemoveInvite = async (inviteId: string) => {
     if (!window.confirm('Tem certeza que deseja remover este convite?')) return;
@@ -155,11 +181,11 @@ export default function Collaborators({ user }: CollaboratorsProps) {
       <Sidebar theme={theme} user={user} />
 
       {/* Cabeçalho fixo */}
-      <header className={`fixed top-0 left-64 right-0 z-40 bg-[#011677] dark:  flex items-center justify-between px-8 py-4 bg-opacity-70 backdrop-blur-md shadow-sm ${theme === 'dark' ? 'bg-gray-800' : 'bg-[#011677]'}`}>
+      <header className={`fixed top-0 left-64 right-0 z-40 flex items-center justify-between px-8 py-4 bg-opacity-70 backdrop-blur-md shadow-sm ${theme === 'dark' ? 'bg-gray-800' : 'bg-[#011677]'}`}>
         <h1 className="text-lg font-semibold text-white">
           Bem-vindo, <span className="text-white">{user.name}</span>
         </h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400">
+        <p className="text-sm text-gray-200">
           {new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })}
         </p>
       </header>
@@ -177,20 +203,18 @@ export default function Collaborators({ user }: CollaboratorsProps) {
                 Gerencie colaboradores e permissões da sua equipe.
               </CardDescription>
             </div>
+
+            {/* Botão + Modal */}
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
                 <Button
                   onClick={() => setIsDialogOpen(true)}
-                  className={`cursor-pointer flex items-center gap-2 font-semibold px-4 py-2 rounded-md shadow-sm hover:shadow-md transition-all
-                    ${theme === 'dark'
-                      ? 'bg-[#011677] hover:bg-blue-800 text-white'
-                      : 'bg-[#011677] hover:bg-[#002a7a] text-white'}`}
+                  className="cursor-pointer flex items-center gap-2 font-semibold px-4 py-2 rounded-md shadow-sm hover:shadow-md transition-all bg-[#011677] hover:bg-[#002a7a] text-white"
                 >
                   <UserPlus size={18} /> Convidar
                 </Button>
               </DialogTrigger>
 
-              {/* Modal */}
               <DialogContent className={`${theme === 'dark' ? 'bg-gray-900 text-gray-100' : 'bg-white'} rounded-xl shadow-2xl`}>
                 <DialogHeader className="text-center">
                   <DialogTitle className="text-xl font-semibold">Convidar Novo Colaborador</DialogTitle>
@@ -217,7 +241,7 @@ export default function Collaborators({ user }: CollaboratorsProps) {
                   )}
 
                   <div>
-                    <Label>E-mail</Label>
+                    <Label className="pb-3">E-mail</Label>
                     <Input
                       type="email"
                       placeholder="email@empresa.com"
@@ -229,7 +253,7 @@ export default function Collaborators({ user }: CollaboratorsProps) {
                   </div>
 
                   <div>
-                    <Label>Nível de Acesso</Label>
+                    <Label className="pb-3">Nível de Acesso</Label>
                     <Select value={inviteRole} onValueChange={(value: UserRole) => setInviteRole(value)}>
                       <SelectTrigger className={`${theme === 'dark' ? 'bg-gray-800 border-gray-700' : ''}`}>
                         <SelectValue placeholder="Selecione um nível" />
@@ -242,18 +266,23 @@ export default function Collaborators({ user }: CollaboratorsProps) {
                     </Select>
                   </div>
 
+                  {/* Feedback */}
                   {formError && <p className="text-red-500 text-sm text-center">{formError}</p>}
+                  {inviteStatus === 'success' && (
+                    <p className="text-green-600 font-medium text-center animate-pulse">
+                      ✅ Convite enviado com sucesso!
+                    </p>
+                  )}
 
                   <Button
                     type="submit"
-                    disabled={inviteStatus === 'loading' || inviteStatus === 'success'}
+                    disabled={inviteStatus === 'loading'}
                     className={`w-full cursor-pointer font-semibold py-2 rounded-md transition-all
                       ${inviteStatus === 'loading' ? 'bg-blue-500 animate-pulse' :
                         inviteStatus === 'success' ? 'bg-green-600 hover:bg-green-700' :
-                        theme === 'dark' ? 'bg-blue-700 hover:bg-blue-600' : 'bg-[#001f61] hover:bg-[#002a7a]'} text-white`}
+                        'bg-[#001f61] hover:bg-[#002a7a]'} text-white`}
                   >
                     {inviteStatus === 'loading' && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    {inviteStatus === 'success' && <CheckCircle className="mr-2 h-4 w-4" />}
                     {inviteStatus === 'loading' ? 'Enviando...' :
                       inviteStatus === 'success' ? 'Enviado!' : 'Enviar Convite'}
                   </Button>
@@ -288,7 +317,7 @@ export default function Collaborators({ user }: CollaboratorsProps) {
                 </TabsTrigger>
               </TabsList>
 
-              {/* ✅ Tabela de Colaboradores */}
+              {/* Tabela de Colaboradores */}
               <TabsContent value="collaborators" className="mt-6">
                 {isLoading ? (
                   <p className="text-center text-gray-500">Carregando...</p>
@@ -326,7 +355,7 @@ export default function Collaborators({ user }: CollaboratorsProps) {
                 )}
               </TabsContent>
 
-              {/* ✅ Tabela de Pendentes */}
+              {/* Tabela de Pendentes */}
               <TabsContent value="pending" className="mt-6">
                 {isLoading ? (
                   <p className="text-center text-gray-500">Carregando...</p>
@@ -352,7 +381,7 @@ export default function Collaborators({ user }: CollaboratorsProps) {
                             <TableCell>
                               <Button
                                 variant="destructive"
-                                className="cursor-pointer flex items-center gap-1 text-sm px-2 py-1"
+                                className="cursor-pointer flex items-center gap-1 text-sm px-2 py-1 bg-[#011677] hover:bg-blue-950 text-white rounded-md"
                                 onClick={() => handleRemoveInvite(invite.id)}
                               >
                                 <Trash2 size={14} /> Remover
