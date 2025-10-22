@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -10,16 +10,16 @@ import {
   CardContent,
   CardFooter,
 } from "../ui/card";
-import { Search } from "lucide-react"; 
-import CardList from "./CardList"; 
-import React from "react";
-import api from "../../lib/api"; // Importando a instância da API
+import { Search } from "lucide-react";
+import CardList from "./CardList";
+import api from "../../lib/api";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
-import "swiper/css/pagination"; 
-// Interface para o formato dos dados recebidos da API
+import "swiper/css/pagination";
+
+// Interfaces
 interface Challenge {
   id: string;
   name: string;
@@ -29,7 +29,6 @@ interface Challenge {
   images: string[];
 }
 
-// Interface para o formato esperado pelo card
 interface CardItem {
   id: string;
   title: string;
@@ -41,24 +40,22 @@ interface CardItem {
 
 export default function CarroselHome() {
   const [challenges, setChallenges] = useState<CardItem[]>([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [visibleCards, setVisibleCards] = useState(5);
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [visibleCards, setVisibleCards] = useState(5);
 
   useEffect(() => {
     const fetchPublicChallenges = async () => {
       setIsLoading(true);
       try {
-        const response = await api.get<Challenge[]>('/challenges/findByPublic');
-        console.log("Desafios públicos recebidos:", response);
-        const formattedChallenges = response.data.map(challenge => ({
+        const response = await api.get<Challenge[]>("/challenges/findByPublic");
+        const formattedChallenges = response.data.map((challenge) => ({
           id: challenge.id,
           title: challenge.name,
           venc: challenge.description,
-          empresa: challenge.company?.name || 'Empresa não informada',
+          empresa: challenge.company?.name || "Empresa não informada",
           area: challenge.area,
-          img: challenge.images?.[0] || '/img/desafio_default.png' // Usa a primeira imagem ou uma padrão
+          img: challenge.images?.[0] || "/img/desafio_default.png",
         }));
         setChallenges(formattedChallenges);
       } catch (error) {
@@ -70,7 +67,6 @@ export default function CarroselHome() {
 
     fetchPublicChallenges();
   }, []);
-
 
   const filteredCards = challenges.filter(
     (card) =>
@@ -92,87 +88,66 @@ export default function CarroselHome() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const nextSlide = () => {
-    if (currentIndex < filteredCards.length - visibleCards) {
-      setCurrentIndex(currentIndex + 1);
-    }
-  };
-
-  const prevSlide = () => {
-    if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
-    }
-  };
-
-  useEffect(() => {
-    setCurrentIndex(0);
-  }, [searchTerm]);
-
-  const showNavigation = filteredCards.length > visibleCards;
-  
   if (isLoading) {
     return (
-        <section className="relative bg-gradient-to-b from-[#011677] to-[#00134d] py-6 px-8 text-white text-center">
-            <h2 className="md:text-3xl font-bold text-2xl">Carregando Desafios...</h2>
-        </section>
+      <section className="relative bg-gradient-to-b from-[#011677] to-[#00134d] py-10 px-8 text-white text-center">
+        <h2 className="text-2xl md:text-3xl font-bold">Carregando desafios...</h2>
+      </section>
     );
   }
 
   return (
-    <section className="relative bg-gradient-to-b from-[#011677] to-[#00134d] py-6 px-8">
+    <section className="relative bg-gradient-to-b from-[#011677] to-[#00134d] py-10 px-8 min-h-[60vh] transition-all duration-300">
       {/* Cabeçalho */}
       <div className="flex flex-col sm:flex-row justify-between items-center mb-4 gap-4">
         <div>
-          <h2 className="md:text-3xl font-bold text-white text-center md:text-start text-2xl">Nossos Desafios</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-white text-center md:text-start">
+            Nossos Desafios
+          </h2>
           <p className="text-gray-300 text-sm">
             Explore desafios em andamento na plataforma.
           </p>
         </div>
 
-        {/* Campo de busca refinado */}
-        <div className="relative">
+        {/* Campo de busca */}
+        <div className="relative w-full sm:w-auto">
           <Search className="absolute left-3 top-2.5 text-[#011677]" size={18} />
           <input
             type="text"
             placeholder="Buscar desafio..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 pr-4 py-2 rounded-full bg-white/90 text-[#011677] placeholder:text-[#011677] text-sm outline-none focus:ring-2 focus:ring-[#011677] transition-all duration-200"
+            className="w-full sm:w-64 pl-10 pr-4 py-2 rounded-full bg-white/90 text-[#011677] placeholder:text-[#011677] text-sm outline-none focus:ring-2 focus:ring-[#011677] transition-all duration-200"
           />
         </div>
       </div>
 
       <hr className="border-gray-400/40 mb-6" />
 
-      {/* Carrossel Container (Relative para os botões) */}
-      <div className="relative max-w-7xl mx-auto">
+      <div className="relative max-w-7xl mx-auto min-h-[300px]">
         {filteredCards.length > 0 ? (
           <>
             <Swiper
-              // Configuração para usar os botões customizados (agora irmãos do Swiper)
               navigation={{
-                  nextEl: '.swiper-button-next-custom',
-                  prevEl: '.swiper-button-prev-custom',
+                nextEl: ".swiper-button-next-custom",
+                prevEl: ".swiper-button-prev-custom",
               }}
               modules={[Navigation, Pagination]}
-              
-              slidesPerView={1.2} 
-              slidesPerGroup={1} 
-              spaceBetween={24} 
-              loop={false} 
-              
+              slidesPerView={1.2}
+              slidesPerGroup={1}
+              spaceBetween={24}
+              loop={false}
               breakpoints={{
-                0: { slidesPerView: 1.2, }, 
-                640: { slidesPerView: 2.2, }, 
-                1024: { slidesPerView: 3.2, }, 
-                1280: { slidesPerView: 4.2, }, 
+                0: { slidesPerView: 1.2 },
+                640: { slidesPerView: 2.2 },
+                1024: { slidesPerView: 3.2 },
+                1280: { slidesPerView: 4.2 },
               }}
-              
-              className="carrossel-home-swiper" 
+              className="carrossel-home-swiper"
             >
               {filteredCards.map((item) => (
-                <SwiperSlide key={item.id} className="pb-4 h-full"> 
-                  <div className="px-0 h-full"> 
+                <SwiperSlide key={item.id} className="pb-4 h-full">
+                  <div className="px-0 h-full">
                     <Card className="h-full flex flex-col bg-white rounded-2xl shadow-md hover:shadow-xl transition-transform duration-300 hover:scale-95">
                       <div className="relative w-full h-40">
                         <Image
@@ -211,63 +186,81 @@ export default function CarroselHome() {
                 </SwiperSlide>
               ))}
             </Swiper>
-            
-            {/* *** BOTÕES DE NAVEGAÇÃO CUSTOMIZADOS *** (FORA do Swiper) */}
-            
-            {/* Botão Prev */}
-            <div className="swiper-button-prev-custom absolute left-[-10px] z-50 top-1/2 -translate-y-1/2 bg-white text-[#011677] p-3 rounded-full shadow-lg cursor-pointer">
-              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevron-left">
-                <path d="m15 18-6-6 6-6"/>
+
+            {/* Botões customizados */}
+            <div className="swiper-button-prev-custom absolute left-[-10px] z-50 top-1/2 -translate-y-1/2 bg-white text-[#011677] p-3 rounded-full shadow-lg cursor-pointer hover:bg-[#f5f5f5] transition">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="lucide lucide-chevron-left"
+              >
+                <path d="m15 18-6-6 6-6" />
               </svg>
             </div>
 
-            {/* Botão Next */}
-            <div className="swiper-button-next-custom absolute right-[-10px] z-50 top-1/2 -translate-y-1/2 bg-white cursor-pointer text-[#011677] p-3 rounded-full shadow-lg">
-              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevron-right">
-                <path d="m9 18 6-6-6-6"/>
+            <div className="swiper-button-next-custom absolute right-[-10px] z-50 top-1/2 -translate-y-1/2 bg-white text-[#011677] p-3 rounded-full shadow-lg cursor-pointer hover:bg-[#f5f5f5] transition">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="lucide lucide-chevron-right"
+              >
+                <path d="m9 18 6-6-6-6" />
               </svg>
             </div>
           </>
         ) : (
-          <CardList cards={filteredCards} />
+          // ✅ Mensagem exibida quando nenhum resultado for encontrado
+          <div className="flex flex-col items-center justify-center text-center text-white py-16 transition-all duration-300">
+            <Image
+              src="/img/not-found1.png"
+              alt="Nenhum desafio encontrado"
+              width={200}
+              height={100}
+              className="mb-4 opacity-90"
+            />
+            <h3 className="text-xl font-semibold">Nenhum desafio encontrado</h3>
+            <p className="text-gray-300 text-sm max-w-md mt-1">
+              Tente ajustar o termo de busca ou confira outros desafios disponíveis.
+            </p>
+          </div>
         )}
       </div>
-      
-      {/* *** CSS GLOBAL ESSENCIAL COM CORREÇÃO *** */}
-      <style jsx global>{`
-        /* Importante: Adiciona classes para o contexto de navegação. */
-        .relative.max-w-7xl.mx-auto {
-            /* Garante que o Swiper procure os botões no container pai */
-            --swiper-navigation-top-offset: 50%;
-            --swiper-navigation-sides-offset: 0;
-        }
 
-        /* Garante que os botões fiquem centrados e o clique funcione */
-        .swiper-button-prev-custom, .swiper-button-next-custom {
-            /* top e transform gerenciados pelo Tailwind (top-1/2 -translate-y-1/2) */
-            transition: opacity 0.3s;
-            pointer-events: auto; 
-            z-index: 50; /* Reforça o z-index no CSS para ter prioridade */
+      {/* Estilo global (mantido e ajustado) */}
+      <style jsx global>{`
+        .swiper-button-prev-custom,
+        .swiper-button-next-custom {
+          transition: opacity 0.3s;
+          pointer-events: auto;
+          z-index: 50;
         }
-        
-        /* Aplica o estilo de desabilitado quando o Swiper adiciona a classe .swiper-button-disabled */
         .swiper-button-prev-custom.swiper-button-disabled,
         .swiper-button-next-custom.swiper-button-disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            pointer-events: none;
+          opacity: 0.4;
+          cursor: not-allowed;
+          pointer-events: none;
         }
-
-        /* Oculta os botões padrão do Swiper */
-        .swiper-button-next, .swiper-button-prev {
-            display: none !important;
+        .swiper-button-next,
+        .swiper-button-prev {
+          display: none !important;
         }
-        
-        /* Garante que o container do SwiperSlide tenha altura mínima para que os h-full funcionem */
         .swiper-slide {
-            height: auto !important;
-            /* Opcional: Adiciona espaço no final para evitar que o último card fique "colado" na borda */
-            padding-bottom: 24px; 
+          height: auto !important;
+          padding-bottom: 24px;
         }
       `}</style>
     </section>
