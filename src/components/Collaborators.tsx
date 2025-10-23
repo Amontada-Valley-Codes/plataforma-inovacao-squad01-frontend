@@ -80,9 +80,23 @@ export default function Collaborators({ user }: CollaboratorsProps) {
   useEffect(() => {
     fetchData();
     if (user.role === 'ADMIN') {
-      api.get('/companies/list')
-        .then(res => setCompanies(res.data))
-        .catch(err => console.error("Falha ao buscar empresas", err));
+      api.get('/companies/')
+        .then(res => {
+          // 💡 CORREÇÃO AQUI
+          // Verificamos se a resposta tem a propriedade 'data' e se ela é um array
+          if (res.data && Array.isArray(res.data.data)) {
+            setCompanies(res.data.data);
+            console.log("Empresas carregadas:", res.data.data);
+          } else {
+             // Se a resposta for um array direto (para manter a compatibilidade)
+            setCompanies(res.data);
+             console.log("Empresas carregadas (array direto):", res.data);
+          }
+        })
+        .catch(err => {
+            console.error("Falha ao buscar empresas", err);
+            setCompanies([]); // Garante que o estado seja um array em caso de erro
+        });
     }
   }, [fetchData, user.role]);
 
@@ -232,9 +246,9 @@ export default function Collaborators({ user }: CollaboratorsProps) {
                           <SelectValue placeholder="Selecione a empresa" />
                         </SelectTrigger>
                         <SelectContent className={`${theme === 'dark' ? 'bg-gray-800 border-gray-700' : ''}`}>
-                          {companies.map((company) => (
-                            <SelectItem key={company.id} value={company.id}>{company.name}</SelectItem>
-                          ))}
+                          {Array.isArray(companies) && companies.map((company) => (
+                <SelectItem key={company.id} value={company.id}>{company.name}</SelectItem>
+              ))}
                         </SelectContent>
                       </Select>
                     </div>
