@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Button } from '../components/ui/button';
-import { ArrowLeft, Home, Search } from 'lucide-react';
+import { ArrowLeft, Home } from 'lucide-react';
 import Image from 'next/image';
 
 export default function NotFound() {
