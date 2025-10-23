@@ -12,14 +12,16 @@ import {
 } from "../ui/card";
 import { Search } from "lucide-react";
 import CardList from "./CardList";
+import React from "react";
 import api from "../../lib/api";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
+import { ca } from "date-fns/locale";
 
-// Interfaces
+// Interface para o formato dos dados recebidos da API
 interface Challenge {
   id: string;
   name: string;
@@ -29,6 +31,13 @@ interface Challenge {
   images: string[];
 }
 
+// Interface para a resposta paginada da API
+interface PaginatedResponse {
+    data: Challenge[];
+    total: number;
+}
+
+// Interface para o formato esperado pelo card
 interface CardItem {
   id: string;
   title: string;
@@ -36,28 +45,61 @@ interface CardItem {
   empresa: string;
   area: string;
   img: string;
+  category: string;
 }
+
+// 💡 NOVA FUNÇÃO PARA SELECIONAR IMAGEM PELA ÁREA
+const getImageForArea = (area: string): string => {
+  const areaNormalizada = area.toLowerCase();
+  if (areaNormalizada.includes('ambiente') || areaNormalizada.includes('sustentabilidade')) {
+    return '/img/desafio1.jpg'; // Imagem de energia sustentável
+  }
+  if (areaNormalizada.includes('automação')) {
+    return '/img/desafio6.jpg'; // Imagem de indústria 4.0
+  }
+  if (areaNormalizada.includes('finanças')) {
+    return '/img/desafio5.jpeg'; // Imagem de finanças
+  }
+  if (areaNormalizada.includes('educação')) {
+    return '/img/desafio7.webp'; // Imagem de educação
+  }
+  // Imagem padrão para outras áreas ou se não houver correspondência
+  return '/img/desafio4.jpg';
+};
+
 
 export default function CarroselHome() {
   const [challenges, setChallenges] = useState<CardItem[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [visibleCards, setVisibleCards] = useState(5);
 
   useEffect(() => {
     const fetchPublicChallenges = async () => {
       setIsLoading(true);
       try {
-        const response = await api.get<Challenge[]>("/challenges/findByPublic");
-        const formattedChallenges = response.data.map((challenge) => ({
-          id: challenge.id,
-          title: challenge.name,
-          venc: challenge.description,
-          empresa: challenge.company?.name || "Empresa não informada",
-          area: challenge.area,
-          img: challenge.images?.[0] || "/img/desafio_default.png",
-        }));
-        setChallenges(formattedChallenges);
+        const response = await api.get<PaginatedResponse>('/challenges/findByPublic');
+// 💡 INÍCIO DA CORREÇÃO
+        // Determina se a resposta é paginada ({data: [...]}) ou um array direto ([...])
+        const challengesArray = Array.isArray(response.data) 
+          ? response.data 
+          : response.data.data;
+
+        console.log("Desafios públicos recebidos da API:", challengesArray);
+        if (Array.isArray(challengesArray)) {
+            const formattedChallenges = challengesArray.map(challenge => ({
+                id: challenge.id,
+                title: challenge.name,
+                venc: challenge.description,
+                empresa: challenge.company?.name || 'Empresa não informada',
+                area: challenge.area,
+                category: challenge.categoria,
+                img: getImageForArea(challenge.area),
+            }));
+            setChallenges(formattedChallenges);
+        } else {
+            console.error("A resposta da API não é um formato esperado (nem array, nem objeto com 'data'):", response.data);
+            setChallenges([]);
+        }
       } catch (error) {
         console.error("Erro ao buscar desafios públicos:", error);
       } finally {
@@ -68,69 +110,58 @@ export default function CarroselHome() {
     fetchPublicChallenges();
   }, []);
 
+
   const filteredCards = challenges.filter(
     (card) =>
       card.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       card.venc.toLowerCase().includes(searchTerm.toLowerCase()) ||
       card.empresa.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      card.area.toLowerCase().includes(searchTerm.toLowerCase())
+      card.area.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      card.category.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth < 640) setVisibleCards(1);
-      else if (window.innerWidth < 1024) setVisibleCards(2);
-      else if (window.innerWidth < 1280) setVisibleCards(3);
-      else setVisibleCards(5);
-    };
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
   if (isLoading) {
     return (
-      <section className="relative bg-gradient-to-b from-[#011677] to-[#00134d] py-10 px-8 text-white text-center">
-        <h2 className="text-2xl md:text-3xl font-bold">Carregando desafios...</h2>
-      </section>
+        <section className="relative bg-gradient-to-b from-[#011677] to-[#00134d] py-6 px-8 text-white text-center">
+            <h2 className="md:text-3xl font-bold text-2xl">Carregando Desafios...</h2>
+        </section>
     );
   }
 
   return (
-    <section className="relative bg-gradient-to-b from-[#011677] to-[#00134d] py-10 px-8 min-h-[60vh] transition-all duration-300">
+    <section className="relative bg-gradient-to-b from-[#011677] to-[#00134d] py-6 px-8">
       {/* Cabeçalho */}
       <div className="flex flex-col sm:flex-row justify-between items-center mb-4 gap-4">
         <div>
-          <h2 className="text-2xl md:text-3xl font-bold text-white text-center md:text-start">
-            Nossos Desafios
-          </h2>
+          <h2 className="md:text-3xl font-bold text-white text-center md:text-start text-2xl">Nossos Desafios</h2>
           <p className="text-gray-300 text-sm">
             Explore desafios em andamento na plataforma.
           </p>
         </div>
 
-        {/* Campo de busca */}
-        <div className="relative w-full sm:w-auto">
+        {/* Campo de busca refinado */}
+        <div className="relative">
           <Search className="absolute left-3 top-2.5 text-[#011677]" size={18} />
           <input
             type="text"
             placeholder="Buscar desafio..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full sm:w-64 pl-10 pr-4 py-2 rounded-full bg-white/90 text-[#011677] placeholder:text-[#011677] text-sm outline-none focus:ring-2 focus:ring-[#011677] transition-all duration-200"
+            className="pl-10 pr-4 py-2 rounded-full bg-white/90 text-[#011677] placeholder:text-[#011677] text-sm outline-none focus:ring-2 focus:ring-[#011677] transition-all duration-200"
           />
         </div>
       </div>
 
       <hr className="border-gray-400/40 mb-6" />
 
-      <div className="relative max-w-7xl mx-auto min-h-[300px]">
+      {/* Carrossel Container (Relative para os botões) */}
+      <div className="relative max-w-7xl mx-auto">
         {filteredCards.length > 0 ? (
           <>
             <Swiper
               navigation={{
-                nextEl: ".swiper-button-next-custom",
-                prevEl: ".swiper-button-prev-custom",
+                nextEl: '.swiper-button-next-custom',
+                prevEl: '.swiper-button-prev-custom',
               }}
               modules={[Navigation, Pagination]}
               slidesPerView={1.2}
@@ -138,17 +169,17 @@ export default function CarroselHome() {
               spaceBetween={24}
               loop={false}
               breakpoints={{
-                0: { slidesPerView: 1.2 },
-                640: { slidesPerView: 2.2 },
-                1024: { slidesPerView: 3.2 },
-                1280: { slidesPerView: 4.2 },
+                0: { slidesPerView: 1.2, },
+                640: { slidesPerView: 2.2, },
+                1024: { slidesPerView: 3.2, },
+                1280: { slidesPerView: 4.2, },
               }}
               className="carrossel-home-swiper"
             >
               {filteredCards.map((item) => (
                 <SwiperSlide key={item.id} className="pb-4 h-full">
                   <div className="px-0 h-full">
-                    <Card className="h-full flex flex-col bg-white rounded-2xl shadow-md hover:shadow-xl transition-transform duration-300 hover:scale-95">
+                    <Card className="h-full flex flex-col bg-white rounded-2xl shadow-md hover:shadow-xl transition-transform duration-300 hover:-translate-y-2">
                       <div className="relative w-full h-40">
                         <Image
                           src={item.img}
@@ -162,7 +193,7 @@ export default function CarroselHome() {
                           {item.title}
                         </CardTitle>
                         <CardDescription className="text-sm text-gray-600">
-                          {item.empresa}
+                          {item.category}
                         </CardDescription>
                       </CardHeader>
                       <CardContent className="flex-grow">
@@ -187,77 +218,46 @@ export default function CarroselHome() {
               ))}
             </Swiper>
 
-            {/* Botões customizados */}
-            <div className="swiper-button-prev-custom absolute left-[-10px] z-50 top-1/2 -translate-y-1/2 bg-white text-[#011677] p-3 rounded-full shadow-lg cursor-pointer hover:bg-[#f5f5f5] transition">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="22"
-                height="22"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="lucide lucide-chevron-left"
-              >
-                <path d="m15 18-6-6 6-6" />
+            <div className="swiper-button-prev-custom absolute left-[-10px] z-50 top-1/2 -translate-y-1/2 bg-white text-[#011677] p-3 rounded-full shadow-lg cursor-pointer">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevron-left">
+                <path d="m15 18-6-6 6-6"/>
               </svg>
             </div>
 
-            <div className="swiper-button-next-custom absolute right-[-10px] z-50 top-1/2 -translate-y-1/2 bg-white text-[#011677] p-3 rounded-full shadow-lg cursor-pointer hover:bg-[#f5f5f5] transition">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="22"
-                height="22"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="lucide lucide-chevron-right"
-              >
-                <path d="m9 18 6-6-6-6" />
+            <div className="swiper-button-next-custom absolute right-[-10px] z-50 top-1/2 -translate-y-1/2 bg-white cursor-pointer text-[#011677] p-3 rounded-full shadow-lg">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevron-right">
+                <path d="m9 18 6-6-6-6"/>
               </svg>
             </div>
           </>
         ) : (
-          // ✅ Mensagem exibida quando nenhum resultado for encontrado
-          <div className="flex flex-col items-center justify-center text-center text-white py-16 transition-all duration-300">
-            <Image
-              src="/img/not-found1.png"
-              alt="Nenhum desafio encontrado"
-              width={200}
-              height={100}
-              className="mb-4 opacity-90"
-            />
-            <h3 className="text-xl font-semibold">Nenhum desafio encontrado</h3>
-            <p className="text-gray-300 text-sm max-w-md mt-1">
-              Tente ajustar o termo de busca ou confira outros desafios disponíveis.
-            </p>
-          </div>
+          <CardList cards={filteredCards} />
         )}
       </div>
 
-      {/* Estilo global (mantido e ajustado) */}
       <style jsx global>{`
-        .swiper-button-prev-custom,
-        .swiper-button-next-custom {
+        .relative.max-w-7xl.mx-auto {
+          --swiper-navigation-top-offset: 50%;
+          --swiper-navigation-sides-offset: 0;
+        }
+
+        .swiper-button-prev-custom, .swiper-button-next-custom {
           transition: opacity 0.3s;
           pointer-events: auto;
           z-index: 50;
         }
+
         .swiper-button-prev-custom.swiper-button-disabled,
         .swiper-button-next-custom.swiper-button-disabled {
-          opacity: 0.4;
+          opacity: 0.5;
           cursor: not-allowed;
           pointer-events: none;
         }
-        .swiper-button-next,
-        .swiper-button-prev {
+
+        .swiper-button-next, .swiper-button-prev {
           display: none !important;
         }
+
         .swiper-slide {
           height: auto !important;
           padding-bottom: 24px;

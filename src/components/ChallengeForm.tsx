@@ -14,6 +14,10 @@ import { format } from 'date-fns';
 import { pt } from 'date-fns/locale';
 import { User } from '../app/context/UserContext';
 import api from '../lib/api';
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectScrollUpButton, SelectScrollDownButton
+} from "./ui/select";
+
 
 interface ChallengeFormProps {
 	user: User;
@@ -230,13 +234,29 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
 
 										<div className="space-y-2">
 											<Label className={` ${theme === 'dark' ? 'text-white' : 'text-black'}`} htmlFor="area">Área Principal</Label>
-											<Input
-												id="area"
-												placeholder="Ex: FinTech, HealthTech..."
-												value={formData.area}
-												onChange={(e) => setFormData({ ...formData, area: e.target.value })}
-												className={`focus:border-[#001f61] focus:ring focus:ring-[#001f61]/30 rounded-lg transition-colors ${theme === 'dark' ? 'bg-gray-800 text-white focus:border-white/10 focus:ring-white/60' : 'bg-white text-black'}`}
-											/>
+											<Select>
+												<SelectTrigger className={`w-full justify-between border-gray-300  transition-colors cursor-pointer ${theme === 'dark' ? 'text-white' : 'text-black hover:border-[#001f61]'}`}>
+													<SelectValue placeholder="Selecione a área principal" className={` ${theme === 'dark' ? 'text-white' : 'text-black'}`} />
+													
+												</SelectTrigger>
+												<SelectContent className={`bg-white shadow-lg rounded-lg ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'}`}>
+													<SelectScrollUpButton className={`text-black ${theme === 'dark' ? 'text-white' : ''}`} />
+													<div>
+														{['Meio Ambiente', 'Automação', 'Sustentabilidade', 'Finanças', 'Educação'].map((area) => (
+															<SelectItem
+																key={area}
+																value={area}
+																onSelect={() => setFormData({ ...formData, area })}
+																className={`cursor-pointer select-none relative py-2 pl-10 pr-4 hover:bg-[#001f61] hover:text-white ${theme === 'dark' ? 'text-white' : 'text-black'}`}
+															>
+																<span>{area}</span>
+															</SelectItem>
+														))}
+													</div>
+													<SelectScrollDownButton className={`text-black ${theme === 'dark' ? 'text-white' : ''}`} />
+												</SelectContent>
+											</Select>
+											
 										</div>
 
 										<div className="space-y-2">
