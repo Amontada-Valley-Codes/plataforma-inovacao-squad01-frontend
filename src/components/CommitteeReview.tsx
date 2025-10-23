@@ -11,7 +11,7 @@ import { Avatar, AvatarFallback } from './ui/avatar';
 import { Textarea } from './ui/textarea';
 import { Badge } from './ui/badge';
 import { User, Idea } from '../app/context/UserContext';
-import { Sidebar } from './SideBar';
+import Sidebar from './SideBar';
 import api from '../lib/api';
 import Loading from '../app/loading';
 
@@ -178,14 +178,14 @@ const handlePostComment = async (ideaId: string) => {
 };
 
   return (
-    <div className={`min-h-screen bg-gray-50 flex ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'}`}>
+    <div className={`flex h-screen bg-background text-white ${theme === 'dark' ? 'bg-gray-900 text-white' : ''}`}>
       <Sidebar theme={theme} user={user} />
 
       <div className="flex-1 flex flex-col">
         {/* Header */}
         <div className={`bg-[#011677]  ${theme === 'dark' ? 'bg-gray-800' : 'border-b border-gray-200'}`}>
                   <div className="container mx-auto px-6 py-4">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 justify-center sm:justify-start">
                       <ClipboardCheck className="w-6 h-6 text-white" />
                       <h1 className="text-xl font-semibold text-white">Revisão do Comitê</h1>
                     </div>

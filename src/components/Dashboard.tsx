@@ -38,7 +38,7 @@ import {
     Building,
 } from "lucide-react";
 import { User, Challenge, Startup, Idea } from "../app/context/UserContext";
-import { Sidebar } from "./SideBar";
+import Sidebar from "./SideBar";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import api from "../lib/api";
@@ -300,13 +300,13 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                     {/* Header */}
                     <div className="flex items-center justify-between">
                         <div className="flex flex-col">
-                            <h1 className={`font-extrabold text-3xl text-[#011677] mb-1 ${theme === 'dark' ? 'text-white' : ''}`}>Dashboard</h1>
+                            <h1 className={`font-extrabold text-3xl pt-10 sm:pt-0 text-[#011677] mb-1 ${theme === 'dark' ? 'text-white' : ''}`}>Dashboard</h1>
                             <p className={`text-gray-500 text-base ${theme === 'dark' ? 'text-gray-200' : ''}`}>
                                 {user.role === 'STARTUP' ? `Bem-vindo(a), ${user.name}!` : `Visão geral dos indicadores de ${user.company}`}
                             </p>
                         </div>
                         {/* Menu de Perfil */}
-                         <div className="flex items-center gap-4">
+                         <div className="flex items-center gap-4 sm:mb-0 mb-20 sm:pb-0">
                             <button
                                 className={`w-14 cursor-pointer h-10 flex items-center justify-center rounded-full bg-gray-200 text-gray-800 hover:bg-gray-300 transition-colors shadow-md ${theme === 'dark' ? 'bg-gray-700 text-white hover:bg-gray-600' : ''}`}
                                 onClick={() => handleThemeChange(theme === 'light' ? 'dark' : 'light')}

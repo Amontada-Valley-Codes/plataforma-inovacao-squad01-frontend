@@ -21,7 +21,7 @@ import {
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { User, UserRole } from "../app/context/UserContext";
-import { Sidebar } from "./SideBar";
+import Sidebar from "./SideBar";
 import api from "../lib/api";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 
@@ -172,7 +172,7 @@ export default function Collaborators({ user }: CollaboratorsProps) {
 
   return (
     <div
-      className={`min-h-screen flex relative transition-colors ${
+      className={`flex h-screen relative bg-background text-white ${
         theme === 'dark'
           ? 'bg-gradient-to-br from-gray-950 via-gray-900 to-gray-800 text-gray-100'
           : 'bg-gradient-to-br from-gray-50 via-blue-50 to-gray-100 text-gray-900'
@@ -181,16 +181,16 @@ export default function Collaborators({ user }: CollaboratorsProps) {
       <Sidebar theme={theme} user={user} />
 
       {/* Cabeçalho fixo */}
-      <header className={`fixed top-0 left-64 right-0 z-40 flex items-center justify-between px-8 py-4 bg-opacity-70 backdrop-blur-md shadow-sm ${theme === 'dark' ? 'bg-gray-800' : 'bg-[#011677]'}`}>
-        <h1 className="text-lg font-semibold text-white">
+      <header className={`absolute top-0 sm:left-64 left-0 right-0 z-10 flex items-center justify-between px-8 py-4 bg-opacity-70 backdrop-blur-md shadow-sm ${theme === 'dark' ? 'bg-gray-800' : 'bg-[#011677]'}`}>
+        <h1 className="text-lg font-semibold text-white ml-10 sm:ml-0">
           Bem-vindo, <span className="text-white">{user.name}</span>
         </h1>
-        <p className="text-sm text-gray-200">
+        <p className="text-sm text-gray-200 ml-5 sm:ml-0">
           {new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })}
         </p>
       </header>
 
-      <main className="flex-1 w-full px-6 py-28">
+      <main className="flex-1 w-full px-6 py-20 mt-16 overflow-y-auto">
         <Card
           className={`shadow-xl rounded-2xl transition-all duration-300 ${
             theme === 'dark' ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'
