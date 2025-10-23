@@ -145,7 +145,7 @@ export default function InitialPage() {
           {/* Redes Sociais */}
           <div className="flex flex-col items-center md:items-start">
             <h3 className="font-bold text-lg mb-4">Redes</h3>
-            <div className="flex space-x-4 mt-6 text-2xl">
+            <div className="flex space-x-4 mt-2 md:mt-6 text-2xl">
               <a
                 href="#"
                 className="p-1.5 rounded-2xl bg-white text-[#011677] transition-colors"
