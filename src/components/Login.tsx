@@ -93,7 +93,6 @@ export default function Login({ onLogin }: LoginProps) {
               <Image
                 width={200}
                 height={60}
-                quality={100}
                 priority
                 src="/img/logo2.png"
                 alt="Logo co.inova"
