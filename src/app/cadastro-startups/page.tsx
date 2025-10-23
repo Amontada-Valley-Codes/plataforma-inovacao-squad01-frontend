@@ -9,7 +9,6 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-  CardDescription,
 } from "../../components/ui/card";
 import api from "../../lib/api";
 import Link from "next/link";

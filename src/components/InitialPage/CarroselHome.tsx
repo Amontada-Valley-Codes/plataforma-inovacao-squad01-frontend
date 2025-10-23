@@ -19,7 +19,6 @@ import { Navigation, Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-import { ca } from "date-fns/locale";
 
 // Interface para o formato dos dados recebidos da API
 interface Challenge {

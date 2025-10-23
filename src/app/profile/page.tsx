@@ -3,7 +3,7 @@ import { useState, useRef, useEffect } from "react";
 import { Input } from "../../components/ui/input";
 import { Button } from "../../components/ui/button";
 import { Card } from "../../components/ui/card";
-import { User, Phone, Briefcase, ArrowLeft, Camera, Loader2 } from "lucide-react";
+import { User, Phone, ArrowLeft, Camera, Loader2 } from "lucide-react";
 import { Separator } from "../../components/ui/separator";
 import { useUser, type User as UserType } from "../context/UserContext";
 import { useRouter } from "next/navigation";

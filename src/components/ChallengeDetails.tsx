@@ -13,8 +13,8 @@ import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Textarea } from './ui/textarea';
 import {
     ArrowLeft, Calendar, Target, Users, Building2, Heart,
-    MessageCircle, Send, Clock, CheckCircle, AlertCircle, Star,
-    TrendingUp, Paperclip, Lightbulb, ThumbsUp, Plus, Check
+    MessageCircle, Send, CheckCircle, AlertCircle,
+    TrendingUp, Paperclip, ThumbsUp, Check
 } from 'lucide-react';
 import { User, Challenge, Startup, Idea } from '../app/context/UserContext';
 import { useRouter } from 'next/navigation';

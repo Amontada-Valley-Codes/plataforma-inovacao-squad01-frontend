@@ -6,7 +6,7 @@ import {
 } from "./ui/card";
 import { Button } from "./ui/button";
 import {
-  UserPlus, Loader2, CheckCircle, Trash2,
+  UserPlus, Loader2, Trash2,
 } from "lucide-react";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,

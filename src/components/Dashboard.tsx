@@ -37,7 +37,7 @@ import {
     Handshake,
     Building,
 } from "lucide-react";
-import { User, Challenge, Startup, Idea } from "../app/context/UserContext";
+import { User, Challenge, Idea } from "../app/context/UserContext";
 import Sidebar from "./SideBar";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -49,7 +49,6 @@ import { IdeaForm } from "./IdeaForm";
 import { Separator } from "./ui/separator";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
-import { Textarea } from "./ui/textarea";
 import { DialogDescription } from "./ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 

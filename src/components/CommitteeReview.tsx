@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Separator } from './ui/separator';
-import { Check, X, Send, ClipboardCheck, MessageSquare, CheckSquare } from 'lucide-react';
+import { Check, X, Send, ClipboardCheck } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './ui/accordion';
 import { Avatar, AvatarFallback } from './ui/avatar';
 import { Textarea } from './ui/textarea';

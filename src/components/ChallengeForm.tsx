@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { Card, CardContent, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
@@ -15,7 +15,7 @@ import { pt } from 'date-fns/locale';
 import { User } from '../app/context/UserContext';
 import api from '../lib/api';
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectScrollUpButton, SelectScrollDownButton
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "./ui/select";
 
 
