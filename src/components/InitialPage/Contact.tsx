@@ -77,7 +77,7 @@ ${name}
         <div className='bg-[#011677]/60 absolute top-0 right-0 bottom-0 left-0'></div>
         <div className='z-10'>
           <h1 className="text-4xl font-extrabold mb-4 text-center pb-10">Conecte sua Empresa à Inovação</h1>
-          <p className="text-lg mb-6 leading-relaxed">
+          <p className="text-lg mb-6 text-center leading-relaxed">
             Sua empresa enfrenta desafios complexos? Traga-os para a nossa comunidade de startups! Juntos, podemos encontrar soluções inovadoras e acelerar o crescimento do seu negócio.
           </p>
           <ul className="space-y-2 text-blue-100 text-center">

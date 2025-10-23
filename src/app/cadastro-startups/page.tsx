@@ -127,7 +127,7 @@ export default function CadastroStartups() {
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div>
-                  <Label htmlFor="name">Nome da Startup</Label>
+                  <Label className="mb-2" htmlFor="name">Nome da Startup</Label>
                   <Input
                     id="name"
                     value={formData.name}
@@ -138,7 +138,7 @@ export default function CadastroStartups() {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="cnpj">CNPJ</Label>
+                  <Label className="mb-2" htmlFor="cnpj">CNPJ</Label>
                   <Input
                     id="cnpj"
                     value={formData.cnpj}
@@ -149,7 +149,7 @@ export default function CadastroStartups() {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="segment">Segmento</Label>
+                  <Label className="mb-2" htmlFor="segment">Segmento</Label>
                   <Input
                     id="segment"
                     value={formData.segment}
@@ -160,7 +160,7 @@ export default function CadastroStartups() {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="technology">Tecnologia Principal</Label>
+                  <Label className="mb-2" htmlFor="technology">Tecnologia Principal</Label>
                   <Input
                     id="technology"
                     value={formData.technology}
@@ -171,7 +171,7 @@ export default function CadastroStartups() {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="stage">Estágio Atual</Label>
+                  <Label className="mb-2" htmlFor="stage">Estágio Atual</Label>
                   <Select
                     onValueChange={handleSelectChange}
                     defaultValue={formData.stage}
@@ -188,7 +188,7 @@ export default function CadastroStartups() {
                   </Select>
                 </div>
                 <div>
-                  <Label htmlFor="location">Localização</Label>
+                  <Label className="mb-2" htmlFor="location">Localização</Label>
                   <Input
                     id="location"
                     value={formData.location}
@@ -199,7 +199,7 @@ export default function CadastroStartups() {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="founders">Fundadores</Label>
+                  <Label className="mb-2" htmlFor="founders">Fundadores</Label>
                   <Input
                     id="founders"
                     value={formData.founders}
@@ -210,7 +210,7 @@ export default function CadastroStartups() {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="links">Website ou LinkedIn</Label>
+                  <Label className="mb-2" htmlFor="links">Website ou LinkedIn</Label>
                   <Input
                     id="links"
                     value={formData.links}
@@ -221,7 +221,7 @@ export default function CadastroStartups() {
                   />
                 </div>
                 <div className="md:col-span-2">
-                  <Label htmlFor="problem">
+                  <Label className="mb-2" htmlFor="problem">
                     Qual problema sua startup resolve?
                   </Label>
                   <Textarea
@@ -233,7 +233,7 @@ export default function CadastroStartups() {
                   />
                 </div>
                 <div className="md:col-span-2">
-                  <Label htmlFor="pitch">Pitch (resumo da solução)</Label>
+                  <Label className="mb-2" htmlFor="pitch">Pitch (resumo da solução)</Label>
                   <Textarea
                     id="pitch"
                     value={formData.pitch}
@@ -252,7 +252,7 @@ export default function CadastroStartups() {
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div>
-                  <Label htmlFor="nameUser">Nome Completo</Label>
+                  <Label className="mb-2" htmlFor="nameUser">Nome Completo</Label>
                   <Input
                     id="nameUser"
                     value={formData.nameUser}
@@ -262,7 +262,7 @@ export default function CadastroStartups() {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="emailUser">E-mail</Label>
+                  <Label className="mb-2" htmlFor="emailUser">E-mail</Label>
                   <Input
                     id="emailUser"
                     type="email"
@@ -273,7 +273,7 @@ export default function CadastroStartups() {
                   />
                 </div>
                 <div className="md:col-span-2">
-                  <Label htmlFor="passwordUser">Senha</Label>
+                  <Label className="mb-2" htmlFor="passwordUser">Senha</Label>
                   <Input
                     id="passwordUser"
                     type="password"
