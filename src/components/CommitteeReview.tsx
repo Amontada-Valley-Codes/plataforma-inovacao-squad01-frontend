@@ -277,8 +277,8 @@ export function CommitteeReview({ user }: CommitteeReviewProps) {
                                       </div>
                                     )}
                                   </div>
-                                  /
-                              <button onClick={() => {
+                                  
+                              <button className='bg-gray-600 rounded p-2 mt-2' onClick={() => {
                                 const updatedIdea = removeEvaluationById(idea, evaluation.id);
                                 setIdeasForReview(prevIdeas => prevIdeas.map(i => i.id === updatedIdea.id ? updatedIdea : i));
                               }}>Remover Avaliação</button>

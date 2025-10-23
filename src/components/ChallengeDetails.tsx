@@ -103,8 +103,44 @@ export function ChallengeDetails({ user, challenge, onNavigate }: ChallengeDetai
     }, [challenge.id, user.companyId]);
 
     const handlePostComment = async () => {
-        // ... (código existente)
-    };
+    if (!newComment.trim()) return;
+    setIsSubmittingComment(true);
+
+    try {
+        // O payload correto para a sua API de comentários
+        const response = await api.post('/comments', {
+            text: newComment,
+            commentableType: 'CHALLENGE',
+            commentableId: challenge.id,
+        });
+
+        // O backend retorna o comentário recém-criado, incluindo o autor
+        const newCommentFromServer = response.data;
+
+        // Monta o objeto Comment no formato que o seu frontend espera
+        const postedComment: Comment = {
+            id: newCommentFromServer.id,
+            // Usamos o nome do usuário logado como autor para feedback imediato
+            author: { name: user.name, avatar: user.image_url },
+            text: newCommentFromServer.text,
+            // Formata a data atual para exibição imediata
+            createdAt: new Date(newCommentFromServer.createdAt).toLocaleDateString('pt-BR'),
+        };
+
+        // Adiciona o novo comentário no topo da lista de comentários existente
+        setComments(prevComments => [postedComment, ...prevComments]);
+
+        // Limpa o campo de texto
+        setNewComment('');
+
+    } catch (error) {
+        console.error("Falha ao publicar comentário:", error);
+        alert("Não foi possível publicar o seu comentário. Tente novamente.");
+    } finally {
+        // Garante que o estado de 'loading' seja desativado, mesmo se ocorrer um erro
+        setIsSubmittingComment(false);
+    }
+};
 
     // 💡 NOVA FUNÇÃO PARA CRIAR CONEXÃO
     const handleConnect = async (startupId: string) => {
@@ -197,7 +233,7 @@ export function ChallengeDetails({ user, challenge, onNavigate }: ChallengeDetai
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 m-5">
                 {/* Left Column - Challenge Details */}
                 <div className="lg:col-span-2 space-y-6">
                     <Card className={`bg-white ${theme === 'dark' ? 'bg-gray-800 text-white' : ''}`}>
@@ -307,7 +343,7 @@ export function ChallengeDetails({ user, challenge, onNavigate }: ChallengeDetai
                 </div>
             </div>
 
-            <div className="mt-8">
+            <div className="mt-8 m-5">
                 <Tabs defaultValue="submissions">
                     <TabsList className={`bg-white border-b ${theme === 'dark' ? 'bg-gray-800 border-gray-700' : 'border-gray-200'}`}>
                         <TabsTrigger className={`py-4 px-6 text-sm font-medium ${theme === 'dark' ? 'text-gray-200 hover:bg-gray-700' : 'text-gray-800 hover:bg-gray-100'}`} value="submissions">Submissões ({submissions.length})</TabsTrigger>

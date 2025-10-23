@@ -51,6 +51,7 @@ import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import { DialogDescription } from "./ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 
 
 interface DashboardProps {
@@ -114,6 +115,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
     });
 
     const [startupConnections, setStartupConnections] = useState<StartupConnection[]>([]);
+    const [allCompanyIdeas, setAllCompanyIdeas] = useState<Idea[]>([]);
 
 
     const stageLabels: { [key: string]: string } = {
@@ -158,6 +160,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
             const [startupsRes, challengesRes, connectionsRes, pocsResOrIdeasRes, startupIdeasRes] = await Promise.all(apiCalls);
             
             const challenges = challengesRes.data.data || challengesRes.data;
+            setAllCompanyIdeas(startupIdeasRes.data || []);
             console.log("Desafios carregados:", challengesRes);
             console.log("Ideias carregadas:", startupIdeasRes);
 
@@ -290,6 +293,10 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
             alert("Não foi possível registrar a Prova de Conceito.");
         }
     };
+
+    // 💡 FILTRAR IDEIAS QUE PERTENCEM AOS DESAFIOS LISTADOS
+    const challengeIds = dashboardData.recentChallenges.map(c => c.id);
+    const ideasForCompanyChallenges = allCompanyIdeas.filter(idea => challengeIds.includes(idea.challengeId));
 
     return (
         <div className={`flex h-screen bg-background text-white ${theme === 'dark' ? 'bg-gray-900 text-white' : ''}`}>
@@ -493,24 +500,35 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
 
                     {/* Lista de Desafios Ativos (com botões condicionais) */}
                     <Card className={`shadow-lg ${theme === 'dark' ? 'bg-gray-800 text-white' : ''}`}>
-                        <CardHeader className="flex md:flex-row flex-col md:items-center justify-between pb-4">
-                            <div>
-                                <CardTitle className="text-xl font-bold">Desafios Ativos</CardTitle>
-                                <CardDescription>
-                                    {user.role === 'STARTUP' ? 'Oportunidades para você aplicar sua solução.' : 'Desafios em andamento na plataforma.'}
-                                </CardDescription>
-                            </div>
-                            {user.role !== 'STARTUP' && (
-                                <Button className={`bg-[#011677] cursor-pointer text-white hover:bg-[#020ebd] mt-4 md:mt-0 font-semibold transition-colorsv ${theme === 'dark' ? 'bg-gray-700 hover:bg-gray-600' : ''}`} onClick={() => router.push("/challenges/new")}>
-                                    <Plus className="w-4 h-4 mr-2" />
-                                    Criar Novo Desafio
-                                </Button>
-                            )}
-                        </CardHeader>
-                        <CardContent>
-                            <div className="space-y-4">
-                                {dashboardData.recentChallenges.map((challenge) => (
-                                    <div key={challenge.id} className={`flex md:items-center md:flex-row flex-col justify-between p-4 border rounded-xl hover:bg-gray-100/50 cursor-pointer transition-colors ${theme === 'dark' ? 'border-gray-700 hover:bg-gray-800/50' : 'border-gray-200'}`}>
+                        <Tabs defaultValue="challenges">
+                            <CardHeader>
+                                <div className="flex md:flex-row flex-col md:items-start justify-between">
+                                    <div>
+                                        <CardTitle className="text-xl font-bold">Atividade Recente</CardTitle>
+                                        <CardDescription>
+                                            {user.role === 'STARTUP' ? 'Oportunidades e suas propostas.' : 'Acompanhe os desafios e ideias da sua empresa.'}
+                                        </CardDescription>
+                                    </div>
+                                    <div className="flex items-center gap-4 mt-4 md:mt-0">
+                                         <TabsList>
+                                            <TabsTrigger value="challenges">Desafios Ativos</TabsTrigger>
+                                            {user.role !== 'STARTUP' && <TabsTrigger value="ideas">Ideias</TabsTrigger>}
+                                        </TabsList>
+                                        {user.role !== 'STARTUP' && (
+                                            <Button className={`bg-[#011677] ...`} onClick={() => router.push("/challenges/new")}>
+                                                <Plus className="w-4 h-4 mr-2" />
+                                                Criar Desafio
+                                            </Button>
+                                        )}
+                                    </div>
+                                </div>
+                            </CardHeader>
+
+                            <CardContent>
+                                <TabsContent value="challenges">
+                                    <div className="space-y-4">
+                                        {dashboardData.recentChallenges.map((challenge) => (
+                                            <div key={challenge.id} className={`flex md:items-center md:flex-row flex-col justify-between p-4 border rounded-xl hover:bg-gray-100/50 cursor-pointer transition-colors ${theme === 'dark' ? 'border-gray-700 hover:bg-gray-800/50' : 'border-gray-200'}`}>
                                         <div className="space-y-1" onClick={() => router.push(`/challenges/${challenge.id}`)}>
                                             <h4 className={`font-semibold text-lg ${theme === 'dark' ? 'text-gray-200' : 'text-[#011677]'}`}>{challenge.name}</h4>
                                             <div className="flex items-center gap-3 flex-wrap">
@@ -550,9 +568,32 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                                             )}
                                         </div>
                                     </div>
-                                ))}
-                            </div>
-                        </CardContent>
+                                        ))}
+                                    </div>
+                                </TabsContent>
+                                
+                                <TabsContent value="ideas">
+                                    <div className="space-y-4">
+                                        {ideasForCompanyChallenges.length > 0 ? ideasForCompanyChallenges.map((idea) => {
+                                            const challenge = dashboardData.recentChallenges.find(c => c.id === idea.challengeId);
+                                            return (
+                                                <div key={idea.id} className={`flex md:items-center justify-between p-4 border rounded-xl ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
+                                                    <div className="space-y-1">
+                                                        <h4 className={`font-semibold text-lg ${theme === 'dark' ? 'text-gray-200' : 'text-[#011677]'}`}>{idea.title}</h4>
+                                                        <p className="text-sm text-gray-500">
+                                                            Para o desafio: <span className="font-medium">{challenge?.name || 'Desconhecido'}</span>
+                                                        </p>
+                                                    </div>
+                                                    <Badge variant="outline">{stageLabels[idea.stage as keyof typeof stageLabels] || idea.stage}</Badge>
+                                                </div>
+                                            )
+                                        }) : (
+                                            <p className="text-center text-gray-500 py-4">Nenhuma ideia encontrada para os desafios ativos.</p>
+                                        )}
+                                    </div>
+                                </TabsContent>
+                            </CardContent>
+                        </Tabs>
                     </Card>
                 </div>
             </div>
