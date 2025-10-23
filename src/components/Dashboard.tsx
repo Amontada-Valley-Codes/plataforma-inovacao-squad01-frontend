@@ -525,7 +525,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                                             </div>
                                         </div>
                                         <div className="flex flex-col md:flex-row md:space-x-3 space-y-2 md:space-y-0 mt-4 md:mt-0">
-                                            <Button className="bg-gray-200 text-gray-700 h-9 hover:bg-gray-300 font-medium" size="sm" onClick={(e) => { e.stopPropagation(); router.push(`/challenges/${challenge.id}`); }}>
+                                            <Button className="bg-gray-200 cursor-pointer text-gray-700 h-9 hover:bg-gray-300 font-medium" size="sm" onClick={(e) => { e.stopPropagation(); router.push(`/challenges/${challenge.id}`); }}>
                                                 <ChevronRight className="w-4 h-4 mr-2" />Ver Detalhes
                                             </Button>
                                             
@@ -543,7 +543,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                                                     Adicionar Ideia
                                                 </Button>
                                             ) : (
-                                                <Button className="bg-[#011677] text-white hover:bg-[#020ebd] h-9 font-medium" onClick={(e) => { e.stopPropagation(); handleChallengeClick(challenge); }}>
+                                                <Button className="bg-[#011677] text-white cursor-pointer hover:bg-[#020ebd] h-9 font-medium" onClick={(e) => { e.stopPropagation(); handleChallengeClick(challenge); }}>
                                                     <Target className="w-4 h-4 mr-2" />
                                                     Funil de Ideias
                                                 </Button>
