@@ -101,7 +101,7 @@ export default function InitialPage() {
       <footer className="bg-[#011677] text-white py-12 px-6">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Logo e Descrição */}
-          <div className="col-span-1 md:col-span-2 flex flex-col items-start">
+          <div className="col-span-1 md:col-span-2 flex flex-col items-center md:items-start ">
             <img
               src="/img/logo1.svg"
               alt="Logo co.inova"
@@ -109,17 +109,17 @@ export default function InitialPage() {
               height={80}
               className="mb-4"
             />
-            <p className="text-sm text-gray-300 max-w-sm">
+            <p className="text-sm text-gray-300 text-center md:text-start max-w-sm">
               Conectando empresas e startups para criar um futuro de inovação.
             </p>
           </div>
 
           {/* Links de Navegação */}
-          <div>
+          <div className="flex flex-col items-center md:items-start">
             <h3 className="font-bold text-lg mb-4">Navegação</h3>
-            <ul className="space-y-2">
+            <ul className="space-y-2 text-center md:text-start ">
               <li>
-                <a href="#Inicio" className="hover:underline transition-colors">
+                <a href="#Inicio" className="hover:underline  transition-colors">
                   Início
                 </a>
               </li>
@@ -143,7 +143,7 @@ export default function InitialPage() {
           </div>
 
           {/* Redes Sociais */}
-          <div>
+          <div className="flex flex-col items-center md:items-start">
             <h3 className="font-bold text-lg mb-4">Redes</h3>
             <div className="flex space-x-4 mt-6 text-2xl">
               <a

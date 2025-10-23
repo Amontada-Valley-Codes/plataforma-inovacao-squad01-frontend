@@ -102,6 +102,41 @@ export function Reports({ user, onNavigate }: ReportsProps) {
         return <Loading />;
     }
 
+    const handleExportCSV = () => {
+        if (ideasData.length === 0) {
+            alert("Não há dados para exportar.");
+            return;
+        }
+
+        // 1. Definir os cabeçalhos do CSV
+        const headers = ['Título da Ideia', 'Autor', 'Área', 'Etapa Atual', 'Status'];
+        
+        // 2. Mapear os dados para o formato de linha do CSV
+        const rows = ideasData.map(idea => [
+            `"${idea.title.replace(/"/g, '""')}"`, // Trata aspas no título
+            `"${idea.author.name}"`,
+            `"${idea.area}"`,
+            `"${stageLabels[idea.stage] || idea.stage}"`,
+            `"${idea.status}"`
+        ].join(','));
+
+        // 3. Juntar cabeçalhos e linhas
+        const csvContent = [headers.join(','), ...rows].join('\n');
+
+        // 4. Criar um Blob com o conteúdo CSV
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+
+        // 5. Criar um link temporário e simular o clique para fazer o download
+        const link = document.createElement("a");
+        link.setAttribute("href", url);
+        link.setAttribute("download", "relatorio_de_ideias.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+    // 💡 FIM DA NOVA FUNÇÃO
+
 
   return (
     <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'}`}>
@@ -125,10 +160,10 @@ export function Reports({ user, onNavigate }: ReportsProps) {
                             <Filter className="w-4 h-4 mr-2" />
                             Filtrar por Período
                         </Button>
-                        <Button>
-                            <Download className="w-4 h-4 mr-2" />
-                            Exportar Relatório
-                        </Button>
+                        <Button onClick={handleExportCSV}>
+                                <Download className="w-4 h-4 mr-2" />
+                                Exportar Relatório
+                            </Button>
                     </div>
                   </div>
                 </div>

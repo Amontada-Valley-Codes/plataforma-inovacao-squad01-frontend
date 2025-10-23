@@ -55,33 +55,25 @@ export default function Login({ onLogin }: LoginProps) {
   };
 
   return (
-    <div className="relative flex flex-col md:flex-row min-h-screen items-center justify-center bg-gradient-to-br from-[#001f61] to-[#003285] text-white">
+    <div className="relative flex flex-col md:flex-row min-h-screen bg-[url('/img/fundo-login.jpg')] bg-cover bg-center items-center justify-center text-white">
       {/* 🔹 Imagem de fundo geral */}
-      <div className="absolute inset-0">
-        <Image
-          src="/img/fundo-login.jpg"
-          alt="Fundo login"
-          fill
-          priority
-          className="object-cover opacity-30"
-        />
-      </div>
+      <div className="absolute bg-[#001f61]/70 inset-0"></div>
 
       {/* 🔹 Container principal */}
-      <div className="relative z-10 flex flex-col md:flex-row w-full max-w-6xl sm:rounded-2xl rounded-none shadow-2xl overflow-hidden backdrop-blur-sm">
+      <div className="relative z-10 flex flex-col md:flex-row w-full md:m-2 max-w-6xl sm:rounded-2xl rounded-none shadow-2xl overflow-hidden ">
         
         {/* 🔹 Seção esquerda com imagem translúcida (a mesma do fundo) */}
         <div className="hidden md:flex relative flex-col justify-center items-start w-1/2 p-12 text-white overflow-hidden">
           {/* Mesma imagem usada no fundo */}
           <Image
-            src="/img/fundo-login.jpg"
+            src="/img/fundo2-login.jpg"
             alt="Imagem decorativa lateral"
             fill
-            className="object-cover opacity-20"
+            className='bg-center bg-cover'
           />
 
           {/* Sobreposição escura para contraste e legibilidade */}
-          <div className="absolute inset-0 bg-[#001f61]/70 backdrop-blur-sm" />
+          <div className="absolute hidden md:block inset-0 bg-[#001f61]/50" />
 
           {/* Conteúdo sobre a imagem */}
           <div className="relative z-10">
@@ -95,7 +87,7 @@ export default function Login({ onLogin }: LoginProps) {
         </div>
 
         {/* 🔹 Seção direita - Formulário de Login */}
-        <div className="flex-1 bg-white text-gray-800 flex flex-col justify-center px-10 py-12 md:py-16">
+        <div className="flex-1 bg-white text-gray-800 flex my-8 md:my-0 mx-8 md:mx-0 rounded-2xl md:rounded-none flex-col justify-center px-4 md:px-10 py-12 md:py-16">
           <CardHeader className="text-center mb-6">
             <div className="flex justify-center">
               <Image

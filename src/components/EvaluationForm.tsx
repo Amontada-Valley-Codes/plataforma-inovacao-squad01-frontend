@@ -47,35 +47,21 @@ export function EvaluationForm({ idea, user, onEvaluationComplete }: EvaluationF
         setError('');
 
         try {
-            // Passo A: Criar a Avaliação no backend
+            // 💡 CORREÇÃO: Unificar a lógica de critérios
+            // O payload de 'criteria' será preenchido dependendo da etapa da avaliação.
+            const criteriaPayload = isPreScreening 
+                ? preScreeningCriteria 
+                : detailedScreeningNotes;
+
+            // Passo A: Criar a Avaliação no backend, enviando os critérios corretos
             const evaluationResponse = await api.post('/evaluations', {
                 stage: stageMap[idea.stage as keyof typeof stageMap],
                 ideaId: idea.id,
                 evaluatorId: user.id,
+                criteria: criteriaPayload, // Envia o objeto com as notas da triagem detalhada
             });
-            const evaluationId = evaluationResponse.data.id;
 
-            // Passo B: Criar os Comentários (se houver)
-            if (isDetailedScreening) {
-                const comments = [
-                    { title: 'Análise de Viabilidade', text: detailedScreeningNotes.viability },
-                    { title: 'Análise de Impacto', text: detailedScreeningNotes.impact },
-                    { title: 'Análise de Riscos', text: detailedScreeningNotes.risks },
-                ];
-                for (const comment of comments) {
-                    if (comment.text.trim()) {
-                        await api.post('/comments', {
-                            text: `${comment.title}: ${comment.text}`,
-                            commentableType: 'IDEA',
-                            commentableId: idea.id,
-                            evaluationsId: evaluationId,
-                        });
-                    }
-                }
-            }
             
-            // --- PASSO C REMOVIDO ---
-            // A ideia não avança mais de fase aqui.
 
             alert('Avaliação enviada com sucesso!');
             onEvaluationComplete(); // Fecha o modal e recarrega os dados
