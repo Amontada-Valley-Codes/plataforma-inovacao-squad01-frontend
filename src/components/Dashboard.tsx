@@ -135,7 +135,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                 ? '/challenges/findByPublic'
                 : `/challenges/findByCompany/${user.companyId}`;
 
-            const ideasEndpoint = user.role === 'STARTUP'
+            const ideasEndpoint = user.role === 'STARTUP' 
                 ? `/idea/`
                 : `/idea/company/${user.companyId}`;
 
