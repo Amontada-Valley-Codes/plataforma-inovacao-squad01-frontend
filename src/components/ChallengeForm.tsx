@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { Card, CardContent, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
@@ -15,7 +15,7 @@ import { pt } from 'date-fns/locale';
 import { User } from '../app/context/UserContext';
 import api from '../lib/api';
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectScrollUpButton, SelectScrollDownButton
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "./ui/select";
 
 
@@ -74,7 +74,7 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
 			typePublication: formData.type === 'interno' ? 'RESTRITO' : 'PUBLICO',
 			// Valores padrão para campos que não existem no formulário
 			status: 'ATIVO',
-			images: 'https://via.placeholder.com/150', // URL de imagem provisória
+			images: ['https://via.placeholder.com/150'], // URL de imagem provisória
 			// O backend espera um Enum, vamos enviar a primeira tag como exemplo
 			// Idealmente, o backend deveria aceitar um array ou o frontend deveria ter um seletor para o Enum
 			tags: tags.length > 0 ? tags[0].toUpperCase().replace(/ /g, '_') : 'IA',
@@ -234,28 +234,22 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
 
 										<div className="space-y-2">
 											<Label className={` ${theme === 'dark' ? 'text-white' : 'text-black'}`} htmlFor="area">Área Principal</Label>
-											<Select>
-												<SelectTrigger className={`w-full justify-between border-gray-300  transition-colors cursor-pointer ${theme === 'dark' ? 'text-white' : 'text-black hover:border-[#001f61]'}`}>
-													<SelectValue placeholder="Selecione a área principal" className={` ${theme === 'dark' ? 'text-white' : 'text-black'}`} />
-													
-												</SelectTrigger>
-												<SelectContent className={`bg-white shadow-lg rounded-lg ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'}`}>
-													<SelectScrollUpButton className={`text-black ${theme === 'dark' ? 'text-white' : ''}`} />
-													<div>
-														{['Meio Ambiente', 'Automação', 'Sustentabilidade', 'Finanças', 'Educação'].map((area) => (
-															<SelectItem
-																key={area}
-																value={area}
-																onSelect={() => setFormData({ ...formData, area })}
-																className={`cursor-pointer select-none relative py-2 pl-10 pr-4 hover:bg-[#001f61] hover:text-white ${theme === 'dark' ? 'text-white' : 'text-black'}`}
-															>
-																<span>{area}</span>
-															</SelectItem>
-														))}
-													</div>
-													<SelectScrollDownButton className={`text-black ${theme === 'dark' ? 'text-white' : ''}`} />
-												</SelectContent>
-											</Select>
+											<Select onValueChange={(value) => setFormData({ ...formData, area: value })}>
+                                                <SelectTrigger className={`w-full justify-between border-gray-300 transition-colors cursor-pointer ${theme === 'dark' ? 'text-white' : 'text-black hover:border-[#001f61]'}`}>
+                                                    <SelectValue placeholder="Selecione a área principal" className={` ${theme === 'dark' ? 'text-white' : 'text-black'}`} />
+                                                </SelectTrigger>
+                                                <SelectContent className={`bg-white shadow-lg rounded-lg ${theme === 'dark' ? 'bg-gray-700' : 'bg-white'}`}>
+                                                    {['Meio Ambiente', 'Automação', 'Sustentabilidade', 'Finanças', 'Educação'].map((areaValue) => (
+                                                        <SelectItem
+                                                            key={areaValue}
+                                                            value={areaValue}
+                                                            className={`cursor-pointer select-none relative py-2 pl-10 pr-4 hover:bg-[#001f61] hover:text-white ${theme === 'dark' ? 'text-white' : 'text-black'}`}
+                                                        >
+                                                            <span>{areaValue}</span>
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
 											
 										</div>
 

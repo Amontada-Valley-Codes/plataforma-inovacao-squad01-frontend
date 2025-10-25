@@ -5,7 +5,6 @@ import api from "../lib/api";
 import {
     Card,
     CardContent,
-    CardDescription,
     CardHeader,
     CardTitle,
 } from "./ui/card";

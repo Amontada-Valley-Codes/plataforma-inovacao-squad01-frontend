@@ -16,12 +16,6 @@ export default function CollaboratorsPage() {
     }
   }, [isAuthenticated, user, router]);
 
-  const handleNavigate = (page: string) => {
-    if (page === 'dashboard') {
-      router.push('/dashboard');
-    }
-  };
-
   if (!isAuthenticated || !user) {
     return null;
   }

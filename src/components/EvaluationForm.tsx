@@ -8,7 +8,7 @@ import { DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose
 import { Badge } from './ui/badge';
 import { Separator } from './ui/separator';
 import { Checkbox } from './ui/checkbox';
-import { Check, Archive, Send } from 'lucide-react'; // Trocado ArrowRight por Send
+import { Archive, Send } from 'lucide-react'; // Trocado ArrowRight por Send
 import { Idea, User } from '../app/context/UserContext';
 import api from '../lib/api';
 

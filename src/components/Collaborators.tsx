@@ -6,7 +6,7 @@ import {
 } from "./ui/card";
 import { Button } from "./ui/button";
 import {
-  UserPlus, Loader2, CheckCircle, Trash2,
+  UserPlus, Loader2, Trash2,
 } from "lucide-react";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -88,14 +88,14 @@ export default function Collaborators({ user }: CollaboratorsProps) {
             setCompanies(res.data.data);
             console.log("Empresas carregadas:", res.data.data);
           } else {
-             // Se a resposta for um array direto (para manter a compatibilidade)
+            // Se a resposta for um array direto (para manter a compatibilidade)
             setCompanies(res.data);
-             console.log("Empresas carregadas (array direto):", res.data);
+            console.log("Empresas carregadas (array direto):", res.data);
           }
         })
         .catch(err => {
-            console.error("Falha ao buscar empresas", err);
-            setCompanies([]); // Garante que o estado seja um array em caso de erro
+          console.error("Falha ao buscar empresas", err);
+          setCompanies([]); // Garante que o estado seja um array em caso de erro
         });
     }
   }, [fetchData, user.role]);
@@ -184,13 +184,41 @@ export default function Collaborators({ user }: CollaboratorsProps) {
     return labels[role] || role;
   };
 
+  // 💡 INÍCIO DA NOVA FUNÇÃO PARA ATUALIZAR O CARGO
+  const handleRoleChange = async (collaboratorId: string, newRole: UserRole) => {
+    // Previne que o gestor altere o próprio cargo
+    if (user.id === collaboratorId) {
+      alert("Você não pode alterar sua própria função.");
+      return;
+    }
+
+    try {
+      // Envia a requisição para o backend para atualizar o usuário
+      await api.put(`/user/${collaboratorId}`, { role: newRole, companyId: user.companyId });
+
+      // Atualiza o estado local para refletir a mudança instantaneamente na UI
+      setCollaborators(prevCollaborators =>
+        prevCollaborators.map(c =>
+          c.id === collaboratorId ? { ...c, role: newRole } : c
+        )
+      );
+
+      alert('Função do colaborador atualizada com sucesso!');
+    } catch (error) {
+      console.error("Erro ao atualizar a função:", error);
+      alert("Não foi possível atualizar a função do colaborador. Tente novamente.");
+      // Opcional: recarregar os dados para reverter a mudança visual em caso de erro
+      fetchData();
+    }
+  };
+  // 💡 FIM DA NOVA FUNÇÃO
+
   return (
     <div
-      className={`flex h-screen relative bg-background text-white ${
-        theme === 'dark'
+      className={`flex h-screen relative bg-background text-white ${theme === 'dark'
           ? 'bg-gradient-to-br from-gray-950 via-gray-900 to-gray-800 text-gray-100'
           : 'bg-gradient-to-br from-gray-50 via-blue-50 to-gray-100 text-gray-900'
-      }`}
+        }`}
     >
       <Sidebar theme={theme} user={user} />
 
@@ -206,9 +234,8 @@ export default function Collaborators({ user }: CollaboratorsProps) {
 
       <main className="flex-1 w-full px-6 py-20 mt-16 overflow-y-auto">
         <Card
-          className={`shadow-xl rounded-2xl transition-all duration-300 ${
-            theme === 'dark' ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'
-          }`}
+          className={`shadow-xl rounded-2xl transition-all duration-300 ${theme === 'dark' ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'
+            }`}
         >
           <CardHeader className="flex flex-row items-center justify-between pb-4 border-b border-gray-200 dark:border-gray-800">
             <div>
@@ -247,8 +274,8 @@ export default function Collaborators({ user }: CollaboratorsProps) {
                         </SelectTrigger>
                         <SelectContent className={`${theme === 'dark' ? 'bg-gray-800 border-gray-700' : ''}`}>
                           {Array.isArray(companies) && companies.map((company) => (
-                <SelectItem key={company.id} value={company.id}>{company.name}</SelectItem>
-              ))}
+                            <SelectItem key={company.id} value={company.id}>{company.name}</SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                     </div>
@@ -294,7 +321,7 @@ export default function Collaborators({ user }: CollaboratorsProps) {
                     className={`w-full cursor-pointer font-semibold py-2 rounded-md transition-all
                       ${inviteStatus === 'loading' ? 'bg-blue-500 animate-pulse' :
                         inviteStatus === 'success' ? 'bg-green-600 hover:bg-green-700' :
-                        'bg-[#001f61] hover:bg-[#002a7a]'} text-white`}
+                          'bg-[#001f61] hover:bg-[#002a7a]'} text-white`}
                   >
                     {inviteStatus === 'loading' && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     {inviteStatus === 'loading' ? 'Enviando...' :
@@ -310,22 +337,20 @@ export default function Collaborators({ user }: CollaboratorsProps) {
               <TabsList className="grid grid-cols-2 w-full rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
                 <TabsTrigger
                   value="collaborators"
-                  className={`cursor-pointer py-2 text-sm font-medium transition-all ${
-                    activeTab === 'collaborators'
+                  className={`cursor-pointer py-2 text-sm font-medium transition-all ${activeTab === 'collaborators'
                       ? 'bg-[#011677] text-white shadow-md scale-[1.02]'
                       : ''
-                  }`}
+                    }`}
                 >
                   Colaboradores ({collaborators.length})
                 </TabsTrigger>
 
                 <TabsTrigger
                   value="pending"
-                  className={`cursor-pointer py-2 text-sm font-medium transition-all ${
-                    activeTab === 'pending'
+                  className={`cursor-pointer py-2 text-sm font-medium transition-all ${activeTab === 'pending'
                       ? 'bg-[#011677] text-white shadow-md scale-[1.02]'
                       : ''
-                  }`}
+                    }`}
                 >
                   Pendentes ({pendingInvites.length})
                 </TabsTrigger>
@@ -361,6 +386,29 @@ export default function Collaborators({ user }: CollaboratorsProps) {
                             </TableCell>
                             <TableCell>{colab.email}</TableCell>
                             <TableCell>{getRoleLabel(colab.role)}</TableCell>
+                            <TableCell>
+                              {/* 💡 INÍCIO DAS ALTERAÇÕES NO SELECT */}
+                              <Select
+                                defaultValue={colab.role}
+                                // Aciona a função de atualização quando o valor muda
+                                onValueChange={(newRole) => handleRoleChange(colab.id, newRole as UserRole)}
+                                // Habilita apenas para GESTOR e desabilita para o próprio usuário
+                                disabled={user.role !== "GESTOR" || user.id === colab.id}
+                              >
+                                <SelectTrigger className={`w-48 cursor-pointer border-gray-300 focus:ring-[#001f61]/30 ${theme === 'dark' ? 'bg-gray-700 text-gray-200 border-gray-600' : ''}`}>
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent className={`shadow-lg ${theme === 'dark' ? 'bg-gray-800 border-gray-600' : ''}`}>
+                                  <SelectItem className={`cursor-pointer ${theme === 'dark' ? 'text-gray-200 hover:bg-gray-700' : 'hover:bg-gray-100'}`} value="COMUM">Usuário Comum</SelectItem>
+                                  <SelectItem className={`cursor-pointer ${theme === 'dark' ? 'text-gray-200 hover:bg-gray-700' : 'hover:bg-gray-100'}`} value="AVALIADOR">Avaliador</SelectItem>
+                                  <SelectItem className={`cursor-pointer ${theme === 'dark' ? 'text-gray-200 hover:bg-gray-700' : 'hover:bg-gray-100'}`} value="GESTOR">Gestor de Inovação</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              {/* 💡 FIM DAS ALTERAÇÕES NO SELECT */}
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <Button variant="default" size="sm" disabled={user.id === colab.id} className={`text-white bg-red-600 cursor-pointer hover:bg-red-700 ...`}>Remover</Button>
+                            </TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
@@ -393,6 +441,7 @@ export default function Collaborators({ user }: CollaboratorsProps) {
                             <TableCell>{getRoleLabel(invite.role)}</TableCell>
                             <TableCell>{new Date(invite.createdAt).toLocaleDateString('pt-BR')}</TableCell>
                             <TableCell>
+
                               <Button
                                 variant="destructive"
                                 className="cursor-pointer flex items-center gap-1 text-sm px-2 py-1 bg-[#011677] hover:bg-blue-950 text-white rounded-md"
