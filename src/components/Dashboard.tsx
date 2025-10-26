@@ -890,31 +890,38 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="pt-0">
-                      <ResponsiveContainer width="100%" height={300}>
-                        <PieChart>
-                          <Pie
-                            data={dashboardData.pieData}
-                            cx="50%"
-                            cy="50%"
-                            outerRadius={100}
-                            dataKey="value"
-                            labelLine={false}
-                            label={({ name, percent }) =>
-                              `${name} (${(percent * 100).toFixed(0)}%)`
-                            }
-                          >
-                            {dashboardData.pieData.map((entry, index) => (
-                              <Cell
-                                key={`cell-${index}`}
-                                fill={entry.color}
-                                stroke="#fff"
-                                strokeWidth={2}
-                              />
-                            ))}
-                          </Pie>
-                          <Tooltip />
-                        </PieChart>
-                      </ResponsiveContainer>
+                      <div className="w-full flex justify-center items-center">
+                        <ResponsiveContainer
+                          width="100%"
+                          height={window.innerWidth < 500 ? 250 : 300}
+                        >
+                          <PieChart>
+                            <Pie
+                              data={dashboardData.pieData}
+                              cx="50%"
+                              cy="50%"
+                              outerRadius={window.innerWidth < 500 ? 70 : 100}
+                              dataKey="value"
+                              labelLine={false}
+                              label={({ name, percent }) =>
+                                window.innerWidth < 500
+                                  ? ""
+                                  : `${name} (${(percent * 100).toFixed(0)}%)`
+                              }
+                            >
+                              {dashboardData.pieData.map((entry, index) => (
+                                <Cell
+                                  key={`cell-${index}`}
+                                  fill={entry.color}
+                                  stroke="#fff"
+                                  strokeWidth={2}
+                                />
+                              ))}
+                            </Pie>
+                            <Tooltip />
+                          </PieChart>
+                        </ResponsiveContainer>
+                      </div>
                     </CardContent>
                   </Card>
                 </div>
@@ -930,8 +937,9 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
           >
             <Tabs defaultValue="challenges">
               <CardHeader>
-                <div className="flex md:flex-row flex-col md:items-start justify-between">
-                  <div>
+                <div className="flex flex-col md:flex-row md:items-start justify-between w-full">
+                  {/* Título e descrição */}
+                  <div className="w-full md:w-auto">
                     <CardTitle className="text-xl font-bold">
                       Atividade Recente
                     </CardTitle>
@@ -941,11 +949,13 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                         : "Acompanhe os desafios e ideias da sua empresa."}
                     </CardDescription>
                   </div>
-                  <div className="flex items-center gap-4 mt-4 md:mt-0">
-                    <TabsList className="flex gap-3 bg-transparent border-0 p-0">
+
+                  {/* Botões e Tabs */}
+                  <div className="flex flex-wrap justify-start md:justify-end items-center gap-3 mt-4 md:mt-0 w-full md:w-auto">
+                    <TabsList className="flex flex-wrap gap-2 bg-transparent border-0 p-0">
                       <TabsTrigger
                         value="challenges"
-                        className="flex items-center gap-2 bg-[#011677] text-white px-4 py-2 rounded-lg transition-all duration-200 hover:bg-[#002494] hover:shadow-md cursor-pointer"
+                        className="flex items-center gap-2 bg-[#011677] text-white px-4 py-2 rounded-lg transition-all duration-200 hover:bg-[#002494] hover:shadow-md"
                       >
                         <ClipboardCheck className="w-4 h-4" />
                         Desafios Ativos
@@ -954,7 +964,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                       {user.role !== "STARTUP" && (
                         <TabsTrigger
                           value="ideas"
-                          className="flex items-center gap-2 bg-[#011677] text-white px-4 py-2 rounded-lg transition-all duration-200 hover:bg-[#002494] hover:shadow-md cursor-pointer"
+                          className="flex items-center gap-2 bg-[#011677] text-white px-4 py-2 rounded-lg transition-all duration-200 hover:bg-[#002494] hover:shadow-md"
                         >
                           <Lightbulb className="w-4 h-4" />
                           Ideias
@@ -965,7 +975,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                     {user.role !== "STARTUP" && (
                       <Button
                         onClick={() => router.push("/challenges/new")}
-                        className="flex items-center gap-2 bg-[#011677] text-white px-4 py-2 rounded-lg transition-all duration-200 hover:bg-[#002494] hover:shadow-md cursor-pointer"
+                        className="flex items-center gap-2 bg-[#011677] text-white px-4 py-2 rounded-lg transition-all duration-200 hover:bg-[#002494] hover:shadow-md"
                       >
                         <Plus className="w-4 h-4" />
                         Criar Desafio
@@ -1092,7 +1102,6 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                           "Experimentação (POC)": "#F59E0B",
                         };
 
-                        // Pega a cor de acordo com o estágio (ou cinza se não achar)
                         const badgeColor =
                           funnelColors[
                             stageLabels[
@@ -1103,13 +1112,14 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                         return (
                           <div
                             key={idea.id}
-                            className={`flex md:items-center justify-between p-4 border rounded-xl ${
+                            className={`flex flex-col md:flex-row md:items-center justify-between p-4 border rounded-xl transition-colors ${
                               theme === "dark"
-                                ? "border-gray-700"
-                                : "border-gray-200"
+                                ? "border-gray-700 bg-gray-800/30 hover:bg-gray-800/50"
+                                : "border-gray-200 hover:bg-gray-100/50"
                             }`}
                           >
-                            <div className="space-y-1">
+                            {/* Lado esquerdo: título e desafio */}
+                            <div className="space-y-1 flex-1">
                               <h4
                                 className={`font-semibold text-lg ${
                                   theme === "dark"
@@ -1127,20 +1137,22 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                               </p>
                             </div>
 
-                            {/* Badge estilizado dinamicamente */}
-                            <Badge
-                              variant="outline"
-                              style={{
-                                backgroundColor: `${badgeColor}1A`, // cor com transparência leve
-                                color: badgeColor,
-                                borderColor: badgeColor,
-                              }}
-                              className="font-medium px-3 py-1 text-sm"
-                            >
-                              {stageLabels[
-                                idea.stage as keyof typeof stageLabels
-                              ] || idea.stage}
-                            </Badge>
+                            {/* Lado direito: badge — desce abaixo no mobile */}
+                            <div className="flex justify-start md:justify-end mt-3 md:mt-0">
+                              <Badge
+                                variant="outline"
+                                style={{
+                                  backgroundColor: `${badgeColor}1A`,
+                                  color: badgeColor,
+                                  borderColor: badgeColor,
+                                }}
+                                className="font-medium px-3 py-1 text-sm min-w-[120px] text-center whitespace-nowrap flex justify-center"
+                              >
+                                {stageLabels[
+                                  idea.stage as keyof typeof stageLabels
+                                ] || idea.stage}
+                              </Badge>
+                            </div>
                           </div>
                         );
                       })
