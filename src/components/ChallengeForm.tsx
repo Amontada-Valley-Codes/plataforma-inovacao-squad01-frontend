@@ -158,7 +158,7 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
               className={`hovers-exit-dash ${
                 theme === "dark"
                   ? "hover:bg-gray-600 text-white"
-                  : "text-white hover:bg-white/10"
+                  : "text-white"
               }`} // Ajuste de cor hover
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
