@@ -1083,6 +1083,23 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                         const challenge = dashboardData.recentChallenges.find(
                           (c) => c.id === idea.challengeId
                         );
+
+                        const funnelColors: Record<string, string> = {
+                          "Geração/Captura": "#3B82F6",
+                          "Pré-Triagem": "#8B5CF6",
+                          Ideação: "#06B6D4",
+                          "Triagem Detalhada": "#10B981",
+                          "Experimentação (POC)": "#F59E0B",
+                        };
+
+                        // Pega a cor de acordo com o estágio (ou cinza se não achar)
+                        const badgeColor =
+                          funnelColors[
+                            stageLabels[
+                              idea.stage as keyof typeof stageLabels
+                            ] || idea.stage
+                          ] || "#9CA3AF";
+
                         return (
                           <div
                             key={idea.id}
@@ -1109,7 +1126,17 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                                 </span>
                               </p>
                             </div>
-                            <Badge variant="outline">
+
+                            {/* Badge estilizado dinamicamente */}
+                            <Badge
+                              variant="outline"
+                              style={{
+                                backgroundColor: `${badgeColor}1A`, // cor com transparência leve
+                                color: badgeColor,
+                                borderColor: badgeColor,
+                              }}
+                              className="font-medium px-3 py-1 text-sm"
+                            >
                               {stageLabels[
                                 idea.stage as keyof typeof stageLabels
                               ] || idea.stage}
