@@ -433,26 +433,24 @@ export function CommitteeReview({ user }: CommitteeReviewProps) {
                                         </div>
                                       )}
                                     </div>
-
-                                    <button
-                                      className="bg-gray-600 rounded p-2 mt-2"
-                                      onClick={() => {
-                                        const updatedIdea =
-                                          removeEvaluationById(
-                                            idea,
-                                            evaluation.id
-                                          );
-                                        setIdeasForReview((prevIdeas) =>
-                                          prevIdeas.map((i) =>
-                                            i.id === updatedIdea.id
-                                              ? updatedIdea
-                                              : i
-                                          )
-                                        );
-                                      }}
-                                    >
-                                      Remover Avaliação
-                                    </button>
+                                    {user.role === "ADMIN" && (
+                                      <div className="flex justify-end mt-4">
+                                        <Button
+                                          variant="destructive"
+                                          onClick={() =>
+                                            removeEvaluationById(
+                                              idea,
+                                              evaluation.id
+                                            )
+                                          }
+                                          className="bg-red-600 hover:bg-red-700 text-white transition-all"
+                                        >
+                                          Remover Avaliação
+                                        </Button>
+                                      </div>
+                                    )
+                                    }
+                                   
                                   </div>
                                 );
                               })

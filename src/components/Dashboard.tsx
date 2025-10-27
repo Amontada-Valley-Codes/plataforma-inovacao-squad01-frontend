@@ -148,134 +148,109 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
   };
 
   const fetchData = async () => {
-    setIsLoading(true);
-    try {
-      const challengesEndpoint =
-        user.role === "ADMIN" || user.role === "STARTUP"
-          ? "/challenges/findByPublic"
-          : `/challenges/findByCompany/${user.companyId}`;
+        setIsLoading(true);
+        try {
+            // Endpoints base
+            const startupsEndpoint = "/startups";
+            let challengesEndpoint = `/challenges/findByCompany/${user.companyId}`;
+            let ideasEndpoint = `/idea/company/${user.companyId}`;
+            let connectionsEndpoint = "/connections";
+            
+            // Ajusta os endpoints para roles específicas
+            if (user.role === "ADMIN") {
+                challengesEndpoint = "/challenges/findAllPaginated?limit=5&page=1";
+                ideasEndpoint = "/idea";
+                connectionsEndpoint = "/companies/list";
+            } else if (user.role === "STARTUP") {
+                challengesEndpoint = "/challenges/findByPublic";
+                ideasEndpoint = `/idea/`; // Busca todas as ideias, será filtrado no frontend
+                connectionsEndpoint = `/connections/startup/${user.startupId}`;
+            }
 
-      const ideasEndpoint =
-        user.role === "STARTUP" ? `/idea/` : `/idea/company/${user.companyId}`;
+            // Faz as chamadas à API
+            const [startupsRes, challengesRes, connectionsRes, ideasRes] = await Promise.all([
+                api.get(startupsEndpoint),
+                api.get(challengesEndpoint),
+                api.get(connectionsEndpoint),
+                api.get(ideasEndpoint),
+            ]);
 
-      const startupsEndpoint = "/startups";
-      const connectionsEndpoint =
-        user.role === "ADMIN" ? "/companies/list" : "/connections";
-      const pocsEndpoint = user.role === "ADMIN" ? null : "/poc";
+            const challenges = challengesRes.data.data || challengesRes.data;
+            const allIdeas = ideasRes.data.data || ideasRes.data;
+            
+            setAllCompanyIdeas(allIdeas);
 
-      const apiCalls = [
-        api.get(startupsEndpoint),
-        api.get(challengesEndpoint),
-        api.get(connectionsEndpoint),
-      ];
+            // Lógica específica para STARTUP
+            if (user.role === "STARTUP") {
+                setStartupConnections(connectionsRes.data);
+                const startupUserIdeas = allIdeas.filter((idea: Idea) => idea.authorId === user.id);
+                const ideasWithChallengeName = startupUserIdeas.map((idea: Idea) => {
+                    const challenge = challenges.find((c: Challenge) => c.id === idea.challengeId);
+                    return {
+                        ...idea,
+                        challengeName: challenge ? challenge.name : "Desafio não encontrado",
+                    };
+                });
+                setStartupIdeas(ideasWithChallengeName);
+            }
+            
+            // Lógica para os outros roles (ADMIN, GESTOR, etc.)
+            const ideasCount = allIdeas.length;
+            const startupsCount = startupsRes.data.length;
+            const connectionsCount = connectionsRes.data.length;
+            
+            // POCs só existem para roles que não são ADMIN ou STARTUP no contexto atual
+            let pocsCount = 0;
+            if (user.role !== 'ADMIN' && user.role !== 'STARTUP') {
+                const pocsRes = await api.get("/poc");
+                pocsCount = pocsRes.data.length;
+            }
 
-      // 💡 Adiciona chamadas específicas
-      if (pocsEndpoint) apiCalls.push(api.get(pocsEndpoint));
-      if (user.role === "STARTUP") apiCalls.push(api.get(ideasEndpoint));
-      else
-        apiCalls.push(
-          api.get(
-            user.role === "ADMIN" ? "/idea" : `/idea/company/${user.companyId}`
-          )
-        );
+            const funnelCounts = allIdeas.reduce((acc: any, idea: any) => {
+                const stageName = stageLabels[idea.stage] || "Outro";
+                acc[stageName] = (acc[stageName] || 0) + 1;
+                return acc;
+            }, {});
 
-      const [
-        startupsRes,
-        challengesRes,
-        connectionsRes,
-        pocsResOrIdeasRes,
-        startupIdeasRes,
-      ] = await Promise.all(apiCalls);
+            const funnelData = Object.entries(funnelCounts).map(([stage, count]) => ({
+                stage,
+                count: count as number,
+                color: funnelColors[stage as keyof typeof funnelColors] || "#ccc",
+            }));
+            
+            const segmentCounts = startupsRes.data.reduce((acc: any, startup: any) => {
+                acc[startup.segment] = (acc[startup.segment] || 0) + 1;
+                return acc;
+            }, {});
 
-      const challenges = challengesRes.data.data || challengesRes.data;
-      setAllCompanyIdeas(startupIdeasRes.data || []);
-      console.log("Desafios carregados:", challengesRes);
-      console.log("Ideias carregadas:", startupIdeasRes);
+            const pieData = Object.entries(segmentCounts).map(([name, value], index) => ({
+                name,
+                value: value as number,
+                color: ["#3B82F6", "#10B981", "#F59E0B", "#8B5CF6"][index % 4],
+            }));
 
-      const ideasFilter =
-        startupIdeasRes?.data.filter(
-          (idea: Idea) => idea.authorId === user.id
-        ) || [];
-      // 💡 Lógica para carregar as ideias da startup
-      if (user.role === "STARTUP") {
-        const connectionsRes = await api.get<StartupConnection[]>(
-          `/connections/startup/${user.startupId}`
-        );
-        console.log("Conexões carregadas:", connectionsRes);
-        setStartupConnections(connectionsRes.data);
-        const ideasWithChallengeName = ideasFilter.map((idea: Idea) => {
-          const challenge = challenges.find(
-            (c: Challenge) => c.id === idea.challengeId
-          );
-          return {
-            ...idea,
-            challengeName: challenge
-              ? challenge.name
-              : "Desafio não encontrado",
-          };
-        });
-        setStartupIdeas(ideasWithChallengeName);
-      }
+            setDashboardData({
+                ideasCount,
+                startupsCount,
+                connectionsCount,
+                pocsCount,
+                recentChallenges: challenges,
+                pieData,
+                kpiData: [
+                    { name: "Jan", ideas: 10 },
+                    { name: "Mar", ideas: 15 },
+                    { name: "Mai", ideas: ideasCount },
+                ],
+                avgTime: 0,
+                funnelData,
+            });
 
-      // Lógica para os outros roles
-      const ideasRes =
-        user.role === "STARTUP"
-          ? { data: [] }
-          : startupIdeasRes || pocsResOrIdeasRes;
-      const pocsRes = user.role === "STARTUP" ? undefined : pocsResOrIdeasRes;
-
-      const ideasCount = ideasRes.data.length;
-      const startupsCount = startupsRes.data.length;
-      const connectionsCount = connectionsRes.data.length;
-      const pocsCount = pocsRes ? pocsRes.data.length : 0;
-
-      const funnelCounts = ideasRes.data.reduce((acc: any, idea: any) => {
-        const stageName = stageLabels[idea.stage] || "Outro";
-        acc[stageName] = (acc[stageName] || 0) + 1;
-        return acc;
-      }, {});
-      const funnelData = Object.entries(funnelCounts).map(([stage, count]) => ({
-        stage,
-        count: count as number,
-        color: funnelColors[stage as keyof typeof funnelColors] || "#ccc",
-      }));
-
-      const segmentCounts = startupsRes.data.reduce(
-        (acc: any, startup: any) => {
-          acc[startup.segment] = (acc[startup.segment] || 0) + 1;
-          return acc;
-        },
-        {}
-      );
-      const pieData = Object.entries(segmentCounts).map(
-        ([name, value], index) => ({
-          name,
-          value: value as number,
-          color: ["#3B82F6", "#10B981", "#F59E0B", "#8B5CF6"][index % 4],
-        })
-      );
-
-      setDashboardData({
-        ideasCount,
-        startupsCount,
-        connectionsCount,
-        pocsCount,
-        recentChallenges: challenges,
-        pieData,
-        kpiData: [
-          { name: "Jan", ideas: 10 },
-          { name: "Mar", ideas: 15 },
-          { name: "Mai", ideas: ideasCount },
-        ],
-        avgTime: 0,
-        funnelData,
-      });
-    } catch (error) {
-      console.error("Falha ao carregar dados do dashboard:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+        } catch (error) {
+            console.error("Falha ao carregar dados do dashboard:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
   useEffect(() => {
     if (user) {
