@@ -433,7 +433,7 @@ export function CommitteeReview({ user }: CommitteeReviewProps) {
                                         </div>
                                       )}
                                     </div>
-                                    {user.role === "ADMIN" && (
+                                    {(user.role === "ADMIN" || user.role === "GESTOR") && (
                                       <div className="flex justify-end mt-4">
                                         <Button
                                           variant="destructive"
