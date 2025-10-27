@@ -45,22 +45,41 @@ interface CardItem {
   area: string;
   img: string;
   category: string;
+  company: { name: string };
 }
 
 // 💡 NOVA FUNÇÃO PARA SELECIONAR IMAGEM PELA ÁREA
 const getImageForArea = (area: string): string => {
   const areaNormalizada = area.toLowerCase();
   if (areaNormalizada.includes('ambiente') || areaNormalizada.includes('sustentabilidade')) {
-    return '/img/desafio1.jpg'; // Imagem de energia sustentável
+    return '/img/SUSTENTAVEL.jpg'; // Imagem de energia sustentável
   }
   if (areaNormalizada.includes('automação')) {
-    return '/img/desafio6.jpg'; // Imagem de indústria 4.0
+    return '/img/OPERACIONAL.jpg'; // Imagem de indústria 4.0
   }
   if (areaNormalizada.includes('finanças')) {
-    return '/img/desafio5.jpeg'; // Imagem de finanças
+    return '/img/FINANCEIRO.jpg'; // Imagem de finanças
   }
   if (areaNormalizada.includes('educação')) {
-    return '/img/desafio7.webp'; // Imagem de educação
+    return '/img/EDUCACIONAL.jpg'; // Imagem de educação
+  }
+  if (areaNormalizada.includes('tecnologia')) {
+    return '/img/TECNOLOGIA.jpg'; // Imagem de tecnologia
+  }
+  if (areaNormalizada.includes('saúde')) {
+    return '/img/SAUDE.jpg'; // Imagem de saúde
+  }
+  if (areaNormalizada.includes('Cultural')) {
+    return '/img/CULTURAL.jpg'; // Imagem de saúde
+  }
+  if (areaNormalizada.includes('social')) {
+    return '/img/SOCIAL.jpg'; // Imagem de saúde
+  }
+  if (areaNormalizada.includes('logística')) {
+    return '/img/LOGISTICA.jpg'; // Imagem de logística
+  }
+  if (areaNormalizada.includes('comercial')) {
+    return '/img/COMERCIAL.jpg'; // Imagem de comercial
   }
   // Imagem padrão para outras áreas ou se não houver correspondência
   return '/img/desafio4.jpg';
@@ -77,7 +96,7 @@ export default function CarroselHome() {
       setIsLoading(true);
       try {
         const response = await api.get<PaginatedResponse>('/challenges/findByPublic');
-// 💡 INÍCIO DA CORREÇÃO
+        // 💡 INÍCIO DA CORREÇÃO
         // Determina se a resposta é paginada ({data: [...]}) ou um array direto ([...])
         const challengesArray = Array.isArray(response.data) 
           ? response.data 
@@ -93,6 +112,7 @@ export default function CarroselHome() {
                 area: challenge.area,
                 category: challenge.categoria,
                 img: getImageForArea(challenge.area),
+                company: challenge.company,
             }));
             setChallenges(formattedChallenges);
         } else {
@@ -192,7 +212,7 @@ export default function CarroselHome() {
                           {item.title}
                         </CardTitle>
                         <CardDescription className="text-sm text-gray-600">
-                          {item.category}
+                          {item.area} - {item.company.name}
                         </CardDescription>
                       </CardHeader>
                       <CardContent className="flex-grow">
