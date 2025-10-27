@@ -448,9 +448,7 @@ export function CommitteeReview({ user }: CommitteeReviewProps) {
                                           Remover Avaliação
                                         </Button>
                                       </div>
-                                    )
-                                    }
-                                   
+                                    )}
                                   </div>
                                 );
                               })
@@ -466,9 +464,7 @@ export function CommitteeReview({ user }: CommitteeReviewProps) {
                               </p>
                             )}
                           </div>
-
                           <Separator />
-
                           {/* Comentários */}
                           <div className="space-y-4">
                             <h4
@@ -588,24 +584,23 @@ export function CommitteeReview({ user }: CommitteeReviewProps) {
                               </div>
                             </div>
                           </div>
-
                           <Separator />
-
-                          <div className="flex justify-end gap-4">
-                            <Button
-                              variant="destructive"
-                              onClick={() => handleDecision(idea.id, "reject")}
-                              className="bg-red-600 hover:bg-red-700 transition-all"
-                            >
-                              <X className="w-4 h-4 mr-2" />
-                              Rejeitar Ideia
-                            </Button>
+                          // ...dentro do último div do AccordionContent
+                          <div className="flex flex-col sm:flex-row-reverse sm:justify-start gap-4">
                             <Button
                               onClick={() => handleDecision(idea.id, "approve")}
-                              className="bg-green-600 hover:bg-green-700 text-white transition-all"
+                              className="bg-green-600 hover:bg-green-700 text-white transition-all w-full sm:w-auto" // Adicionado w-full e sm:w-auto
                             >
                               <Check className="w-4 h-4 mr-2" />
                               Aprovar para Ideação
+                            </Button>
+                            <Button
+                              variant="destructive"
+                              onClick={() => handleDecision(idea.id, "reject")}
+                              className="bg-red-600 hover:bg-red-700 transition-all w-full sm:w-auto" // Adicionado w-full e sm:w-auto
+                            >
+                              <X className="w-4 h-4 mr-2" />
+                              Rejeitar Ideia
                             </Button>
                           </div>
                         </div>
