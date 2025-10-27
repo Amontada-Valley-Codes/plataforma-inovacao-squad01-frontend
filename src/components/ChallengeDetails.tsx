@@ -442,19 +442,7 @@ export function ChallengeDetails({
             <CardHeader>
               <CardTitle>Ações Rápidas</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
-              <Button
-                className={`w-full justify-start cursor-pointer  ${
-                  theme === "dark"
-                    ? "text-gray-200 hover:bg-gray-500"
-                    : "text-gray-800 hover:bg-gray-100"
-                }`}
-                variant="outline"
-              >
-                <Users className="w-4 h-4 mr-2" />
-                Gerenciar Participantes
-              </Button>
-
+            <CardContent className="space-y-3">              
               <Button
                 variant="outline"
                 className={`w-full justify-start cursor-pointer  ${
@@ -493,18 +481,18 @@ export function ChallengeDetails({
       </div>
 
       {/* SEÇÃO DAS TABS (ABAS) - CORREÇÃO DE RESPONSIVIDADE APLICADA AQUI */}
-      <div className="container mx-auto px-4 sm:px-6 mt-8">
+      <div className="container pb-7 mx-auto px-4 sm:px-6 mt-8">
         <Tabs defaultValue="submissions">
           {/* TabsList com overflow-x-auto e classes de padding responsivas */}
           <TabsList
-            className={`w-full overflow-x-auto justify-start border-b ${
+            className={`w-full overflow-x-auto overflow-y-hidden justify-start border-b ${
               theme === "dark"
                 ? "bg-gray-800 border-gray-700"
                 : "bg-white border-gray-200"
             }`}
           >
             <TabsTrigger
-              className={`py-3 px-3 sm:py-4 sm:px-6 text-sm font-medium whitespace-nowrap ${
+              className={`py-3 px-3 sm:py-4 cursor-pointer sm:px-6 text-sm font-medium whitespace-nowrap ${
                 theme === "dark"
                   ? "text-gray-200 hover:bg-gray-700"
                   : "text-gray-800 hover:bg-gray-100"
@@ -514,7 +502,7 @@ export function ChallengeDetails({
               Submissões ({submissions.length})
             </TabsTrigger>
             <TabsTrigger
-              className={`py-3 px-3 sm:py-4 sm:px-6 text-sm font-medium whitespace-nowrap ${
+              className={`py-3 px-3 sm:py-4 cursor-pointer  sm:px-6 text-sm font-medium whitespace-nowrap ${
                 theme === "dark"
                   ? "text-gray-200 hover:bg-gray-700"
                   : "text-gray-800 hover:bg-gray-100"
@@ -524,7 +512,7 @@ export function ChallengeDetails({
               Startups Recomendadas ({recommendedStartups.length})
             </TabsTrigger>
             <TabsTrigger
-              className={`py-3 px-3 sm:py-4 sm:px-6 text-sm font-medium whitespace-nowrap ${
+              className={`py-3 px-3 sm:py-4 cursor-pointer  sm:px-6 text-sm font-medium whitespace-nowrap ${
                 theme === "dark"
                   ? "text-gray-200 hover:bg-gray-700"
                   : "text-gray-800 hover:bg-gray-100"
@@ -710,16 +698,6 @@ export function ChallengeDetails({
                       onChange={(e) => setNewComment(e.target.value)}
                     />
                     <div className="flex justify-between items-center">
-                      <Button
-                        className={`hover:bg-gray-300 cursor-pointer ${
-                          theme === "dark" ? "hover:bg-gray-600" : ""
-                        }`}
-                        variant="outline"
-                        size="sm"
-                      >
-                        <Paperclip className="w-4 h-4 mr-2" />
-                        Anexar
-                      </Button>
                       <Button
                         className={`hover:bg-gray-300 cursor-pointer ${
                           theme === "dark" ? "hover:bg-gray-600" : ""
