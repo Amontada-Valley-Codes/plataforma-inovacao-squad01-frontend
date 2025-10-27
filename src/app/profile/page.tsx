@@ -86,13 +86,13 @@ export default function ProfilePage() {
       }`}
     >
       {/* Navbar */}
-      <div className="bg-[#011677] sticky top-0 z-10 shadow-md">
+      <div className={`${theme === "dark" ? "bg-gray-800" : "bg-[#011677]"} sticky top-0 z-10 shadow-md`}>
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center gap-4">
             <Button
               variant="ghost"
               size="sm"
-              className="text-white hovers-exit-dash transition-colors duration-200"
+              className={`text-white ${theme === "dark" ? "hover:bg-gray-700" : ""} hovers-exit-dash transition-colors duration-200`}
               onClick={() => router.push("/dashboard")}
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
@@ -185,28 +185,6 @@ export default function ProfilePage() {
                   {user.role}
                 </span>
               </div>
-
-              <div
-                className={`flex items-center gap-2 pt-2 ${
-                  theme === "dark" ? "text-gray-300" : "text-gray-700"
-                }`}
-              >
-                <Briefcase
-                  size={18}
-                  className={`${
-                    theme === "dark" ? "text-gray-400" : "text-gray-500"
-                  }`}
-                />{" "}
-                Departamento:{" "}
-                <span
-                  className={`font-medium ${
-                    theme === "dark" ? "text-gray-50" : "text-gray-900"
-                  }`}
-                >
-                  {profile.department}
-                </span>
-              </div>
-
               <div
                 className={`flex items-center gap-2 pt-2 ${
                   theme === "dark" ? "text-gray-300" : "text-gray-700"
@@ -270,14 +248,7 @@ export default function ProfilePage() {
                 placeholder="Email"
               />
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Input
-                  className={`rounded-lg ${inputFocusClass} ${inputThemeClass}`}
-                  name="department"
-                  value={profile.department}
-                  onChange={handleChange}
-                  placeholder="Departamento"
-                />
+              <div className="grid grid-cols-1 gap-4">
                 <Input
                   className={`rounded-lg ${inputFocusClass} ${inputThemeClass}`}
                   name="phone"
