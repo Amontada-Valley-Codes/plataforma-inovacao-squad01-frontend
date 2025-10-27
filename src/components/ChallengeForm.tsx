@@ -456,11 +456,27 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
                           }`}
                         >
                           {[
-                            "Meio Ambiente",
-                            "Automação",
-                            "Sustentabilidade",
-                            "Finanças",
-                            "Educação",
+                            "Ambiental ",
+
+                            "Tecnologia ",
+
+                            "Operacional ",
+
+                            "Educacional ",
+
+                            "Financeiro ",
+
+                            "Sustentavel ",
+
+                            "Social ",
+
+                            "Logistico ",
+
+                            "Comercial ",
+
+                            "Saude ",
+
+                            "Cultural "
                           ].map((areaValue) => (
                             <SelectItem
                               key={areaValue}
