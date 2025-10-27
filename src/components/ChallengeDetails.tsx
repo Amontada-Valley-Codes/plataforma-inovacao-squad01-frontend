@@ -251,7 +251,7 @@ export function ChallengeDetails({
       <div
         className={` ${
           theme === "dark"
-            ? "bg-gray-700 text-white"
+            ? "bg-gray-800 text-white"
             : " text-white border-b border-gray-200 bg-[#011677]"
         }`}
       >
@@ -266,7 +266,7 @@ export function ChallengeDetails({
               onClick={() => onNavigate("dashboard")}
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
-              Voltar ao Dashboard
+              Voltar ao Dashboardd
             </Button>
             <Separator orientation="vertical" className="h-6" />
             <div className="flex items-center gap-2">
