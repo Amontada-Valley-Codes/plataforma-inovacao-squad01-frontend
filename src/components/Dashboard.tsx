@@ -955,7 +955,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                     <TabsList className="flex flex-wrap gap-2 bg-transparent border-0 p-0">
                       <TabsTrigger
                         value="challenges"
-                        className="flex items-center gap-2 bg-[#011677] text-white px-4 py-2 rounded-lg transition-all duration-200 hover:bg-[#002494] hover:shadow-md"
+                        className="flex cursor-pointer items-center gap-2 bg-[#011677] text-white px-4 py-2 rounded-lg transition-all duration-200 hover:bg-[#002494] hover:shadow-md"
                       >
                         <ClipboardCheck className="w-4 h-4" />
                         Desafios Ativos
@@ -964,7 +964,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                       {user.role !== "STARTUP" && (
                         <TabsTrigger
                           value="ideas"
-                          className="flex items-center gap-2 bg-[#011677] text-white px-4 py-2 rounded-lg transition-all duration-200 hover:bg-[#002494] hover:shadow-md"
+                          className="flex cursor-pointer items-center gap-2 bg-[#011677] text-white px-4 py-2 rounded-lg transition-all duration-200 hover:bg-[#002494] hover:shadow-md"
                         >
                           <Lightbulb className="w-4 h-4" />
                           Ideias
@@ -975,7 +975,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                     {user.role !== "STARTUP" && (
                       <Button
                         onClick={() => router.push("/challenges/new")}
-                        className="flex items-center gap-2 bg-[#011677] text-white px-4 py-2 rounded-lg transition-all duration-200 hover:bg-[#002494] hover:shadow-md"
+                        className="flex cursor-pointer items-center gap-2 bg-[#011677] text-white px-4 py-2 rounded-lg transition-all duration-200 hover:bg-[#002494] hover:shadow-md"
                       >
                         <Plus className="w-4 h-4" />
                         Criar Desafio
