@@ -585,11 +585,10 @@ export function CommitteeReview({ user }: CommitteeReviewProps) {
                             </div>
                           </div>
                           <Separator />
-                          // ...dentro do último div do AccordionContent
                           <div className="flex flex-col sm:flex-row-reverse sm:justify-start gap-4">
                             <Button
                               onClick={() => handleDecision(idea.id, "approve")}
-                              className="bg-green-600 hover:bg-green-700 text-white transition-all w-full sm:w-auto" // Adicionado w-full e sm:w-auto
+                              className="bg-green-600 hover:bg-green-700 text-white transition-all w-full sm:w-auto" 
                             >
                               <Check className="w-4 h-4 mr-2" />
                               Aprovar para Ideação
@@ -597,7 +596,7 @@ export function CommitteeReview({ user }: CommitteeReviewProps) {
                             <Button
                               variant="destructive"
                               onClick={() => handleDecision(idea.id, "reject")}
-                              className="bg-red-600 hover:bg-red-700 transition-all w-full sm:w-auto" // Adicionado w-full e sm:w-auto
+                              className="bg-red-600 hover:bg-red-700 transition-all w-full sm:w-auto"
                             >
                               <X className="w-4 h-4 mr-2" />
                               Rejeitar Ideia
