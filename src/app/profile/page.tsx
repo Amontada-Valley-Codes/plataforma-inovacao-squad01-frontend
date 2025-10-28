@@ -146,7 +146,7 @@ export default function ProfilePage() {
 						<div className="flex flex-col items-center mb-6">
 							<div className="relative">
 								<img
-									src={profile.avatar || "https://cdn-icons-png.flaticon.com/512/9131/9131529.png"}
+									src={user.avatar || "https://cdn-icons-png.flaticon.com/512/9131/9131529.png"}
 									alt="Foto de perfil"
 									className="w-32 h-32 rounded-full object-cover border-4 border-[#001f61]"
 								/>

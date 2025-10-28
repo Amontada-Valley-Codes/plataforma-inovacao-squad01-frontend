@@ -14,6 +14,7 @@ export interface User {
   image_url?: string;
   access_token?: string;
   startupId?: string; // <-- ADICIONE ESTA LINHA (opcional para não quebrar outras partes)
+  avatar?: string;
 }
 
 export interface Challenge {
