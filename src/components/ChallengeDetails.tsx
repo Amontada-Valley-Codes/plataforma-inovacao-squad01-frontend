@@ -266,7 +266,7 @@ export function ChallengeDetails({
               onClick={() => onNavigate("dashboard")}
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
-              Voltar ao Dashboardd
+              Voltar ao Dashboard
             </Button>
             <Separator orientation="vertical" className="h-6" />
             <div className="flex items-center gap-2">
@@ -502,7 +502,7 @@ export function ChallengeDetails({
               Submissões ({submissions.length})
             </TabsTrigger>
             <TabsTrigger
-              className={`py-3 px-3 sm:py-4 cursor-pointer  sm:px-6 text-sm font-medium whitespace-nowrap ${
+              className={`py-3 px-3 sm:py-4 cursor-pointer sm:px-6 text-sm font-medium whitespace-nowrap ${
                 theme === "dark"
                   ? "text-gray-200 hover:bg-gray-700"
                   : "text-gray-800 hover:bg-gray-100"
@@ -512,7 +512,7 @@ export function ChallengeDetails({
               Startups Recomendadas ({recommendedStartups.length})
             </TabsTrigger>
             <TabsTrigger
-              className={`py-3 px-3 sm:py-4 cursor-pointer  sm:px-6 text-sm font-medium whitespace-nowrap ${
+              className={`py-3 px-3 sm:py-4 cursor-pointer sm:px-6 text-sm font-medium whitespace-nowrap ${
                 theme === "dark"
                   ? "text-gray-200 hover:bg-gray-700"
                   : "text-gray-800 hover:bg-gray-100"
@@ -692,7 +692,11 @@ export function ChallengeDetails({
                   </Avatar>
                   <div className="w-full space-y-2">
                     <Textarea
-                      className="focus:border-[#001f61] focus:ring focus:ring-[#001f61]/30 transition-colors"
+                      className={`${
+                        theme === "dark"
+                          ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500 focus:ring-blue-500/60"
+                          : "input-gbl"
+                      }`}
                       placeholder="Adicione um comentário..."
                       value={newComment}
                       onChange={(e) => setNewComment(e.target.value)}

@@ -82,3 +82,9 @@
 html {
   scroll-behavior: smooth;
 }
+
+.input-gbl {
+  @apply rounded-lg transition-colors duration-200 border outline-none
+          text-black border-gray-300 
+          focus:border-[#001f61] focus:ring-2 focus:ring-[#001f61]/40 focus:ring-offset-1;
+}

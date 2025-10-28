@@ -118,7 +118,7 @@ export default function Login({ onLogin }: LoginProps) {
                   value={email} 
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="py-6 bg-gray-100 focus:ring-2 focus:ring-[#001f61] border-none text-gray-800"
+                  className="py-6 bg-gray-100 input-gbl border-none text-gray-800"
                 />
               </div>
 
@@ -131,7 +131,7 @@ export default function Login({ onLogin }: LoginProps) {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="py-6 bg-gray-100 focus:ring-2 focus:ring-[#001f61] border-none text-gray-800"
+                  className="py-6 bg-gray-100 input-gbl border-none text-gray-800"
                 />
               </div>
 

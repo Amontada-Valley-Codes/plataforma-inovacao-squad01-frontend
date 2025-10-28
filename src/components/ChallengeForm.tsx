@@ -258,7 +258,7 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
                           className={` rounded-lg transition-colors ${
                             theme === "dark"
                               ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500 focus:ring-blue-500/60"
-                              : "bg-white text-black border-gray-300 focus:border-[#001f61] focus:ring focus:ring-[#001f61]/30"
+                              : "bg-white text-black input-gbl"
                           }`} // Ajuste de cores dark/light
                         />
                       </div>
@@ -508,7 +508,7 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
                           className={`rounded-lg transition-colors ${
                             theme === "dark"
                               ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500 focus:ring-blue-500/60"
-                              : "bg-white border-gray-300 text-black focus:border-[#001f61] focus:ring focus:ring-[#001f61]/30"
+                              : "bg-white text-black input-gbl"
                           }`}
                           value={currentTag}
                           onChange={(e) => setCurrentTag(e.target.value)}
@@ -626,7 +626,7 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
                         className={`min-h-[150px] sm:min-h-[200px] rounded-lg transition-colors ${
                           theme === "dark"
                             ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500 focus:ring-blue-500/60"
-                            : "bg-white border-gray-300 text-black focus:border-[#001f61] focus:ring focus:ring-[#001f61]/30"
+                            : "bg-white text-black input-gbl"
                         }`} // Altura mínima ajustada
                         value={formData.description}
                         onChange={(e) =>
