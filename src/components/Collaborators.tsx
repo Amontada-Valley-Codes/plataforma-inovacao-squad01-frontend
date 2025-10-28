@@ -289,17 +289,17 @@ export default function Collaborators({ user }: CollaboratorsProps) {
                       required
                       value={inviteEmail}
                       onChange={(e) => setInviteEmail(e.target.value)}
-                      className={`${theme === 'dark' ? 'bg-gray-800 border-gray-700 text-gray-100' : ''}`}
+                      className={`${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-white focus:border-blue-500 focus:ring-blue-500/60' : 'input-gbl'}`}
                     />
                   </div>
 
                   <div>
                     <Label className="pb-3">Nível de Acesso</Label>
                     <Select value={inviteRole} onValueChange={(value: UserRole) => setInviteRole(value)}>
-                      <SelectTrigger className={`${theme === 'dark' ? 'bg-gray-800 border-gray-700' : ''}`}>
+                      <SelectTrigger className={`${theme === 'dark' ? 'bg-gray-700 border-gray-700 text-gray-300' : ''}`}>
                         <SelectValue placeholder="Selecione um nível" />
                       </SelectTrigger>
-                      <SelectContent className={`${theme === 'dark' ? 'bg-gray-800 border-gray-700' : ''}`}>
+                      <SelectContent className={`${theme === 'dark' ? 'bg-gray-700 text-white border-gray-700' : ''}`}>
                         <SelectItem value="COMUM">Usuário Comum</SelectItem>
                         <SelectItem value="AVALIADOR">Avaliador</SelectItem>
                         {user.role === 'ADMIN' && <SelectItem value="GESTOR">Gestor de Inovação</SelectItem>}

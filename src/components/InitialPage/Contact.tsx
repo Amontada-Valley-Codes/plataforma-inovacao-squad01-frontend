@@ -144,7 +144,7 @@ ${name}
                     value={(formData as any)[field]}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-2 bg-gray-100 text-[#011677] placeholder-[#011677] rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#011677]"
+                    className="w-full px-4 py-2 bg-gray-100 rounded-lg shadow-sm input-gbl"
                   />
                 ) : (
                   <textarea
@@ -155,7 +155,7 @@ ${name}
                     value={(formData as any)[field]}
                     onChange={handleChange}
                     required
-                    className="w-full resize-none px-4 py-2 bg-gray-100 text-[#011677] placeholder-[#011677] rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#011677]"
+                    className="w-full resize-none px-4 py-2 bg-gray-100 rounded-lg shadow-sm input-gbl"
                   ></textarea>
                 )}
               </div>

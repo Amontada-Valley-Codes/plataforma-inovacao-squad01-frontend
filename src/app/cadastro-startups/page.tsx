@@ -133,7 +133,7 @@ export default function CadastroStartups() {
                     onChange={handleChange}
                     required
                     placeholder="Ex: InovaTech"
-                    className="bg-gray-100 focus:ring-2 focus:ring-[#001f61]"
+                    className="bg-gray-100 input-gbl"
                   />
                 </div>
                 <div>
@@ -144,7 +144,7 @@ export default function CadastroStartups() {
                     onChange={handleChange}
                     required
                     placeholder="00.000.000/0000-00"
-                    className="bg-gray-100 focus:ring-2 focus:ring-[#001f61]"
+                    className="bg-gray-100 input-gbl"
                   />
                 </div>
                 <div>
@@ -154,7 +154,7 @@ export default function CadastroStartups() {
                     value={formData.segment}
                     onChange={handleChange}
                     placeholder="Ex: FinTech, HealthTech"
-                    className="bg-gray-100 focus:ring-2 focus:ring-[#001f61]"
+                    className="bg-gray-100 input-gbl"
                     required
                   />
                 </div>
@@ -165,7 +165,7 @@ export default function CadastroStartups() {
                     value={formData.technology}
                     onChange={handleChange}
                     placeholder="Ex: IA, Blockchain"
-                    className="bg-gray-100 focus:ring-2 focus:ring-[#001f61]"
+                    className="bg-gray-100 input-gbl"
                     required
                   />
                 </div>
@@ -193,7 +193,7 @@ export default function CadastroStartups() {
                     value={formData.location}
                     onChange={handleChange}
                     placeholder="Cidade, Estado"
-                    className="bg-gray-100 focus:ring-2 focus:ring-[#001f61]"
+                    className="bg-gray-100 input-gbl"
                     required
                   />
                 </div>
@@ -204,7 +204,7 @@ export default function CadastroStartups() {
                     value={formData.founders}
                     onChange={handleChange}
                     placeholder="Nome dos fundadores"
-                    className="bg-gray-100 focus:ring-2 focus:ring-[#001f61]"
+                    className="bg-gray-100 input-gbl"
                     required
                   />
                 </div>
@@ -215,7 +215,7 @@ export default function CadastroStartups() {
                     value={formData.links}
                     onChange={handleChange}
                     placeholder="https://..."
-                    className="bg-gray-100 focus:ring-2 focus:ring-[#001f61]"
+                    className="bg-gray-100 input-gbl"
                     required
                   />
                 </div>
@@ -228,7 +228,7 @@ export default function CadastroStartups() {
                     value={formData.problem}
                     onChange={handleChange}
                     required
-                    className="bg-gray-100 focus:ring-2 focus:ring-[#001f61]"
+                    className="bg-gray-100 input-gbl"
                   />
                 </div>
                 <div className="md:col-span-2">
@@ -238,7 +238,7 @@ export default function CadastroStartups() {
                     value={formData.pitch}
                     onChange={handleChange}
                     required
-                    className="bg-gray-100 focus:ring-2 focus:ring-[#001f61]"
+                    className="bg-gray-100 input-gbl"
                   />
                 </div>
               </div>
@@ -256,7 +256,7 @@ export default function CadastroStartups() {
                     id="nameUser"
                     value={formData.nameUser}
                     onChange={handleChange}
-                    className="bg-gray-100 focus:ring-2 focus:ring-[#001f61]"
+                    className="bg-gray-100 input-gbl"
                     required
                   />
                 </div>
@@ -267,7 +267,7 @@ export default function CadastroStartups() {
                     type="email"
                     value={formData.emailUser}
                     onChange={handleChange}
-                    className="bg-gray-100 focus:ring-2 focus:ring-[#001f61]"
+                    className="bg-gray-100 input-gbl"
                     required
                   />
                 </div>
@@ -279,7 +279,7 @@ export default function CadastroStartups() {
                     value={formData.passwordUser}
                     onChange={handleChange}
                     minLength={6}
-                    className="bg-gray-100 focus:ring-2 focus:ring-[#001f61]"
+                    className="bg-gray-100 input-gbl"
                     required
                   />
                   <p className="text-xs text-gray-500 mt-1">

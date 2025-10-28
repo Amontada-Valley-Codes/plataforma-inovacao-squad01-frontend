@@ -158,7 +158,7 @@ export function StartupDatabase({ user, onNavigate }: StartupDatabaseProps) {
                 size="sm"
                 onClick={() => onNavigate("dashboard")}
                 className={`hovers-exit-dash px-2 sm:px-3 ${
-                  theme === "dark" ? "hover:bg-gray-700" : "hover:bg-white/10"
+                  theme === "dark" ? "hover:bg-gray-700" : ""
                 }`} // Padding ajustado
               >
                 <ArrowLeft className="w-4 h-4 sm:mr-2" />{" "}
@@ -279,8 +279,8 @@ export function StartupDatabase({ user, onNavigate }: StartupDatabaseProps) {
                     placeholder="Nome, problema, tecnologia..."
                     className={`pl-10 rounded-md ${
                       theme === "dark"
-                        ? "bg-gray-700 border-gray-600 text-gray-200 focus:border-blue-500 focus:ring-blue-500"
-                        : "bg-white border-gray-300 text-black focus:border-[#001f61] focus:ring-[#001f61]/30"
+                        ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500 focus:ring-blue-500/60"
+                        : "bg-white input-gbl"
                     }`}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
@@ -388,8 +388,8 @@ export function StartupDatabase({ user, onNavigate }: StartupDatabaseProps) {
                     }
                     className={`rounded-md ${
                       theme === "dark"
-                        ? "bg-gray-700 border-gray-600 text-gray-200 focus:border-blue-500 focus:ring-blue-500"
-                        : "bg-white border-gray-300 text-black focus:border-[#001f61] focus:ring-[#001f61]/30"
+                        ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500 focus:ring-blue-500/60"
+                        : "bg-white input-gbl"
                     }`}
                   />
                 </div>
@@ -407,7 +407,7 @@ export function StartupDatabase({ user, onNavigate }: StartupDatabaseProps) {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className={`text-xs sm:text-sm ${
+                  className={`text-xs cursor-pointer sm:text-sm ${
                     theme === "dark"
                       ? "text-blue-400 hover:bg-gray-700"
                       : "text-[#001f61] hover:bg-blue-50"
@@ -598,7 +598,7 @@ export function StartupDatabase({ user, onNavigate }: StartupDatabaseProps) {
                   </div>
                 )}
                 <Button
-                  className={`w-full mt-3 sm:mt-4 text-sm ${
+                  className={`w-full cursor-pointer mt-3 sm:mt-4 text-sm ${
                     theme === "dark"
                       ? "bg-blue-600 hover:bg-blue-500"
                       : "bg-[#001f61] hover:bg-[#002a7a]"

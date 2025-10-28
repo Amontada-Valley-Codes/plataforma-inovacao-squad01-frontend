@@ -21,6 +21,8 @@ export function IdeaForm({ stageTitle, onSubmit }: IdeaFormProps) {
     
   };
 
+  const [theme, setTheme] = useState<string>(typeof window !== 'undefined' ? (sessionStorage.getItem('theme') || 'light') : 'light');
+
   return (
     <div>
       <DialogHeader>
@@ -41,7 +43,11 @@ export function IdeaForm({ stageTitle, onSubmit }: IdeaFormProps) {
             <Input 
               id="idea-title" 
               placeholder="Ex: App de Recomendações com IA" 
-              className="border-[#001f61] focus:ring-[#7eb526] focus:border-[#7eb526] rounded-lg"
+              className={`${
+                        theme === "dark"
+                          ? "bg-gray-300 border-gray-600 text-black focus:border-blue-500 focus:ring-blue-500/60"
+                          : "input-gbl"
+                      }`}
               value={title} // Conectar estado
               onChange={(e) => setTitle(e.target.value)} // Conectar estado
               required
@@ -52,7 +58,11 @@ export function IdeaForm({ stageTitle, onSubmit }: IdeaFormProps) {
             <Textarea 
               id="idea-description" 
               placeholder="Descreva a sua ideia em detalhe..." 
-              className="border-[#001f61] focus:ring-[#7eb526] focus:border-[#7eb526] rounded-lg"
+              className={`${
+                        theme === "dark"
+                          ? "bg-gray-300 border-gray-600 text-black focus:border-blue-500 focus:ring-blue-500/60"
+                          : "input-gbl"
+                      }`}
               value={description} // Conectar estado
               onChange={(e) => setDescription(e.target.value)} // Conectar estado
               required
@@ -65,14 +75,14 @@ export function IdeaForm({ stageTitle, onSubmit }: IdeaFormProps) {
             <Button 
               type="button" 
               variant="secondary" 
-              className="bg-gray-200 text-[#001f61] hover:bg-gray-300"
+              className="bg-gray-200 cursor-pointer text-[#001f61] hover:bg-gray-300"
             >
               Cancelar
             </Button>
           </DialogClose>
           <Button 
             type="submit"
-            className="bg-[#7eb526] hover:bg-[#6aa21e] text-white"
+            className="bg-[#001f61] hover:bg-blue-900 cursor-pointer text-white"
           >
             Submeter Ideia
           </Button>

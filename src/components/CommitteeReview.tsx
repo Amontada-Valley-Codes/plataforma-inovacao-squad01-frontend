@@ -563,13 +563,13 @@ export function CommitteeReview({ user }: CommitteeReviewProps) {
                                   }
                                   className={`focus:border-[#001f61] focus:ring focus:ring-[#001f61]/30 transition-colors ${
                                     theme === "dark"
-                                      ? "bg-gray-700 text-gray-200"
-                                      : "bg-gray-50 text-gray-800"
+                                      ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500 focus:ring-blue-500/60"
+                                      : "input-gbl"
                                   }`}
                                 />
                                 <div className="flex justify-end">
                                   <Button
-                                    className={`${
+                                    className={` cursor-pointer ${
                                       theme === "dark"
                                         ? "bg-gray-600 text-gray-200"
                                         : "bg-gray-200 text-gray-800"
@@ -588,7 +588,7 @@ export function CommitteeReview({ user }: CommitteeReviewProps) {
                           <div className="flex flex-col sm:flex-row-reverse sm:justify-start gap-4">
                             <Button
                               onClick={() => handleDecision(idea.id, "approve")}
-                              className="bg-green-600 hover:bg-green-700 text-white transition-all w-full sm:w-auto" 
+                              className="bg-green-600 cursor-pointer hover:bg-green-700 text-white transition-all w-full sm:w-auto" 
                             >
                               <Check className="w-4 h-4 mr-2" />
                               Aprovar para Ideação
@@ -596,7 +596,7 @@ export function CommitteeReview({ user }: CommitteeReviewProps) {
                             <Button
                               variant="destructive"
                               onClick={() => handleDecision(idea.id, "reject")}
-                              className="bg-red-600 hover:bg-red-700 transition-all w-full sm:w-auto"
+                              className="bg-red-600 cursor-pointer hover:bg-red-700 transition-all w-full sm:w-auto"
                             >
                               <X className="w-4 h-4 mr-2" />
                               Rejeitar Ideia

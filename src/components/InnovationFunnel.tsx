@@ -194,7 +194,7 @@ export function InnovationFunnel({ user, challenge }: InnovationFunnelProps) {
                                         <div className={`p-4 bg-[#011677] rounded-t-lg ${theme === "dark" ? "bg-gray-800 text-white" : "text-white"}`}>
                                             <div className="flex items-center justify-between">
                                                 <div className="flex items-center gap-2 text-white">
-                                                    <span className="w-3 h-3 rounded-full bg-[#7eb526]"></span>
+                                                    <span className="w-3 h-3 rounded-full bg-[#001f61]"></span>
                                                     <h3 className="font-semibold">{stage.title}</h3>
                                                 </div>
                                                 <Badge className="bg-white text-[#001f61] font-semibold">{ideas.filter(idea => idea.stage === stage.id).length}</Badge>
@@ -207,7 +207,7 @@ export function InnovationFunnel({ user, challenge }: InnovationFunnelProps) {
                                                         <Dialog open={isEvaluationModalOpen && selectedIdea?.id === idea.id} onOpenChange={(isOpen) => { if (!isOpen) setSelectedIdea(null); setIsEvaluationModalOpen(isOpen); }}>
                                                             <DialogTrigger asChild onClick={() => setSelectedIdea(idea)}>
                                                                 <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps} className={`shadow-md ${snapshot.isDragging ? 'opacity-80 shadow-lg' : ''}`}>
-                                                                    <Card className={`cursor-pointer active:cursor-grabbing hover:bg-gray-50 border-l-4 border-[#011677] hover:border-[#7eb526] transition-all ${theme === "dark" ? "bg-gray-800 text-white hover:bg-gray-700" : "bg-white"}`}>
+                                                                    <Card className={`cursor-pointer active:cursor-grabbing hover:bg-gray-50 border-l-4 border-[#011677] hover:border-white transition-all ${theme === "dark" ? "bg-gray-800 text-white hover:bg-gray-700" : "bg-white"}`}>
                                                                         <CardHeader className="p-4">
                                                                             <div className="flex justify-between items-start">{getPriorityBadge(idea.priority)}<GripVertical className={`w-4 h-4 ${theme === "dark" ? "text-gray-400" : "text-gray-400"}`} /></div>
                                                                             <CardTitle className={`text-base mt-2 ${theme === "dark" ? "text-gray-200" : "text-gray-900"}`}>{idea.title}</CardTitle>
@@ -221,7 +221,7 @@ export function InnovationFunnel({ user, challenge }: InnovationFunnelProps) {
                                                                             <Separator className="my-3" />
                                                                             <div className="flex items-center justify-between">
                                                                                 <div className={`flex items-center gap-1 text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}><ThumbsUp className={`w-4 h-4 ${theme === "dark" ? "text-gray-400" : "text-[#001f61]"}`} /><span>{idea.votes}</span></div>
-                                                                                <Button size="sm" className="bg-[#7eb526] text-white hover:bg-[#6aa21e]" onClick={(e) => { e.stopPropagation(); handleVote(idea.id); }} disabled={votedIdeas.includes(idea.id)}>Apoiar</Button>
+                                                                                <Button size="sm" className="bg-[#001f61] cursor-pointer text-white hover:bg-blue-900" onClick={(e) => { e.stopPropagation(); handleVote(idea.id); }} disabled={votedIdeas.includes(idea.id)}>Apoiar</Button>
                                                                             </div>
                                                                         </CardContent>
                                                                     </Card>

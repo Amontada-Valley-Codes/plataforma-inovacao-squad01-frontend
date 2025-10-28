@@ -173,7 +173,7 @@ export function Reports({ user, onNavigate }: ReportsProps) {
                             </Button>
                             <Button 
                                 onClick={handleExportCSV} 
-                                className={`w-full sm:w-auto ${theme === 'dark' ? 'bg-indigo-700 hover:bg-indigo-600' : ''}`}
+                                className={`w-full sm:w-auto cursor-pointer ${theme === 'dark' ? 'bg-gray-700 hover:bg-gray-600' : 'hovers-exit-dash'}`}
                             >
                                 <Download className="w-4 h-4 mr-2" />
                                 Exportar Relatório

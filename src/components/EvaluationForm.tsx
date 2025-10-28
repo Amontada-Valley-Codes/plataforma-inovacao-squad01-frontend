@@ -87,7 +87,7 @@ export function EvaluationForm({ idea, user, onEvaluationComplete }: EvaluationF
                 </DialogDescription>
                 <div className="flex gap-2 pt-2">
                     <Badge className="bg-[#001f61] text-white">Prioridade: {idea.priority}</Badge>
-                    <Badge className="bg-[#7eb526] text-white">Comentários: {idea.comments}</Badge>
+                    <Badge className="bg-[#001f61] text-white">Comentários: {idea.comments}</Badge>
                 </div>
             </DialogHeader>
 
@@ -98,16 +98,16 @@ export function EvaluationForm({ idea, user, onEvaluationComplete }: EvaluationF
                     <div className="space-y-4">
                         <h4 className="font-semibold text-[#001f61]">Checklist de Pré-Triagem</h4>
                         <div className="flex items-center space-x-2">
-                            <Checkbox id="alignment" className="border-[#001f61] text-[#7eb526]" onCheckedChange={(checked) => setPreScreeningCriteria(prev => ({ ...prev, alignment: !!checked }))} />
+                            <Checkbox id="alignment" className="border-[#001f61] text-[#001f61]" onCheckedChange={(checked) => setPreScreeningCriteria(prev => ({ ...prev, alignment: !!checked }))} />
                             <Label htmlFor="alignment">Possui alinhamento estratégico?</Label>
                         </div>
                         <div className="flex items-center space-x-2">
-                            <Checkbox id="innovative" className="border-[#001f61] text-[#7eb526]" onCheckedChange={(checked) => setPreScreeningCriteria(prev => ({ ...prev, innovative: !!checked }))} />
-                            <Label htmlFor="innovative" className="text-gray-800">A ideia tem potencial inovador?</Label>
+                            <Checkbox id="innovative" className="border-[#001f61] text-[#001f61]" onCheckedChange={(checked) => setPreScreeningCriteria(prev => ({ ...prev, innovative: !!checked }))} />
+                            <Label htmlFor="innovative">A ideia tem potencial inovador?</Label>
                         </div>
                         <div className="flex items-center space-x-2">
-                            <Checkbox id="relevance" className="border-[#001f61] text-[#7eb526]" onCheckedChange={(checked) => setPreScreeningCriteria(prev => ({ ...prev, relevance: !!checked }))} />
-                            <Label htmlFor="relevance" className="text-gray-800">É relevante para o negócio atualmente?</Label>
+                            <Checkbox id="relevance" className="border-[#001f61] text-[#001f61]" onCheckedChange={(checked) => setPreScreeningCriteria(prev => ({ ...prev, relevance: !!checked }))} />
+                            <Label htmlFor="relevance">É relevante para o negócio atualmente?</Label>
                         </div>
                     </div>
                 )}
@@ -140,10 +140,10 @@ export function EvaluationForm({ idea, user, onEvaluationComplete }: EvaluationF
                 </Button>
                 <div className="flex gap-2">
                     <DialogClose asChild>
-                        <Button type="button" variant="secondary">Fechar</Button>
+                        <Button className='cursor-pointer hover:bg-gray-300' type="button" variant="secondary">Fechar</Button>
                     </DialogClose>
                     {/* Botão atualizado */}
-                    <Button onClick={handleSubmitEvaluation} disabled={isLoading} className="bg-blue-600 hover:bg-blue-700 text-white">
+                    <Button onClick={handleSubmitEvaluation} disabled={isLoading} className="bg-[#001f61] cursor-pointer hover:bg-blue-900 text-white">
                         {isLoading ? 'A enviar...' : (
                             <>
                                 <Send className="w-4 h-4 mr-2" />
