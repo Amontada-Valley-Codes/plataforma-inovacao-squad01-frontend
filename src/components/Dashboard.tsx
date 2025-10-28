@@ -564,7 +564,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                                 {idea.stage === "EXPERIMENTACAO" ? (
                                   <Button
                                     size="sm"
-                                    className="bg-blue-600 hover:bg-blue-700 text-white"
+                                    className="bg-[#011677] hover:bg-[#0121af] cursor-pointer text-white"
                                     onClick={() => {
                                       setSelectedIdeaForPoc(idea);
                                       setIsPocModalOpen(true);
@@ -601,7 +601,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
               >
                 <CardHeader>
                   <CardTitle className="text-xl font-bold flex items-center">
-                    <Handshake className="w-6 h-6 mr-2 text-[#011677]" />
+                    <Handshake className={`w-6 h-6 mr-2 ${theme === 'dark' ? 'text-white' : 'text-[#011677]'}`} />
                     Conexões Recebidas
                   </CardTitle>
                   <CardDescription>
@@ -920,7 +920,9 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
 
                   {/* Botões e Tabs */}
                   <div className="flex flex-wrap justify-start md:justify-end items-center gap-3 mt-4 md:mt-0 w-full md:w-auto">
+                    {user.role !== "STARTUP" && (
                     <TabsList className="flex flex-wrap gap-2 bg-transparent border-0 p-0">
+                      
                       <TabsTrigger
                         value="challenges"
                         className="flex cursor-pointer items-center gap-2 bg-[#011677] text-white px-4 py-2 rounded-lg transition-all duration-200 hover:bg-[#002494] hover:shadow-md"
@@ -928,8 +930,6 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                         <ClipboardCheck className="w-4 h-4" />
                         Desafios Ativos
                       </TabsTrigger>
-
-                      {user.role !== "STARTUP" && (
                         <TabsTrigger
                           value="ideas"
                           className="flex cursor-pointer items-center gap-2 bg-[#011677] text-white px-4 py-2 rounded-lg transition-all duration-200 hover:bg-[#002494] hover:shadow-md"
@@ -937,8 +937,9 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                           <Lightbulb className="w-4 h-4" />
                           Ideias
                         </TabsTrigger>
-                      )}
+
                     </TabsList>
+                    )}
 
                     {user.role !== "STARTUP" && (
                       <Button
@@ -1024,7 +1025,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                           {/* 💡 LÓGICA DE BOTÕES CONDICIONAL */}
                           {user.role === "STARTUP" ? (
                             <Button
-                              className="bg-green-600 text-white hover:bg-green-700 h-9 font-medium"
+                              className="bg-[#011677] text-white hover:bg-[#020ebd] h-9 font-medium"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 setSelectedChallengeForIdea(challenge);
@@ -1165,7 +1166,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
       {/* 💡 NOVO MODAL PARA CRIAR POC */}
       <Dialog open={isPocModalOpen} onOpenChange={setIsPocModalOpen}>
         <DialogContent
-          className={`bg-white ${theme === "dark" ? "bg-gray-800" : ""}`}
+          className={`bg-white ${theme === "dark" ? "bg-gray-800 text-white" : ""}`}
         >
           <DialogHeader>
             <DialogTitle>Registrar Prova de Conceito (POC)</DialogTitle>
@@ -1174,7 +1175,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handlePocSubmit} className="space-y-4">
-            <div>
+            <div className="space-y-2">
               <Label htmlFor="responsavel">Responsável pela POC</Label>
               <Input
                 id="responsavel"
@@ -1188,7 +1189,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                 required
               />
             </div>
-            <div>
+            <div className="space-y-2">
               <Label htmlFor="custo">Custo Estimado (R$)</Label>
               <Input
                 id="custo"
@@ -1204,7 +1205,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
-              <div>
+              <div className="space-y-2">
                 <Label htmlFor="startDate">Data de Início</Label>
                 <Input
                   id="startDate"
@@ -1219,7 +1220,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                   required
                 />
               </div>
-              <div>
+              <div className="space-y-2">
                 <Label htmlFor="endDate">Data de Término</Label>
                 <Input
                   id="endDate"
@@ -1234,11 +1235,11 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
             </div>
             <DialogFooter>
               <DialogClose asChild>
-                <Button type="button" variant="secondary">
+                <Button type="button" variant="secondary" className="bg-red-600 text-white hover:bg-red-700 cursor-pointer">
                   Cancelar
                 </Button>
               </DialogClose>
-              <Button type="submit">Registrar POC</Button>
+              <Button type="submit" className="bg-[#011677] hover:bg-[#0121af] text-white cursor-pointer">Registrar POC</Button>
             </DialogFooter>
           </form>
         </DialogContent>
