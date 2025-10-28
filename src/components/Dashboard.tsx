@@ -287,6 +287,36 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
 		}
 	};
 
+	const handleDeleteIdea = async (ideaId: string) => {
+		// Pede confirmação antes de uma ação destrutiva
+		if (!window.confirm('Tem certeza que deseja excluir esta ideia? Esta ação é irreversível.')) {
+			return;
+		}
+
+		try {
+			// Chama o novo endpoint DELETE no backend
+			await api.delete(`/idea/${ideaId}`);
+
+			// Atualiza o estado local para remover a ideia da lista instantaneamente
+			setAllCompanyIdeas(prevIdeas => prevIdeas.filter(idea => idea.id !== ideaId));
+
+			// Opcional: Atualiza o contador de ideias no dashboard
+			setDashboardData(prevData => {
+				if (!prevData) return null;
+				return {
+					...prevData,
+					ideasCount: prevData.ideasCount - 1,
+				};
+			});
+
+			alert('Ideia excluída com sucesso!');
+
+		} catch (error) {
+			console.error("Falha ao excluir a ideia:", error);
+			alert("Não foi possível excluir a ideia. Verifique as suas permissões.");
+		}
+	};
+
 	const handleChallengeClick = (challenge: Challenge) => {
 		sessionStorage.setItem("selectedChallenge", JSON.stringify(challenge));
 		router.push(`/funnel/${challenge.id}`);
@@ -449,7 +479,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
 									className="w-10 h-10 bg-[#011677] rounded-full flex items-center justify-center cursor-pointer shadow-md hover:ring-2 ring-offset-2 ring-[#011677] transition-all"
 									onClick={() => setIsMenuOpen(!isMenuOpen)}
 								>
-									
+
 									{user.avatar ? (
 										<Image
 											src={user.avatar || user.image_url}
@@ -1093,6 +1123,10 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
 													] || idea.stage
 													] || "#9CA3AF";
 
+
+												// 💡 Condição para mostrar o botão
+												const canDelete = user.role === 'GESTOR' || user.id === idea.authorId;
+
 												return (
 													<div
 														key={idea.id}
@@ -1121,19 +1155,24 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
 
 														{/* Lado direito: badge — desce abaixo no mobile */}
 														<div className="flex justify-start md:justify-end mt-3 md:mt-0">
-															<Badge
-																variant="outline"
-																style={{
-																	backgroundColor: `${badgeColor}1A`,
-																	color: badgeColor,
-																	borderColor: badgeColor,
-																}}
-																className="font-medium px-3 py-1 text-sm min-w-[120px] text-center whitespace-nowrap flex justify-center"
-															>
-																{stageLabels[
-																	idea.stage as keyof typeof stageLabels
-																] || idea.stage}
-															</Badge>
+															<div className="flex items-center gap-2">
+																<Badge variant="outline">{stageLabels[idea.stage as keyof typeof stageLabels] || idea.stage}</Badge>
+
+																{/* 💡 RENDERIZAÇÃO CONDICIONAL DO BOTÃO DELETAR */}
+																{canDelete && (
+																	<Button
+																		variant="ghost"
+																		size="icon"
+																		className="text-red-600 hover:bg-red-100 hover:text-red-700 h-8 w-8"
+																		onClick={(e) => {
+																			e.stopPropagation(); // Evita outros eventos de clique
+																			handleDeleteIdea(idea.id);
+																		}}
+																	>
+																		<Trash2 className="w-4 h-4" />
+																	</Button>
+																)}
+															</div>
 														</div>
 													</div>
 												);
