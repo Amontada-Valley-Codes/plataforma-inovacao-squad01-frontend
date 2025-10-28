@@ -239,7 +239,7 @@ export default function Collaborators({ user }: CollaboratorsProps) {
         >
           <CardHeader className="flex flex-row items-center justify-between pb-4 border-b border-gray-200 dark:border-gray-800">
             <div>
-              <CardTitle className="text-2xl font-bold">Equipe e Acessos</CardTitle>
+              <CardTitle className={`${theme === 'dark' ? 'text-white' : 'text-black'} text-2xl font-bold`}>Equipe e Acessos</CardTitle>
               <CardDescription className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                 Gerencie colaboradores e permissões da sua equipe.
               </CardDescription>
@@ -334,12 +334,12 @@ export default function Collaborators({ user }: CollaboratorsProps) {
 
           <CardContent className="pt-6">
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="grid grid-cols-2 w-full rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
+              <TabsList className="grid grid-cols-2 w-full p-0 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
                 <TabsTrigger
                   value="collaborators"
                   className={`cursor-pointer py-2 text-sm font-medium transition-all ${activeTab === 'collaborators'
                       ? 'bg-[#011677] text-white shadow-md scale-[1.02]'
-                      : ''
+                      : `${theme === 'dark' ? 'text-white' : 'text-black'}`
                     }`}
                 >
                   Colaboradores ({collaborators.length})
@@ -349,7 +349,7 @@ export default function Collaborators({ user }: CollaboratorsProps) {
                   value="pending"
                   className={`cursor-pointer py-2 text-sm font-medium transition-all ${activeTab === 'pending'
                       ? 'bg-[#011677] text-white shadow-md scale-[1.02]'
-                      : ''
+                      : `${theme === 'dark' ? 'text-white' : 'text-black'}`
                     }`}
                 >
                   Pendentes ({pendingInvites.length})
@@ -363,7 +363,7 @@ export default function Collaborators({ user }: CollaboratorsProps) {
                 ) : collaborators.length === 0 ? (
                   <p className="text-center text-gray-500">Nenhum colaborador encontrado.</p>
                 ) : (
-                  <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
+                  <div className={`${theme === 'dark' ? 'text-white' : 'text-black'} overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700`}>
                     <Table>
                       <TableHeader>
                         <TableRow>
