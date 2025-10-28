@@ -424,7 +424,7 @@ export default function Collaborators({ user }: CollaboratorsProps) {
                 ) : pendingInvites.length === 0 ? (
                   <p className="text-center text-gray-500">Nenhum convite pendente.</p>
                 ) : (
-                  <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
+                  <div className={`overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700 ${theme === 'dark' ? 'text-white' : 'text-black'}`}>
                     <Table>
                       <TableHeader>
                         <TableRow>
@@ -444,7 +444,7 @@ export default function Collaborators({ user }: CollaboratorsProps) {
 
                               <Button
                                 variant="destructive"
-                                className="cursor-pointer flex items-center gap-1 text-sm px-2 py-1 bg-[#011677] hover:bg-blue-950 text-white rounded-md"
+                                className="cursor-pointer flex items-center gap-1 text-sm px-2 py-1 bg-[#011677] hover:bg-[#002a7a] text-white rounded-md"
                                 onClick={() => handleRemoveInvite(invite.id)}
                               >
                                 <Trash2 size={14} /> Remover
