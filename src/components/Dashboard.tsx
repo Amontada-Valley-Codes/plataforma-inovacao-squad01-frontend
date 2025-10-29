@@ -169,12 +169,13 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
       }
 
       // Faz as chamadas à API
-      const [startupsRes, challengesRes, connectionsRes, ideasRes] = await Promise.all([
-        api.get(startupsEndpoint),
-        api.get(challengesEndpoint),
-        api.get(connectionsEndpoint),
-        api.get(ideasEndpoint),
-      ]);
+      const [startupsRes, challengesRes, connectionsRes, ideasRes] =
+        await Promise.all([
+          api.get(startupsEndpoint),
+          api.get(challengesEndpoint),
+          api.get(connectionsEndpoint),
+          api.get(ideasEndpoint),
+        ]);
 
       const challenges = challengesRes.data.data || challengesRes.data;
       const allIdeas = ideasRes.data.data || ideasRes.data;
@@ -184,12 +185,18 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
       // Lógica específica para STARTUP
       if (user.role === "STARTUP") {
         setStartupConnections(connectionsRes.data);
-        const startupUserIdeas = allIdeas.filter((idea: Idea) => idea.authorId === user.id);
+        const startupUserIdeas = allIdeas.filter(
+          (idea: Idea) => idea.authorId === user.id
+        );
         const ideasWithChallengeName = startupUserIdeas.map((idea: Idea) => {
-          const challenge = challenges.find((c: Challenge) => c.id === idea.challengeId);
+          const challenge = challenges.find(
+            (c: Challenge) => c.id === idea.challengeId
+          );
           return {
             ...idea,
-            challengeName: challenge ? challenge.name : "Desafio não encontrado",
+            challengeName: challenge
+              ? challenge.name
+              : "Desafio não encontrado",
           };
         });
         setStartupIdeas(ideasWithChallengeName);
@@ -202,7 +209,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
 
       // POCs só existem para roles que não são ADMIN ou STARTUP no contexto atual
       let pocsCount = 0;
-      if (user.role !== 'ADMIN' && user.role !== 'STARTUP') {
+      if (user.role !== "ADMIN" && user.role !== "STARTUP") {
         const pocsRes = await api.get("/poc");
         pocsCount = pocsRes.data.length;
       }
@@ -219,16 +226,21 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
         color: funnelColors[stage as keyof typeof funnelColors] || "#ccc",
       }));
 
-      const segmentCounts = startupsRes.data.reduce((acc: any, startup: any) => {
-        acc[startup.segment] = (acc[startup.segment] || 0) + 1;
-        return acc;
-      }, {});
+      const segmentCounts = startupsRes.data.reduce(
+        (acc: any, startup: any) => {
+          acc[startup.segment] = (acc[startup.segment] || 0) + 1;
+          return acc;
+        },
+        {}
+      );
 
-      const pieData = Object.entries(segmentCounts).map(([name, value], index) => ({
-        name,
-        value: value as number,
-        color: ["#3B82F6", "#10B981", "#F59E0B", "#8B5CF6"][index % 4],
-      }));
+      const pieData = Object.entries(segmentCounts).map(
+        ([name, value], index) => ({
+          name,
+          value: value as number,
+          color: ["#3B82F6", "#10B981", "#F59E0B", "#8B5CF6"][index % 4],
+        })
+      );
 
       setDashboardData({
         ideasCount,
@@ -245,7 +257,6 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
         avgTime: 0,
         funnelData,
       });
-
     } catch (error) {
       console.error("Falha ao carregar dados do dashboard:", error);
     } finally {
@@ -287,6 +298,41 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
     }
   };
 
+  const handleDeleteIdea = async (ideaId: string) => {
+    // Pede confirmação antes de uma ação destrutiva
+    if (
+      !window.confirm(
+        "Tem certeza que deseja excluir esta ideia? Esta ação é irreversível."
+      )
+    ) {
+      return;
+    }
+
+    try {
+      // Chama o novo endpoint DELETE no backend
+      await api.delete(`/idea/${ideaId}`);
+
+      // Atualiza o estado local para remover a ideia da lista instantaneamente
+      setAllCompanyIdeas((prevIdeas) =>
+        prevIdeas.filter((idea) => idea.id !== ideaId)
+      );
+
+      // Opcional: Atualiza o contador de ideias no dashboard
+      setDashboardData((prevData) => {
+        if (!prevData) return null;
+        return {
+          ...prevData,
+          ideasCount: prevData.ideasCount - 1,
+        };
+      });
+
+      alert("Ideia excluída com sucesso!");
+    } catch (error) {
+      console.error("Falha ao excluir a ideia:", error);
+      alert("Não foi possível excluir a ideia. Verifique as suas permissões.");
+    }
+  };
+
   const handleChallengeClick = (challenge: Challenge) => {
     sessionStorage.setItem("selectedChallenge", JSON.stringify(challenge));
     router.push(`/funnel/${challenge.id}`);
@@ -302,7 +348,11 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
 
   const handleDeleteChallenge = async (challengeId: string) => {
     // Pede confirmação ao usuário antes de prosseguir
-    if (!window.confirm('Tem certeza que deseja excluir este desafio? Esta ação não pode ser desfeita.')) {
+    if (
+      !window.confirm(
+        "Tem certeza que deseja excluir este desafio? Esta ação não pode ser desfeita."
+      )
+    ) {
       return;
     }
 
@@ -311,16 +361,17 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
       await api.delete(`/challenges/${challengeId}`);
 
       // Atualiza o estado local para remover o desafio da lista instantaneamente
-      setDashboardData(prevData => {
+      setDashboardData((prevData) => {
         if (!prevData) return null;
         return {
           ...prevData,
-          recentChallenges: prevData.recentChallenges.filter(c => c.id !== challengeId),
+          recentChallenges: prevData.recentChallenges.filter(
+            (c) => c.id !== challengeId
+          ),
         };
       });
 
-      alert('Desafio excluído com sucesso!');
-
+      alert("Desafio excluído com sucesso!");
     } catch (error) {
       console.error("Falha ao excluir o desafio:", error);
       alert("Não foi possível excluir o desafio. Tente novamente.");
@@ -364,28 +415,32 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
 
   return (
     <div
-      className={`flex h-screen bg-background text-white ${theme === "dark" ? "bg-gray-900 text-white" : ""
-        }`}
+      className={`flex h-screen bg-background text-white ${
+        theme === "dark" ? "bg-gray-900 text-white" : ""
+      }`}
     >
       <Sidebar theme={theme} user={user} />
 
       <div
-        className={`flex-1 overflow-y-auto bg-gray-50 text-gray-900 ${theme === "dark" ? "bg-gray-900 text-white" : ""
-          }`}
+        className={`flex-1 overflow-y-auto bg-gray-50 text-gray-900 ${
+          theme === "dark" ? "bg-gray-900 text-white" : ""
+        }`}
       >
         <div className="p-6 md:p-8 space-y-8">
           {/* Header */}
           <div className="flex items-center justify-between">
             <div className="flex flex-col">
               <h1
-                className={`font-extrabold text-3xl pt-10 sm:pt-0 text-[#011677] mb-1 ${theme === "dark" ? "text-white" : ""
-                  }`}
+                className={`font-extrabold text-3xl pt-10 sm:pt-0 text-[#011677] mb-1 ${
+                  theme === "dark" ? "text-white" : ""
+                }`}
               >
                 Dashboard
               </h1>
               <p
-                className={`text-gray-500 text-base ${theme === "dark" ? "text-gray-200" : ""
-                  }`}
+                className={`text-gray-500 text-base ${
+                  theme === "dark" ? "text-gray-200" : ""
+                }`}
               >
                 {user.role === "STARTUP"
                   ? `Bem-vindo(a), ${user.name}!`
@@ -395,10 +450,11 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
             {/* Menu de Perfil */}
             <div className="flex items-center gap-4 sm:mb-0 mb-20 sm:pb-0">
               <button
-                className={`w-14 cursor-pointer h-10 flex items-center justify-center rounded-full bg-gray-200 text-gray-800 hover:bg-gray-300 transition-colors shadow-md ${theme === "dark"
+                className={`w-14 cursor-pointer h-10 flex items-center justify-center rounded-full bg-gray-200 text-gray-800 hover:bg-gray-300 transition-colors shadow-md ${
+                  theme === "dark"
                     ? "bg-gray-700 text-white hover:bg-gray-600"
                     : ""
-                  }`}
+                }`}
                 onClick={() =>
                   handleThemeChange(theme === "light" ? "dark" : "light")
                 }
@@ -446,16 +502,15 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
 
               <div className="relative" ref={menuRef}>
                 <div
-                  className="w-10 h-10 bg-[#011677] rounded-full flex items-center justify-center cursor-pointer shadow-md hover:ring-2 ring-offset-2 ring-[#011677] transition-all"
+                  className="w-10 h-10 bg-[#011677] rounded-full flex items-center justify-center cursor-pointer shadow-md hover:ring-2 ring-offset-2 ring-[#011677] transition-all overflow-hidden relative"
                   onClick={() => setIsMenuOpen(!isMenuOpen)}
                 >
-                  {user.image_url ? (
+                  {user.avatar ? (
                     <Image
-                      src={user.image_url}
+                      src={user.avatar || user.image_url}
                       alt="Perfil"
-                      width={40}
-                      height={40}
-                      className="rounded-full object-cover"
+                      fill
+                      className="object-cover rounded-full"
                     />
                   ) : (
                     <span className="text-lg font-bold text-white">
@@ -465,8 +520,9 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                 </div>
                 {isMenuOpen && (
                   <Card
-                    className={`absolute right-0 mt-3 w-72 rounded-xl shadow-2xl z-20 bg-white p-0 overflow-hidden ${theme === "dark" ? "bg-gray-900" : ""
-                      }`}
+                    className={`absolute right-0 mt-3 w-72 rounded-xl shadow-2xl z-20 bg-white p-0 overflow-hidden ${
+                      theme === "dark" ? "bg-gray-900" : ""
+                    }`}
                   >
                     <div className="bg-[#011677]/95 p-4 text-center ">
                       <p className="text-base font-semibold text-white">
@@ -477,43 +533,49 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                       </p>
                     </div>
                     <CardContent
-                      className={`p-2 space-y-1 ${theme === "dark" ? "bg-gray-900" : ""
-                        }`}
+                      className={`p-2 space-y-1 ${
+                        theme === "dark" ? "bg-gray-900" : ""
+                      }`}
                     >
                       <div
-                        className={`flex items-center p-3 rounded-lg cursor-pointer transition-colors ${theme === "dark"
+                        className={`flex items-center p-3 rounded-lg cursor-pointer transition-colors ${
+                          theme === "dark"
                             ? "text-gray-200 hover:bg-gray-800"
                             : "text-gray-700 hover:bg-gray-100"
-                          }`}
+                        }`}
                         onClick={() => {
                           router.push("/profile");
                           setIsMenuOpen(false);
                         }}
                       >
                         <UserIcon
-                          className={`mr-3 h-4 w-4 ${theme === "dark"
+                          className={`mr-3 h-4 w-4 ${
+                            theme === "dark"
                               ? "text-gray-200"
                               : "text-[#011677]"
-                            }`}
+                          }`}
                         />
                         <span className="text-sm font-medium">Ver Perfil</span>
                       </div>
                       <hr
-                        className={`my-1 ${theme === "dark"
+                        className={`my-1 ${
+                          theme === "dark"
                             ? "border-gray-700"
                             : "border-gray-100"
-                          }`}
+                        }`}
                       />
                       <div
-                        className={`flex items-center p-3 rounded-lg cursor-pointer transition-colors ${theme === "dark"
+                        className={`flex items-center p-3 rounded-lg cursor-pointer transition-colors ${
+                          theme === "dark"
                             ? "text-red-400 hover:bg-gray-800"
                             : "text-red-600 hover:bg-red-50"
-                          }`}
+                        }`}
                         onClick={onLogout}
                       >
                         <LogOut
-                          className={`mr-3 h-4 w-4 ${theme === "dark" ? "text-red-400" : "text-red-600"
-                            }`}
+                          className={`mr-3 h-4 w-4 ${
+                            theme === "dark" ? "text-red-400" : "text-red-600"
+                          }`}
                         />
                         <span className="text-sm font-semibold">
                           Sair da Plataforma
@@ -531,8 +593,9 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
             // Card de Minhas Ideias para Startups
             <>
               <Card
-                className={`shadow-lg ${theme === "dark" ? "bg-gray-800 text-white" : ""
-                  }`}
+                className={`shadow-lg ${
+                  theme === "dark" ? "bg-gray-800 text-white" : ""
+                }`}
               >
                 <CardHeader>
                   <CardTitle className="text-xl font-bold">
@@ -554,10 +617,11 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                             {ideas.map((idea) => (
                               <div
                                 key={idea.id}
-                                className={`flex items-center justify-between p-3 border rounded-lg ${theme === "dark"
+                                className={`flex items-center justify-between p-3 border rounded-lg ${
+                                  theme === "dark"
                                     ? "border-gray-700"
                                     : "border-gray-200"
-                                  }`}
+                                }`}
                               >
                                 <p>{idea.title}</p>
                                 {/* 💡 LÓGICA DO BOTÃO CONDICIONAL */}
@@ -596,12 +660,17 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
               </Card>
 
               <Card
-                className={`shadow-lg ${theme === "dark" ? "bg-gray-800 text-white" : ""
-                  }`}
+                className={`shadow-lg ${
+                  theme === "dark" ? "bg-gray-800 text-white" : ""
+                }`}
               >
                 <CardHeader>
                   <CardTitle className="text-xl font-bold flex items-center">
-                    <Handshake className={`w-6 h-6 mr-2 ${theme === 'dark' ? 'text-white' : 'text-[#011677]'}`} />
+                    <Handshake
+                      className={`w-6 h-6 mr-2 ${
+                        theme === "dark" ? "text-white" : "text-[#011677]"
+                      }`}
+                    />
                     Conexões Recebidas
                   </CardTitle>
                   <CardDescription>
@@ -613,10 +682,11 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                     startupConnections.map((conn) => (
                       <div
                         key={conn.id}
-                        className={`flex flex-col md:flex-row md:items-center justify-between p-3 border rounded-lg ${theme === "dark"
+                        className={`flex flex-col md:flex-row md:items-center justify-between p-3 border rounded-lg ${
+                          theme === "dark"
                             ? "border-gray-700"
                             : "border-gray-200"
-                          }`}
+                        }`}
                       >
                         <div>
                           <p className="font-semibold text-base flex items-center">
@@ -653,25 +723,29 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
               {user.role === "GESTOR" && (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                   <Card
-                    className={`shadow-lg hover:shadow-xl transition-shadow duration-300 ${theme === "dark" ? "bg-gray-800 text-white" : ""
-                      }`}
+                    className={`shadow-lg hover:shadow-xl transition-shadow duration-300 ${
+                      theme === "dark" ? "bg-gray-800 text-white" : ""
+                    }`}
                   >
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                       <CardTitle
-                        className={`text-sm font-medium text-gray-500 ${theme === "dark" ? "text-gray-200" : ""
-                          }`}
+                        className={`text-sm font-medium text-gray-500 ${
+                          theme === "dark" ? "text-gray-200" : ""
+                        }`}
                       >
                         Ideias Submetidas
                       </CardTitle>
                       <Lightbulb
-                        className={`h-4 w-4 text-[#011677] ${theme === "dark" ? "text-gray-200" : ""
-                          }`}
+                        className={`h-4 w-4 text-[#011677] ${
+                          theme === "dark" ? "text-gray-200" : ""
+                        }`}
                       />
                     </CardHeader>
                     <CardContent>
                       <div
-                        className={`text-3xl font-bold ${theme === "dark" ? "text-gray-200" : "text-gray-900"
-                          }`}
+                        className={`text-3xl font-bold ${
+                          theme === "dark" ? "text-gray-200" : "text-gray-900"
+                        }`}
                       >
                         {dashboardData.ideasCount}
                       </div>
@@ -681,13 +755,15 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                     </CardContent>
                   </Card>
                   <Card
-                    className={`shadow-lg hover:shadow-xl transition-shadow duration-300 ${theme === "dark" ? "bg-gray-800 text-white" : ""
-                      }`}
+                    className={`shadow-lg hover:shadow-xl transition-shadow duration-300 ${
+                      theme === "dark" ? "bg-gray-800 text-white" : ""
+                    }`}
                   >
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                       <CardTitle
-                        className={`text-sm font-medium text-gray-500 ${theme === "dark" ? "text-gray-200" : ""
-                          }`}
+                        className={`text-sm font-medium text-gray-500 ${
+                          theme === "dark" ? "text-gray-200" : ""
+                        }`}
                       >
                         Startups Conectadas
                       </CardTitle>
@@ -695,8 +771,9 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                     </CardHeader>
                     <CardContent>
                       <div
-                        className={`text-3xl font-bold ${theme === "dark" ? "text-gray-200" : "text-gray-900"
-                          }`}
+                        className={`text-3xl font-bold ${
+                          theme === "dark" ? "text-gray-200" : "text-gray-900"
+                        }`}
                       >
                         {dashboardData.startupsCount}
                       </div>
@@ -706,13 +783,15 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                     </CardContent>
                   </Card>
                   <Card
-                    className={`shadow-lg hover:shadow-xl transition-shadow duration-300 ${theme === "dark" ? "bg-gray-800 text-white" : ""
-                      }`}
+                    className={`shadow-lg hover:shadow-xl transition-shadow duration-300 ${
+                      theme === "dark" ? "bg-gray-800 text-white" : ""
+                    }`}
                   >
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                       <CardTitle
-                        className={`text-sm font-medium text-gray-500 ${theme === "dark" ? "text-gray-200" : ""
-                          }`}
+                        className={`text-sm font-medium text-gray-500 ${
+                          theme === "dark" ? "text-gray-200" : ""
+                        }`}
                       >
                         POCs Realizadas
                       </CardTitle>
@@ -720,8 +799,9 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                     </CardHeader>
                     <CardContent>
                       <div
-                        className={`text-3xl font-bold ${theme === "dark" ? "text-gray-200" : "text-gray-900"
-                          }`}
+                        className={`text-3xl font-bold ${
+                          theme === "dark" ? "text-gray-200" : "text-gray-900"
+                        }`}
                       >
                         {dashboardData.pocsCount}
                       </div>
@@ -731,13 +811,15 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                     </CardContent>
                   </Card>
                   <Card
-                    className={`shadow-lg hover:shadow-xl transition-shadow duration-300 ${theme === "dark" ? "bg-gray-800 text-white" : ""
-                      }`}
+                    className={`shadow-lg hover:shadow-xl transition-shadow duration-300 ${
+                      theme === "dark" ? "bg-gray-800 text-white" : ""
+                    }`}
                   >
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                       <CardTitle
-                        className={`text-sm font-medium text-gray-500 ${theme === "dark" ? "text-gray-200" : ""
-                          }`}
+                        className={`text-sm font-medium text-gray-500 ${
+                          theme === "dark" ? "text-gray-200" : ""
+                        }`}
                       >
                         Tempo Médio por Etapa
                       </CardTitle>
@@ -745,8 +827,9 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                     </CardHeader>
                     <CardContent>
                       <div
-                        className={`text-3xl font-bold ${theme === "dark" ? "text-gray-200" : "text-gray-900"
-                          }`}
+                        className={`text-3xl font-bold ${
+                          theme === "dark" ? "text-gray-200" : "text-gray-900"
+                        }`}
                       >
                         {dashboardData.avgTime} dias
                       </div>
@@ -760,8 +843,9 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
 
               {(user.role === "AVALIADOR" || user.role === "GESTOR") && (
                 <Card
-                  className={`lg:col-span-2 shadow-lg ${theme === "dark" ? "bg-gray-800 text-white" : ""
-                    }`}
+                  className={`lg:col-span-2 shadow-lg ${
+                    theme === "dark" ? "bg-gray-800 text-white" : ""
+                  }`}
                 >
                   <CardHeader>
                     <CardTitle className="text-xl font-bold">
@@ -783,16 +867,18 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                             {stage.count}
                           </div>
                           <h4
-                            className={`text-sm font-semibold mb-1 ${theme === "dark"
+                            className={`text-sm font-semibold mb-1 ${
+                              theme === "dark"
                                 ? "text-gray-200"
                                 : "text-gray-700"
-                              }`}
+                            }`}
                           >
                             {stage.stage}
                           </h4>
                           <p
-                            className={`text-xs text-gray-500 ${theme === "dark" ? "text-gray-400" : ""
-                              }`}
+                            className={`text-xs text-gray-500 ${
+                              theme === "dark" ? "text-gray-400" : ""
+                            }`}
                           >
                             projetos
                           </p>
@@ -806,8 +892,9 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
               {(user.role === "AVALIADOR" || user.role === "GESTOR") && (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   <Card
-                    className={`shadow-lg ${theme === "dark" ? "bg-gray-800 text-white" : ""
-                      }`}
+                    className={`shadow-lg ${
+                      theme === "dark" ? "bg-gray-800 text-white" : ""
+                    }`}
                   >
                     <CardHeader>
                       <CardTitle className="text-xl font-bold">
@@ -847,8 +934,9 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                     </CardContent>
                   </Card>
                   <Card
-                    className={`shadow-lg ${theme === "dark" ? "bg-gray-800 text-white" : ""
-                      }`}
+                    className={`shadow-lg ${
+                      theme === "dark" ? "bg-gray-800 text-white" : ""
+                    }`}
                   >
                     <CardHeader>
                       <CardTitle className="text-xl font-bold">
@@ -900,8 +988,9 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
 
           {/* Lista de Desafios Ativos (com botões condicionais) */}
           <Card
-            className={`shadow-lg ${theme === "dark" ? "bg-gray-800 text-white" : ""
-              }`}
+            className={`shadow-lg ${
+              theme === "dark" ? "bg-gray-800 text-white" : ""
+            }`}
           >
             <Tabs defaultValue="challenges">
               <CardHeader>
@@ -921,15 +1010,14 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                   {/* Botões e Tabs */}
                   <div className="flex flex-wrap justify-start md:justify-end items-center gap-3 mt-4 md:mt-0 w-full md:w-auto">
                     {user.role !== "STARTUP" && (
-                    <TabsList className="flex flex-wrap gap-2 bg-transparent border-0 p-0">
-                      
-                      <TabsTrigger
-                        value="challenges"
-                        className="flex cursor-pointer items-center gap-2 bg-[#011677] text-white px-4 py-2 rounded-lg transition-all duration-200 hover:bg-[#002494] hover:shadow-md"
-                      >
-                        <ClipboardCheck className="w-4 h-4" />
-                        Desafios Ativos
-                      </TabsTrigger>
+                      <TabsList className="flex flex-wrap gap-2 bg-transparent border-0 p-0">
+                        <TabsTrigger
+                          value="challenges"
+                          className="flex cursor-pointer items-center gap-2 bg-[#011677] text-white px-4 py-2 rounded-lg transition-all duration-200 hover:bg-[#002494] hover:shadow-md"
+                        >
+                          <ClipboardCheck className="w-4 h-4" />
+                          Desafios Ativos
+                        </TabsTrigger>
                         <TabsTrigger
                           value="ideas"
                           className="flex cursor-pointer items-center gap-2 bg-[#011677] text-white px-4 py-2 rounded-lg transition-all duration-200 hover:bg-[#002494] hover:shadow-md"
@@ -937,8 +1025,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                           <Lightbulb className="w-4 h-4" />
                           Ideias
                         </TabsTrigger>
-
-                    </TabsList>
+                      </TabsList>
                     )}
 
                     {user.role !== "STARTUP" && (
@@ -960,10 +1047,11 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                     {dashboardData.recentChallenges.map((challenge) => (
                       <div
                         key={challenge.id}
-                        className={`flex md:items-center md:flex-row flex-col justify-between p-4 border rounded-xl hover:bg-gray-100/50 cursor-pointer transition-colors ${theme === "dark"
+                        className={`flex md:items-center md:flex-row flex-col justify-between p-4 border rounded-xl hover:bg-gray-100/50 cursor-pointer transition-colors ${
+                          theme === "dark"
                             ? "border-gray-700 hover:bg-gray-800/50"
                             : "border-gray-200"
-                          }`}
+                        }`}
                       >
                         <div
                           className="space-y-1"
@@ -972,10 +1060,11 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                           }
                         >
                           <h4
-                            className={`font-semibold text-lg ${theme === "dark"
+                            className={`font-semibold text-lg ${
+                              theme === "dark"
                                 ? "text-gray-200"
                                 : "text-[#011677]"
-                              }`}
+                            }`}
                           >
                             {challenge.name}
                           </h4>
@@ -1046,11 +1135,9 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                               <Target className="w-4 h-4 mr-2" />
                               Funil de Ideias
                             </Button>
-
-
                           )}
 
-                          {user.role === 'GESTOR' && (
+                          {user.role === "GESTOR" && (
                             <Button
                               variant="ghost"
                               size="sm"
@@ -1087,26 +1174,32 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
 
                         const badgeColor =
                           funnelColors[
-                          stageLabels[
-                          idea.stage as keyof typeof stageLabels
-                          ] || idea.stage
+                            stageLabels[
+                              idea.stage as keyof typeof stageLabels
+                            ] || idea.stage
                           ] || "#9CA3AF";
+
+                        // 💡 Condição para mostrar o botão
+                        const canDelete =
+                          user.role === "GESTOR" || user.id === idea.authorId;
 
                         return (
                           <div
                             key={idea.id}
-                            className={`flex flex-col md:flex-row md:items-center justify-between p-4 border rounded-xl transition-colors ${theme === "dark"
+                            className={`flex flex-col md:flex-row md:items-center justify-between p-4 border rounded-xl transition-colors ${
+                              theme === "dark"
                                 ? "border-gray-700 bg-gray-800/30 hover:bg-gray-800/50"
                                 : "border-gray-200 hover:bg-gray-100/50"
-                              }`}
+                            }`}
                           >
                             {/* Lado esquerdo: título e desafio */}
                             <div className="space-y-1 flex-1">
                               <h4
-                                className={`font-semibold text-lg ${theme === "dark"
+                                className={`font-semibold text-lg ${
+                                  theme === "dark"
                                     ? "text-gray-200"
                                     : "text-[#011677]"
-                                  }`}
+                                }`}
                               >
                                 {idea.title}
                               </h4>
@@ -1120,19 +1213,28 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
 
                             {/* Lado direito: badge — desce abaixo no mobile */}
                             <div className="flex justify-start md:justify-end mt-3 md:mt-0">
-                              <Badge
-                                variant="outline"
-                                style={{
-                                  backgroundColor: `${badgeColor}1A`,
-                                  color: badgeColor,
-                                  borderColor: badgeColor,
-                                }}
-                                className="font-medium px-3 py-1 text-sm min-w-[120px] text-center whitespace-nowrap flex justify-center"
-                              >
-                                {stageLabels[
-                                  idea.stage as keyof typeof stageLabels
-                                ] || idea.stage}
-                              </Badge>
+                              <div className="flex items-center gap-2">
+                                <Badge variant="outline">
+                                  {stageLabels[
+                                    idea.stage as keyof typeof stageLabels
+                                  ] || idea.stage}
+                                </Badge>
+
+                                {/* 💡 RENDERIZAÇÃO CONDICIONAL DO BOTÃO DELETAR */}
+                                {canDelete && (
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className={`text-red-600 hover:bg-red-100 cursor-pointer hover:text-red-700 h-8 w-8 ${theme === "dark" ? "hover:bg-gray-600" : ""}`}
+                                    onClick={(e) => {
+                                      e.stopPropagation(); // Evita outros eventos de clique
+                                      handleDeleteIdea(idea.id);
+                                    }}
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </Button>
+                                )}
+                              </div>
                             </div>
                           </div>
                         );
@@ -1166,7 +1268,9 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
       {/* 💡 NOVO MODAL PARA CRIAR POC */}
       <Dialog open={isPocModalOpen} onOpenChange={setIsPocModalOpen}>
         <DialogContent
-          className={`bg-white ${theme === "dark" ? "bg-gray-800 text-white" : ""}`}
+          className={`bg-white ${
+            theme === "dark" ? "bg-gray-800 text-white" : ""
+          }`}
         >
           <DialogHeader>
             <DialogTitle>Registrar Prova de Conceito (POC)</DialogTitle>
@@ -1235,11 +1339,20 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
             </div>
             <DialogFooter>
               <DialogClose asChild>
-                <Button type="button" variant="secondary" className="bg-red-600 text-white hover:bg-red-700 cursor-pointer">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  className="bg-red-600 text-white hover:bg-red-700 cursor-pointer"
+                >
                   Cancelar
                 </Button>
               </DialogClose>
-              <Button type="submit" className="bg-[#011677] hover:bg-[#0121af] text-white cursor-pointer">Registrar POC</Button>
+              <Button
+                type="submit"
+                className="bg-[#011677] hover:bg-[#0121af] text-white cursor-pointer"
+              >
+                Registrar POC
+              </Button>
             </DialogFooter>
           </form>
         </DialogContent>
