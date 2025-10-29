@@ -117,15 +117,15 @@ export function EvaluationForm({ idea, user, onEvaluationComplete }: EvaluationF
                         <h4 className="font-semibold text-[#001f61]">Análise Detalhada</h4>
                         <div className="space-y-2">
                             <Label htmlFor="viability">Análise de Viabilidade Técnica</Label>
-                            <Textarea id="viability" placeholder="Descreva a viabilidade técnica..." value={detailedScreeningNotes.viability} onChange={(e) => setDetailedScreeningNotes(prev => ({ ...prev, viability: e.target.value }))} />
+                            <Textarea id="viability" placeholder="Descreva a viabilidade técnica..." className='input-gbl' value={detailedScreeningNotes.viability} onChange={(e) => setDetailedScreeningNotes(prev => ({ ...prev, viability: e.target.value }))} />
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="impact" className="text-gray-800">Análise de Impacto Financeiro</Label>
-                            <Textarea id="impact" placeholder="Descreva o potencial de retorno, custos estimados, etc." className="border-[#001f61] focus:ring-[#7eb526] focus:border-[#7eb526] rounded-lg" value={detailedScreeningNotes.impact} onChange={(e) => setDetailedScreeningNotes(prev => ({...prev, impact: e.target.value}))} />
+                            <Textarea id="impact" placeholder="Descreva o potencial de retorno, custos estimados, etc." className="input-gbl" value={detailedScreeningNotes.impact} onChange={(e) => setDetailedScreeningNotes(prev => ({...prev, impact: e.target.value}))} />
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="risks" className="text-gray-800">Análise de Riscos</Label>
-                            <Textarea id="risks" placeholder="Descreva os possíveis riscos de mercado, técnicos ou operacionais." className="border-[#001f61] focus:ring-[#7eb526] focus:border-[#7eb526] rounded-lg" value={detailedScreeningNotes.risks} onChange={(e) => setDetailedScreeningNotes(prev => ({...prev, risks: e.target.value}))} />
+                            <Textarea id="risks" placeholder="Descreva os possíveis riscos de mercado, técnicos ou operacionais." className="input-gbl" value={detailedScreeningNotes.risks} onChange={(e) => setDetailedScreeningNotes(prev => ({...prev, risks: e.target.value}))} />
                         </div>
                     </div>
                 )}

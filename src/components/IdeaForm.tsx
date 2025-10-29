@@ -37,22 +37,22 @@ export function IdeaForm({ stageTitle, onSubmit }: IdeaFormProps) {
       <DialogHeader>
         <DialogTitle
           className={`flex items-center gap-2 ${
-            theme === "dark" ? "text-white" : "text-[#011677]"
+            theme === "dark" ? "text-black" : "text-[#011677]"
           } font-bold`}
         >
           <Lightbulb
             className={` ${
-              theme === "dark" ? "text-white" : "text-[#011677]"
+              theme === "dark" ? "text-black" : "text-[#011677]"
             } w-5 h-5`}
           />
           Submeter Nova Ideia
         </DialogTitle>
         <DialogDescription
-          className={`${theme === "dark" ? "text-white" : ""}`}
+          className={`${theme === "dark" ? "text-black" : ""}`}
         >
           Descreva a sua ideia ou oportunidade. Ela será adicionada à coluna
           <span
-            className={`font-semibold ${theme === "dark" ? "text-white" : ""}`}
+            className={`font-semibold ${theme === "dark" ? "text-black" : ""}`}
           >
             {" "}
             "{stageTitle}"
