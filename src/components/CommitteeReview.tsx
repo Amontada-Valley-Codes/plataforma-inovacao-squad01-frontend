@@ -220,7 +220,7 @@ export function CommitteeReview({ user }: CommitteeReviewProps) {
         {/* Header fixo */}
         <div
           className={`bg-[#011677] sticky top-0 z-10 ${
-            theme === "dark" ? "bg-gray-800" : "border-b border-gray-200"
+            theme === "dark" ? "bg-gray-800" : "border-b bg-gray-8 "
           }`}
         >
           <div className="container mx-auto px-6 py-4">
@@ -242,9 +242,7 @@ export function CommitteeReview({ user }: CommitteeReviewProps) {
               }`}
             >
               <CardHeader
-                className={`border-b ${
-                  theme === "dark" ? "border-gray-700" : "border-gray-200"
-                }`}
+                className={`border-b border-gray-700`}
               >
                 <CardTitle
                   className={`text-xl ${
@@ -564,7 +562,7 @@ export function CommitteeReview({ user }: CommitteeReviewProps) {
                                   className={`focus:border-[#001f61] focus:ring focus:ring-[#001f61]/30 transition-colors ${
                                     theme === "dark"
                                       ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500 focus:ring-blue-500/60"
-                                      : "input-gbl"
+                                      : "input-gbl "
                                   }`}
                                 />
                                 <div className="flex justify-end">

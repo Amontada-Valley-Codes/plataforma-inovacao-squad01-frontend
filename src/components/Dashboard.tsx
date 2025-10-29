@@ -1054,7 +1054,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="text-red-600 hover:bg-red-100 hover:text-red-700"
+                              className="text-red-600 cursor-pointer hover:bg-red-100 hover:text-red-700"
                               onClick={(e) => {
                                 e.stopPropagation(); // Impede que o clique propague para a div pai
                                 handleDeleteChallenge(challenge.id);

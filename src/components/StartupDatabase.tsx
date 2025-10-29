@@ -231,7 +231,7 @@ export function StartupDatabase({ user, onNavigate }: StartupDatabaseProps) {
           {/* ✅ AQUI: Tamanho da fonte ajustado */}
           <h2
             className={`text-2xl sm:text-3xl font-bold ${
-              theme === "dark" ? "text-gray-200" : "text-[#001f61]"
+              theme === "dark" ? "text-gray-200" : "text-[#011677]"
             }`}
           >
             Explore Startups Inovadoras
@@ -254,7 +254,7 @@ export function StartupDatabase({ user, onNavigate }: StartupDatabaseProps) {
           <CardHeader className="border-b pb-4 ${theme === 'dark' ? 'border-gray-700' : 'border-gray-100'}">
             <CardTitle
               className={`flex items-center gap-2 text-base sm:text-lg font-semibold ${
-                theme === "dark" ? "text-gray-200" : "text-[#001f61]"
+                theme === "dark" ? "text-gray-200" : "text-[#011677]"
               }`}
             >
               <Filter className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -409,8 +409,8 @@ export function StartupDatabase({ user, onNavigate }: StartupDatabaseProps) {
                   size="sm"
                   className={`text-xs cursor-pointer sm:text-sm ${
                     theme === "dark"
-                      ? "text-blue-400 hover:bg-gray-700"
-                      : "text-[#001f61] hover:bg-blue-50"
+                      ? "text-white hover:bg-gray-700"
+                      : "text-[#011677] hover:bg-blue-50"
                   }`} // Cor ajustada
                   onClick={() => {
                     setSearchQuery("");
@@ -455,7 +455,7 @@ export function StartupDatabase({ user, onNavigate }: StartupDatabaseProps) {
                     {/* ✅ AQUI: Tamanho da fonte ajustado */}
                     <CardTitle
                       className={`flex items-center gap-2 text-base sm:text-lg font-semibold ${
-                        theme === "dark" ? "text-gray-100" : "text-[#001f61]"
+                        theme === "dark" ? "text-gray-100" : "text-[#011677]"
                       }`}
                     >
                       <Building2 className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />{" "}
@@ -598,11 +598,7 @@ export function StartupDatabase({ user, onNavigate }: StartupDatabaseProps) {
                   </div>
                 )}
                 <Button
-                  className={`w-full cursor-pointer mt-3 sm:mt-4 text-sm ${
-                    theme === "dark"
-                      ? "bg-blue-600 hover:bg-blue-500"
-                      : "bg-[#001f61] hover:bg-[#002a7a]"
-                  } transition-colors text-white`}
+                  className={`w-full cursor-pointer mt-3 sm:mt-4 text-sm bg-[#011677] hover:bg-[#002a7a] transition-colors text-white`}
                 >
                   Ver Detalhes
                 </Button>

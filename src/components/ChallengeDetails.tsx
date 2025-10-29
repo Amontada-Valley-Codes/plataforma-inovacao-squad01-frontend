@@ -433,6 +433,7 @@ export function ChallengeDetails({
         </div>
 
         {/* Right Column - Actions */}
+        {user.role !== "STARTUP" && (
         <div className="space-y-6">
           <Card
             className={`bg-white ${
@@ -442,7 +443,8 @@ export function ChallengeDetails({
             <CardHeader>
               <CardTitle>Ações Rápidas</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">              
+            <CardContent className="space-y-3">
+              {user.role === "GESTOR" && (              
               <Button
                 variant="outline"
                 className={`w-full justify-start cursor-pointer  ${
@@ -454,6 +456,7 @@ export function ChallengeDetails({
                 <TrendingUp className="w-4 h-4 mr-2" />
                 Relatório Detalhado
               </Button>
+              )}
               <Button
                 variant="outline"
                 className={`w-full justify-start cursor-pointer  ${
@@ -478,6 +481,7 @@ export function ChallengeDetails({
             </CardContent>
           </Card>
         </div>
+        )}
       </div>
 
       {/* SEÇÃO DAS TABS (ABAS) - CORREÇÃO DE RESPONSIVIDADE APLICADA AQUI */}

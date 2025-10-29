@@ -398,7 +398,7 @@ export default function Collaborators({ user }: CollaboratorsProps) {
                                 <SelectTrigger className={`w-48 cursor-pointer border-gray-300 focus:ring-[#001f61]/30 ${theme === 'dark' ? 'bg-gray-700 text-gray-200 border-gray-600' : ''}`}>
                                   <SelectValue />
                                 </SelectTrigger>
-                                <SelectContent className={`shadow-lg ${theme === 'dark' ? 'bg-gray-800 border-gray-600' : ''}`}>
+                                <SelectContent className={`shadow-lg ${theme === 'dark' ? 'bg-gray-800 border-gray-600' : 'bg-white'}`}>
                                   <SelectItem className={`cursor-pointer ${theme === 'dark' ? 'text-gray-200 hover:bg-gray-700' : 'hover:bg-gray-100'}`} value="COMUM">Usuário Comum</SelectItem>
                                   <SelectItem className={`cursor-pointer ${theme === 'dark' ? 'text-gray-200 hover:bg-gray-700' : 'hover:bg-gray-100'}`} value="AVALIADOR">Avaliador</SelectItem>
                                   <SelectItem className={`cursor-pointer ${theme === 'dark' ? 'text-gray-200 hover:bg-gray-700' : 'hover:bg-gray-100'}`} value="GESTOR">Gestor de Inovação</SelectItem>
@@ -424,7 +424,7 @@ export default function Collaborators({ user }: CollaboratorsProps) {
                 ) : pendingInvites.length === 0 ? (
                   <p className="text-center text-gray-500">Nenhum convite pendente.</p>
                 ) : (
-                  <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
+                  <div className={`${theme === 'dark' ? 'text-white' : 'text-black'} overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700`}>
                     <Table>
                       <TableHeader>
                         <TableRow>
@@ -444,7 +444,7 @@ export default function Collaborators({ user }: CollaboratorsProps) {
 
                               <Button
                                 variant="destructive"
-                                className="cursor-pointer flex items-center gap-1 text-sm px-2 py-1 bg-[#011677] hover:bg-blue-950 text-white rounded-md"
+                                className="cursor-pointer flex items-center gap-1 text-sm px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded-md"
                                 onClick={() => handleRemoveInvite(invite.id)}
                               >
                                 <Trash2 size={14} /> Remover
