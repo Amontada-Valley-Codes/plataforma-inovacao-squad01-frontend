@@ -198,7 +198,7 @@ export default function CarroselHome() {
               {filteredCards.map((item) => (
                 <SwiperSlide key={item.id} className="pb-4 h-full">
                   <div className="px-0 h-full">
-                    <Card className="h-full flex flex-col bg-white rounded-2xl shadow-md hover:shadow-xl transition-transform duration-300 hover:-translate-y-2">
+                    <Card className="h-full flex flex-col bg-white rounded-2xl shadow-md hover:shadow-xl transition-transform duration-300 hover:scale-98 hover:border-2 border-white">
                       <div className="relative w-full h-40">
                         <Image
                           src={item.img}
