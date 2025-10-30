@@ -39,7 +39,7 @@ export default function InitialPage() {
               Contato
             </Link>
           </li>
-          <Link href="/login" className="py-1 px-6 cursor-pointer bg-[#011677] hover:bg-[#0121af] text-white font-semibold rounded">
+          <Link href="/login" className="py-1 px-6 cursor-pointer bg-[#011677] hover:bg-[#001a90] text-white font-semibold rounded">
             Login
           </Link>
         </ul>
@@ -82,7 +82,7 @@ export default function InitialPage() {
             </p>
             <Link
               href="/login"
-              className="bg-[#011677] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#0121af] transition"
+              className="bg-[#011677] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#001a90] transition"
             >
               Comece Agora
             </Link>

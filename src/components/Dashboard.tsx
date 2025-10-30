@@ -1031,7 +1031,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                     {user.role !== "STARTUP" && (
                       <Button
                         onClick={() => router.push("/challenges/new")}
-                        className="flex cursor-pointer items-center gap-2 bg-[#011677] text-white px-4 py-2 rounded-lg transition-all duration-200 hover:bg-[#002494] hover:shadow-md"
+                        className="flex button-style"
                       >
                         <Plus className="w-4 h-4" />
                         Criar Desafio
@@ -1042,6 +1042,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
               </CardHeader>
 
               <CardContent>
+                {/* 🔹 ABA DE DESAFIOS */}
                 <TabsContent value="challenges">
                   <div className="space-y-4">
                     {dashboardData.recentChallenges.map((challenge) => (
@@ -1053,8 +1054,9 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                             : "border-gray-200"
                         }`}
                       >
+                        {/* Lado esquerdo: nome, badges e datas */}
                         <div
-                          className="space-y-1"
+                          className="space-y-1 w-full"
                           onClick={() =>
                             router.push(`/challenges/${challenge.id}`)
                           }
@@ -1068,7 +1070,8 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                           >
                             {challenge.name}
                           </h4>
-                          <div className="flex items-center gap-3 flex-wrap">
+
+                          <div className="flex flex-wrap items-center gap-2">
                             <Badge
                               variant="outline"
                               className="border-[#011677] text-[#011677] bg-blue-50/50"
@@ -1098,7 +1101,9 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                             </span>
                           </div>
                         </div>
-                        <div className="flex flex-col md:flex-row md:space-x-3 space-y-2 md:space-y-0 mt-4 md:mt-0">
+
+                        {/* Lado direito: botões */}
+                        <div className="flex flex-wrap md:flex-nowrap items-center justify-between md:justify-end gap-3 mt-3 md:mt-0 w-full md:w-auto">
                           <Button
                             className="bg-gray-200 cursor-pointer text-gray-700 h-9 hover:bg-gray-300 font-medium"
                             size="sm"
@@ -1111,10 +1116,9 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                             Ver Detalhes
                           </Button>
 
-                          {/* 💡 LÓGICA DE BOTÕES CONDICIONAL */}
                           {user.role === "STARTUP" ? (
                             <Button
-                              className="bg-[#011677] text-white hover:bg-[#020ebd] h-9 font-medium"
+                              className="bg-[#011677] text-white cursor-pointer hover:bg-[#020ebd] h-9 font-medium"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 setSelectedChallengeForIdea(challenge);
@@ -1126,7 +1130,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                             </Button>
                           ) : (
                             <Button
-                              className="bg-[#011677] text-white cursor-pointer hover:bg-[#020ebd] h-9 font-medium"
+                              className="button-style h-9 font-medium"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 handleChallengeClick(challenge);
@@ -1140,10 +1144,12 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                           {user.role === "GESTOR" && (
                             <Button
                               variant="ghost"
-                              size="sm"
-                              className={`text-red-600 hover:bg-red-100 cursor-pointer hover:text-red-700 h-8 w-8 ${theme === "dark" ? "hover:bg-gray-600" : ""}`}
+                              size="icon"
+                              className={`text-red-600 cursor-pointer hover:bg-red-100 hover:text-red-700 h-9 w-9 ${
+                                theme === "dark" ? "hover:bg-gray-600" : ""
+                              }`}
                               onClick={(e) => {
-                                e.stopPropagation(); // Impede que o clique propague para a div pai
+                                e.stopPropagation();
                                 handleDeleteChallenge(challenge.id);
                               }}
                             >
@@ -1156,6 +1162,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                   </div>
                 </TabsContent>
 
+                {/* 🔹 ABA DE IDEIAS */}
                 <TabsContent value="ideas">
                   <div className="space-y-4">
                     {ideasForCompanyChallenges.length > 0 ? (
@@ -1172,14 +1179,12 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                           "Experimentação (POC)": "#F59E0B",
                         };
 
-                        const badgeColor =
-                          funnelColors[
-                            stageLabels[
-                              idea.stage as keyof typeof stageLabels
-                            ] || idea.stage
-                          ] || "#9CA3AF";
+                        const stageName =
+                          stageLabels[idea.stage as keyof typeof stageLabels] ||
+                          idea.stage;
 
-                        // 💡 Condição para mostrar o botão
+                        const badgeColor = funnelColors[stageName] || "#9CA3AF";
+
                         const canDelete =
                           user.role === "GESTOR" || user.id === idea.authorId;
 
@@ -1192,7 +1197,6 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                                 : "border-gray-200 hover:bg-gray-100/50"
                             }`}
                           >
-                            {/* Lado esquerdo: título e desafio */}
                             <div className="space-y-1 flex-1">
                               <h4
                                 className={`font-semibold text-lg ${
@@ -1211,30 +1215,32 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                               </p>
                             </div>
 
-                            {/* Lado direito: badge — desce abaixo no mobile */}
-                            <div className="flex justify-start md:justify-end mt-3 md:mt-0">
-                              <div className="flex items-center gap-2">
-                                <Badge variant="outline">
-                                  {stageLabels[
-                                    idea.stage as keyof typeof stageLabels
-                                  ] || idea.stage}
-                                </Badge>
+                            <div className="flex flex-wrap md:flex-nowrap items-center justify-between md:justify-end gap-3 mt-3 md:mt-0 w-full md:w-auto">
+                              <Badge
+                                className="text-white font-medium px-3 py-1 text-sm"
+                                style={{
+                                  backgroundColor: badgeColor,
+                                  borderColor: badgeColor,
+                                }}
+                              >
+                                {stageName}
+                              </Badge>
 
-                                {/* 💡 RENDERIZAÇÃO CONDICIONAL DO BOTÃO DELETAR */}
-                                {canDelete && (
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className={`text-red-600 hover:bg-red-100 cursor-pointer hover:text-red-700 h-8 w-8 ${theme === "dark" ? "hover:bg-gray-600" : ""}`}
-                                    onClick={(e) => {
-                                      e.stopPropagation(); // Evita outros eventos de clique
-                                      handleDeleteIdea(idea.id);
-                                    }}
-                                  >
-                                    <Trash2 className="w-4 h-4" />
-                                  </Button>
-                                )}
-                              </div>
+                              {canDelete && (
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className={`text-red-600 cursor-pointer hover:bg-red-100 hover:text-red-700 h-9 w-9 flex-shrink-0 ${
+                                    theme === "dark" ? "hover:bg-gray-600" : ""
+                                  }`}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDeleteIdea(idea.id);
+                                  }}
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              )}
                             </div>
                           </div>
                         );

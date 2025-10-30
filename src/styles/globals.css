@@ -88,3 +88,11 @@ html {
           text-black border-gray-300 
           focus:border-[#001f61] focus:ring-2 focus:ring-[#001f61]/40 focus:ring-offset-1;
 }
+
+.button-style {
+  @apply cursor-pointer flex items-center justify-center gap-2 
+         bg-[#011677] text-white 
+         px-4 py-2 rounded-lg 
+         transition-all duration-200 
+         hover:bg-[#001a90] hover:shadow-md;
+}

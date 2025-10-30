@@ -164,7 +164,7 @@ ${name}
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-[#011677] cursor-pointer text-white font-bold py-3 rounded-lg shadow-lg hover:opacity-90 transition disabled:opacity-50"
+              className="w-full button-style py-3 text-white"
             >
               {isSubmitting ? 'Enviando...' : 'Enviar'}
             </button>

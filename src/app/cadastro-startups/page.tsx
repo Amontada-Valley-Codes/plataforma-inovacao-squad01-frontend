@@ -304,7 +304,7 @@ export default function CadastroStartups() {
               </Link>
               <Button
                 type="submit"
-                className="bg-[#001f61] cursor-pointer text-white hover:bg-[#002a7a] transition-all duration-200 px-6 py-3"
+                className="bg-[#011677] cursor-pointer text-white hover:bg-[#001a90] transition-all duration-200 px-6 py-3"
               >
                 Finalizar Cadastro
               </Button>

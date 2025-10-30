@@ -522,11 +522,7 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
                         <Button
                           type="button"
                           onClick={handleAddTag}
-                          className={`bg-[#001f61] text-white hover:bg-[#002a7a] transition-colors cursor-pointer px-3 ${
-                            theme === "dark"
-                              ? "bg-blue-600 hover:bg-blue-500"
-                              : ""
-                          }`}
+                          className={`bg-[#001f61] text-white hover:bg-[#002a7a] transition-colors cursor-pointer px-3 button-style`}
                         >
                           {" "}
                           {/* Padding ajustado */}

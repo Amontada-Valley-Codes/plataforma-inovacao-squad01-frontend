@@ -225,7 +225,7 @@ export default function ProfilePage() {
 								placeholder="Email"
 							/>
 
-							<Button type="submit" disabled={isSaving} className={`w-full ...`}>
+							<Button type="submit" disabled={isSaving} className={`w-full cursor-pointer ${theme === 'dark' ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-300 hover:bg-gray-400'} ...`}>
 								{isSaving ? "Salvando..." : "Atualizar"}
 							</Button>
 

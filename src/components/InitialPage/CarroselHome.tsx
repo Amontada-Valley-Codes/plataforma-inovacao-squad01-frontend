@@ -226,7 +226,7 @@ export default function CarroselHome() {
                         </span>
                         <Link
                           href={`/desafios-publicos/${item.id}`}
-                          className="bg-[#011677] text-white px-4 py-1.5 rounded-full text-sm font-medium hover:bg-[#0121af] transition-all duration-300"
+                          className="button-style px-4 py-2 text-white rounded-lg"
                         >
                           Ver
                         </Link>
