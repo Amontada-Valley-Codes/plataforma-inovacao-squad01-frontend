@@ -416,49 +416,57 @@ export function ChallengeDetails({
 					</Card>
 				</div>
 
-				{/* Right Column - Actions */}
-				<div className="space-y-6">
-					<Card
-						className={`bg-white ${theme === "dark" ? "bg-gray-800 text-white" : ""
-							}`}
-					>
-						<CardHeader>
-							<CardTitle>Ações Rápidas</CardTitle>
-						</CardHeader>
-						<CardContent className="space-y-3">
-							<Button
-								variant="outline"
-								className={`w-full justify-start cursor-pointer  ${theme === "dark"
-										? "text-gray-200 hover:bg-gray-500"
-										: "text-gray-800 hover:bg-gray-100"
-									}`}
-							>
-								<TrendingUp className="w-4 h-4 mr-2" />
-								Relatório Detalhado
-							</Button>
-							<Button
-								variant="outline"
-								className={`w-full justify-start cursor-pointer  ${theme === "dark"
-										? "text-gray-200 hover:bg-gray-500"
-										: "text-gray-800 hover:bg-gray-100"
-									}`}
-								onClick={() => onNavigate("startup-database")}
-							>
-								<Building2 className="w-4 h-4 mr-2" />
-								Buscar Mais Startups
-							</Button>
-							<Button
-								className={`w-full justify-start bg-[#011677] text-white hover:bg-[#0121af] cursor-pointer ${theme === "dark" ? "bg-gray-600 hover:bg-gray-700 " : ""
-									}`}
-								onClick={() => router.push(`/funnel/${challenge.id}`)}
-							>
-								<Target className="w-4 h-4 mr-2" />
-								Aceder ao Funil de Ideias
-							</Button>
-						</CardContent>
-					</Card>
-				</div>
-			</div>
+        {/* Right Column - Actions */}
+        {user.role !== "STARTUP" && (
+        <div className="space-y-6">
+          <Card
+            className={`bg-white ${
+              theme === "dark" ? "bg-gray-800 text-white" : ""
+            }`}
+          >
+            <CardHeader>
+              <CardTitle>Ações Rápidas</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {user.role === "GESTOR" && (              
+              <Button
+                variant="outline"
+                className={`w-full justify-start cursor-pointer  ${
+                  theme === "dark"
+                    ? "text-gray-200 hover:bg-gray-500"
+                    : "text-gray-800 hover:bg-gray-100"
+                }`}
+              >
+                <TrendingUp className="w-4 h-4 mr-2" />
+                Relatório Detalhado
+              </Button>
+              )}
+              <Button
+                variant="outline"
+                className={`w-full justify-start cursor-pointer  ${
+                  theme === "dark"
+                    ? "text-gray-200 hover:bg-gray-500"
+                    : "text-gray-800 hover:bg-gray-100"
+                }`}
+                onClick={() => onNavigate("startup-database")}
+              >
+                <Building2 className="w-4 h-4 mr-2" />
+                Buscar Mais Startups
+              </Button>
+              <Button
+                className={`w-full justify-start bg-[#011677] text-white hover:bg-[#0121af] cursor-pointer ${
+                  theme === "dark" ? "bg-gray-600 hover:bg-gray-700 " : ""
+                }`}
+                onClick={() => router.push(`/funnel/${challenge.id}`)}
+              >
+                <Target className="w-4 h-4 mr-2" />
+                Aceder ao Funil de Ideias
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+        )}
+      </div>
 
 			{/* SEÇÃO DAS TABS (ABAS) - CORREÇÃO DE RESPONSIVIDADE APLICADA AQUI */}
 			<div className="container pb-7 mx-auto px-4 sm:px-6 mt-8">

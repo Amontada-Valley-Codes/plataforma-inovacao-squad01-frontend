@@ -257,7 +257,7 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
                           required
                           className={` rounded-lg transition-colors ${
                             theme === "dark"
-                              ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500 focus:ring-blue-500/60"
+                              ? "bg-gray-700 border-gray-600 text-white focus:border-white focus:ring-white"
                               : "bg-white text-black input-gbl"
                           }`} // Ajuste de cores dark/light
                         />
@@ -507,7 +507,7 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
                           placeholder="Digite tag e Enter" // Texto placeholder menor
                           className={`rounded-lg transition-colors ${
                             theme === "dark"
-                              ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500 focus:ring-blue-500/60"
+                              ? "bg-gray-700 border-gray-600 text-white focus:border-white focus:ring-white"
                               : "bg-white text-black input-gbl"
                           }`}
                           value={currentTag}
@@ -621,8 +621,8 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
                         placeholder="Descreva o contexto, o problema específico, objetivos..."
                         className={`min-h-[150px] sm:min-h-[200px] rounded-lg transition-colors ${
                           theme === "dark"
-                            ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500 focus:ring-blue-500/60"
-                            : "bg-white text-black input-gbl"
+                            ? "bg-gray-700 border-gray-600 text-white focus:border-white focus:ring-white"
+                            : "bg-white text-black input-gbl "
                         }`} // Altura mínima ajustada
                         value={formData.description}
                         onChange={(e) =>
@@ -682,8 +682,8 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
                             id="interno"
                             className={`border-gray-400 ${
                               formData.type === "interno"
-                                ? "text-[#001f61]"
-                                : ""
+                                ? "text-white"
+                                : "text-[#011677]"
                             } ${theme === "dark" ? "border-gray-500" : ""}`} // Estilo do radio
                           />
                           <div className="space-y-1 flex-1">
@@ -691,7 +691,7 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
                               className={`font-medium ${
                                 theme === "dark"
                                   ? "text-white"
-                                  : "text-[#001f61]"
+                                  : "text-[#011677]"
                               }`}
                             >
                               🔒 Restrito (Interno)
@@ -734,8 +734,8 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
                             id="publico"
                             className={`border-gray-400 ${
                               formData.type === "publico"
-                                ? "text-[#001f61]"
-                                : ""
+                                ? "text-white"
+                                : "text-[#011677]"
                             } ${theme === "dark" ? "border-gray-500" : ""}`}
                           />
                           <div className="space-y-1 flex-1">
@@ -743,7 +743,7 @@ export function ChallengeForm({ user, onNavigate }: ChallengeFormProps) {
                               className={`font-medium ${
                                 theme === "dark"
                                   ? "text-white"
-                                  : "text-[#001f61]"
+                                  : "text-[#011677]"
                               }`}
                             >
                               🌍 Público (Externo)
