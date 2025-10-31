@@ -159,7 +159,7 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
 
       // Ajusta os endpoints para roles específicas
       if (user.role === "ADMIN") {
-        challengesEndpoint = "/challenges/findAllPaginated?limit=5&page=1";
+        challengesEndpoint = "/challenges/findByPublic";
         ideasEndpoint = "/idea";
         connectionsEndpoint = "/companies/list";
       } else if (user.role === "STARTUP") {
