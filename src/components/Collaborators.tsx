@@ -274,7 +274,7 @@ export default function Collaborators({ user }: CollaboratorsProps) {
 				</div>
 
 
-      <main className="flex-1 w-full px-6 py-20 mt-16 overflow-y-auto">
+      <main className="flex-1 w-full px-6 py-20 overflow-y-auto">
         <Card
           className={`shadow-xl rounded-2xl transition-all duration-300 ${
             theme === "dark"
