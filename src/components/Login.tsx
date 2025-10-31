@@ -162,9 +162,9 @@ export default function Login({ onLogin }: LoginProps) {
               <div className="text-center pt-2">
                 <Link
                   href="/cadastro-startups"
-                  className="text-sm text-[#001f61] hover:underline font-medium"
+                  className="text-sm text-[#001f61] font-medium"
                 >
-                  Não tem uma conta? Cadastre sua startup
+                  Não tem uma conta? <span className="underline text-[#001f61]">Cadastre sua startup</span>
                 </Link>
               </div>
             </form>
