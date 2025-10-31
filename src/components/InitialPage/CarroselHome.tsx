@@ -51,7 +51,7 @@ interface CardItem {
 // 💡 NOVA FUNÇÃO PARA SELECIONAR IMAGEM PELA ÁREA
 const getImageForArea = (area: string): string => {
   const areaNormalizada = area.toLowerCase();
-  if (areaNormalizada.includes('ambiente') || areaNormalizada.includes('sustentabilidade')) {
+  if (areaNormalizada.includes('ambiente') || areaNormalizada.includes('sustentavel')) {
     return '/img/SUSTENTAVEL.jpg'; // Imagem de energia sustentável
   }
   if (areaNormalizada.includes('automação')) {
@@ -60,7 +60,7 @@ const getImageForArea = (area: string): string => {
   if (areaNormalizada.includes('finanças')) {
     return '/img/FINANCEIRO.jpg'; // Imagem de finanças
   }
-  if (areaNormalizada.includes('educação')) {
+  if (areaNormalizada.includes('educacional')) {
     return '/img/EDUCACIONAL.jpg'; // Imagem de educação
   }
   if (areaNormalizada.includes('tecnologia')) {
@@ -69,14 +69,14 @@ const getImageForArea = (area: string): string => {
   if (areaNormalizada.includes('saúde')) {
     return '/img/SAUDE.jpg'; // Imagem de saúde
   }
-  if (areaNormalizada.includes('Cultural')) {
+  if (areaNormalizada.includes('cultural')) {
     return '/img/CULTURAL.jpg'; // Imagem de saúde
   }
   if (areaNormalizada.includes('social')) {
     return '/img/SOCIAL.jpg'; // Imagem de saúde
   }
-  if (areaNormalizada.includes('logística')) {
-    return '/img/LOGISTICA.jpg'; // Imagem de logística
+  if (areaNormalizada.includes('logistico')) {
+    return '/img/LOGISTICO.jpg'; // Imagem de logística
   }
   if (areaNormalizada.includes('comercial')) {
     return '/img/COMERCIAL.jpg'; // Imagem de comercial
