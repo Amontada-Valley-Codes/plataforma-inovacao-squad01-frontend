@@ -51,7 +51,7 @@ interface CardItem {
 // 💡 NOVA FUNÇÃO PARA SELECIONAR IMAGEM PELA ÁREA
 const getImageForArea = (area: string): string => {
   const areaNormalizada = area.toLowerCase();
-  if (areaNormalizada.includes('ambiente') || areaNormalizada.includes('sustentabilidade')) {
+  if (areaNormalizada.includes('ambiente') || areaNormalizada.includes('sustentavel')) {
     return '/img/SUSTENTAVEL.jpg'; // Imagem de energia sustentável
   }
   if (areaNormalizada.includes('automação')) {
@@ -60,7 +60,7 @@ const getImageForArea = (area: string): string => {
   if (areaNormalizada.includes('finanças')) {
     return '/img/FINANCEIRO.jpg'; // Imagem de finanças
   }
-  if (areaNormalizada.includes('educação')) {
+  if (areaNormalizada.includes('educacional')) {
     return '/img/EDUCACIONAL.jpg'; // Imagem de educação
   }
   if (areaNormalizada.includes('tecnologia')) {
@@ -69,14 +69,14 @@ const getImageForArea = (area: string): string => {
   if (areaNormalizada.includes('saúde')) {
     return '/img/SAUDE.jpg'; // Imagem de saúde
   }
-  if (areaNormalizada.includes('Cultural')) {
+  if (areaNormalizada.includes('cultural')) {
     return '/img/CULTURAL.jpg'; // Imagem de saúde
   }
   if (areaNormalizada.includes('social')) {
     return '/img/SOCIAL.jpg'; // Imagem de saúde
   }
-  if (areaNormalizada.includes('logística')) {
-    return '/img/LOGISTICA.jpg'; // Imagem de logística
+  if (areaNormalizada.includes('logistico')) {
+    return '/img/LOGISTICO.jpg'; // Imagem de logística
   }
   if (areaNormalizada.includes('comercial')) {
     return '/img/COMERCIAL.jpg'; // Imagem de comercial
@@ -150,9 +150,9 @@ export default function CarroselHome() {
   return (
     <section className="relative bg-gradient-to-b from-[#011677] to-[#00134d] py-6 px-8">
       {/* Cabeçalho */}
-      <div className="flex flex-col sm:flex-row justify-between items-center mb-4 gap-4">
-        <div>
-          <h2 className="md:text-3xl font-bold text-white text-center md:text-start text-2xl">Nossos Desafios</h2>
+      <div className="flex flex-col sm:flex-row justify-between md:items-center mb-4 md:gap-4">
+        <div className="mb-2">
+          <h2 className="md:text-3xl font-bold text-white text-start text-2xl">Nossos Desafios</h2>
           <p className="text-gray-300 text-sm">
             Explore desafios em andamento na plataforma.
           </p>
@@ -166,7 +166,7 @@ export default function CarroselHome() {
             placeholder="Buscar desafio..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 pr-4 py-2 rounded-full bg-white/90 text-[#011677] placeholder:text-[#011677] text-sm outline-none focus:ring-2 focus:ring-[#011677] transition-all duration-200"
+            className="pl-10 pr-4 py-2 rounded-full w-full bg-white/90 text-[#011677] placeholder:text-[#011677] text-sm outline-none focus:ring-2 focus:ring-[#011677] transition-all duration-200"
           />
         </div>
       </div>

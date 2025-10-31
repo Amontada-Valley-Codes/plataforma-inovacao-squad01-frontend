@@ -256,7 +256,7 @@ export function CommitteeReview({ user }: CommitteeReviewProps) {
 									{ideasForReview.map((idea) => (
 										<AccordionItem key={idea.id} value={idea.id}>
 											<AccordionTrigger
-												className={`hover:bg-gray-100 px-4 py-2 rounded-md flex justify-between items-center transition-colors duration-300 ${theme === "dark" ? "hover:bg-gray-700" : ""
+												className={`hover:bg-gray-100 px-4 py-2 rounded-md flex justify-between items-center transition-colors duration-300 ${theme === "dark" ? "hover:bg-gray-700" : "shadow"
 													}`}
 											>
 												<div className="text-left">
@@ -286,7 +286,7 @@ export function CommitteeReview({ user }: CommitteeReviewProps) {
 											</AccordionTrigger>
 
 											{/* 🔧 Conteúdo expansível com rolagem se for muito longo */}
-											<AccordionContent className="px-4 pt-4 border-t max-h-[70vh] overflow-y-auto">
+											<AccordionContent className="px-4 pt-4 border-t border-gray-200 max-h-[70vh] overflow-y-auto">
 												{/* Pareceres */}
 												<div className="space-y-6 mb-6">
 													<div className="space-y-4">
@@ -525,7 +525,7 @@ export function CommitteeReview({ user }: CommitteeReviewProps) {
 															)}
 														</div>
 
-														<div className="flex items-start gap-3 pt-4 border-t">
+														<div className="flex items-start gap-3 pt-4 border-t border-gray-200">
 															<Avatar
 																className={`w-8 h-8 ${theme === "dark"
 																	? "bg-gray-600"

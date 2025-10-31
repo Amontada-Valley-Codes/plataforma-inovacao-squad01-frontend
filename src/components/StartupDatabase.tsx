@@ -184,7 +184,7 @@ export function StartupDatabase({ user, onNavigate }: StartupDatabaseProps) {
 
             {/* Grupo Direito: Botões Grid/Lista */}
             {/* ✅ AQUI: Botões usam ícones em telas pequenas */}
-            <div className="flex items-center gap-2">
+            <div className="hidden md:flex items-center gap-2">
               <Button
                 variant={viewMode === "grid" ? "secondary" : "ghost"} // Estilo ajustado
                 size="icon" // Tamanho ícone padrão
