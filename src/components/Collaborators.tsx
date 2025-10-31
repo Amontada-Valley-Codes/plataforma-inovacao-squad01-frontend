@@ -506,28 +506,9 @@ export default function Collaborators({ user }: CollaboratorsProps) {
                             <TableCell>
                               <div className="flex items-center gap-3">
                                 {/* Avatar estilizado */}
-                                <Avatar
-                                  className={`w-9 h-9 flex items-center justify-center rounded-full shadow-md transition-all duration-300 border
-    ${
-      theme === "dark"
-        ? "bg-gradient-to-br from-gray-700 to-gray-800 border-gray-600 hover:shadow-blue-500/20"
-        : "bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:shadow-blue-400/20"
-    }`}
-                                >
-                                  {user.avatar ? (
-                                    <img
-                                      src={user.avatar}
-                                      alt={user.name}
-                                      className="w-full h-full object-cover rounded-full"
-                                    />
-                                  ) : (
-                                    <AvatarFallback
-                                      className={`text-sm font-semibold select-none 
-        ${theme === "dark" ? "text-gray-200" : "text-[#011677]"}`}
-                                    >
-                                      {user.name.charAt(0).toUpperCase()}
-                                    </AvatarFallback>
-                                  )}
+                                 <Avatar>
+                                  <AvatarImage src={colab.avatarUrl || undefined} />
+                                  <AvatarFallback className={`border-[#011677] border-2 ${theme === 'dark' ? 'border-white' : ''}`}>{colab.name?.[0]}</AvatarFallback>
                                 </Avatar>
 
                                 {colab.name}
