@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   title: 'Plataforma de Inovação Aberta',
   description: 'Conectando corporações e startups para acelerar a inovação',
   icons: {
-    icon: "/img/logo.png", // <-- AQUI ESTÁ A DEFINIÇÃO
+    icon: "/img/icon-logo.png", // <-- AQUI ESTÁ A DEFINIÇÃO
   },
 };
 

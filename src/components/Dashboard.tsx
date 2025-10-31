@@ -250,9 +250,9 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
         recentChallenges: challenges,
         pieData,
         kpiData: [
-          { name: "Jan", ideas: 10 },
-          { name: "Mar", ideas: 15 },
-          { name: "Mai", ideas: ideasCount },
+          { name: "ago", ideas: 10 },
+          { name: "set", ideas: 15 },
+          { name: "out", ideas: ideasCount },
         ],
         avgTime: 0,
         funnelData,
@@ -437,15 +437,6 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
               >
                 Dashboard
               </h1>
-              <p
-                className={`text-gray-500 text-base ${
-                  theme === "dark" ? "text-gray-200" : ""
-                }`}
-              >
-                {user.role === "STARTUP"
-                  ? `Bem-vindo(a), ${user.name}!`
-                  : `Visão geral dos indicadores de ${user.company}`}
-              </p>
             </div>
             {/* Menu de Perfil */}
             <div className="flex items-center gap-4 sm:mb-0 mb-20 sm:pb-0">
@@ -805,8 +796,8 @@ export function Dashboard({ user, onLogout }: DashboardProps) {
                       >
                         {dashboardData.pocsCount}
                       </div>
-                      <p className="text-xs text-green-600 mt-1">
-                        +25% em relação ao mês anterior
+                      <p className="text-xs text-gray-400 mt-1">
+                        0% em relação ao mês anterior
                       </p>
                     </CardContent>
                   </Card>

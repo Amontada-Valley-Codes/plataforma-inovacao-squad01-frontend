@@ -111,7 +111,7 @@ export default function Sidebar({ user, theme }: SidebarProps) {
               sidebarOpen ? "justify-center" : "justify-center"
             } gap-2 mb-8 w-full`}
           >
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg flex items-center pt-4 justify-center">
               <Image
                 alt="logo"
                 src={"/img/icon-logo.png"}
@@ -119,7 +119,7 @@ export default function Sidebar({ user, theme }: SidebarProps) {
                 height={60}
               />
             </div>
-            {sidebarOpen && <span className="font-semibold">CO.INOVA</span>}
+            {sidebarOpen && <span className="font-semibold pt-4 text-2xl">CO.INOVA</span>}
           </div>
 
           {/* Menu */}

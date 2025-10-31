@@ -1,22 +1,38 @@
-'use client';
+"use client";
 
 import React, { useEffect, useState, useCallback } from "react";
 import {
-  Card, CardContent, CardDescription, CardHeader, CardTitle,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
 } from "./ui/card";
 import { Button } from "./ui/button";
+import { UserPlus, Loader2, Trash2 } from "lucide-react";
 import {
-  UserPlus, Loader2, Trash2,
-} from "lucide-react";
-import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "./ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "./ui/select";
 import {
-  Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
 } from "./ui/dialog";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
@@ -25,8 +41,10 @@ import Sidebar from "./SideBar";
 import api from "../lib/api";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 
-interface CollaboratorsProps { user: User; }
-type InviteStatus = 'idle' | 'loading' | 'success' | 'error';
+interface CollaboratorsProps {
+  user: User;
+}
+type InviteStatus = "idle" | "loading" | "success" | "error";
 
 interface PendingInvite {
   id: string;
@@ -34,38 +52,45 @@ interface PendingInvite {
   role: UserRole;
   createdAt: string;
   companyId: string;
-  status: 'PENDENTE' | 'ACCEPTED' | 'REJECTED';
+  status: "PENDENTE" | "ACCEPTED" | "REJECTED";
 }
 
 export default function Collaborators({ user }: CollaboratorsProps) {
   const [theme, setTheme] = useState<string>(
-    typeof window !== 'undefined' ? (sessionStorage.getItem('theme') || 'light') : 'light'
+    typeof window !== "undefined"
+      ? sessionStorage.getItem("theme") || "light"
+      : "light"
   );
   const [collaborators, setCollaborators] = useState<User[]>([]);
   const [pendingInvites, setPendingInvites] = useState<PendingInvite[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [companies, setCompanies] = useState<{ id: string; name: string }[]>([]);
-  const [selectedCompanyId, setSelectedCompanyId] = useState<string>('');
-  const [inviteEmail, setInviteEmail] = useState('');
-  const [inviteRole, setInviteRole] = useState<UserRole>('COMUM');
-  const [formError, setFormError] = useState('');
-  const [inviteStatus, setInviteStatus] = useState<InviteStatus>('idle');
+  const [companies, setCompanies] = useState<{ id: string; name: string }[]>(
+    []
+  );
+  const [selectedCompanyId, setSelectedCompanyId] = useState<string>("");
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteRole, setInviteRole] = useState<UserRole>("COMUM");
+  const [formError, setFormError] = useState("");
+  const [inviteStatus, setInviteStatus] = useState<InviteStatus>("idle");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("collaborators");
 
   const fetchData = useCallback(async () => {
     setIsLoading(true);
-    const companyIdToFilter = user.role === 'ADMIN' ? selectedCompanyId : user.companyId;
+    const companyIdToFilter =
+      user.role === "ADMIN" ? selectedCompanyId : user.companyId;
 
     try {
       const [collaboratorsRes, allInvitesRes] = await Promise.all([
-        companyIdToFilter ? api.get(`/user/${companyIdToFilter}`) : Promise.resolve({ data: [] }),
-        api.get('/invitations')
+        companyIdToFilter
+          ? api.get(`/user/${companyIdToFilter}`)
+          : Promise.resolve({ data: [] }),
+        api.get("/invitations"),
       ]);
       setCollaborators(collaboratorsRes.data || []);
       const filteredInvites = (allInvitesRes.data || []).filter(
         (invite: PendingInvite) =>
-          invite.companyId === companyIdToFilter && invite.status === 'PENDENTE'
+          invite.companyId === companyIdToFilter && invite.status === "PENDENTE"
       );
       setPendingInvites(filteredInvites);
     } catch (error: any) {
@@ -79,9 +104,10 @@ export default function Collaborators({ user }: CollaboratorsProps) {
 
   useEffect(() => {
     fetchData();
-    if (user.role === 'ADMIN') {
-      api.get('/companies/')
-        .then(res => {
+    if (user.role === "ADMIN") {
+      api
+        .get("/companies/")
+        .then((res) => {
           // 💡 CORREÇÃO AQUI
           // Verificamos se a resposta tem a propriedade 'data' e se ela é um array
           if (res.data && Array.isArray(res.data.data)) {
@@ -93,7 +119,7 @@ export default function Collaborators({ user }: CollaboratorsProps) {
             console.log("Empresas carregadas (array direto):", res.data);
           }
         })
-        .catch(err => {
+        .catch((err) => {
           console.error("Falha ao buscar empresas", err);
           setCompanies([]); // Garante que o estado seja um array em caso de erro
         });
@@ -103,23 +129,23 @@ export default function Collaborators({ user }: CollaboratorsProps) {
   // 🚀 Enviar convite (com prevenção de duplicados e múltiplos envios)
   const handleInviteSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setFormError('');
-    setInviteStatus('loading');
+    setFormError("");
+    setInviteStatus("loading");
 
     if (!inviteEmail || !inviteRole) {
-      setFormError('Por favor, preencha todos os campos.');
-      setInviteStatus('error');
+      setFormError("Por favor, preencha todos os campos.");
+      setInviteStatus("error");
       return;
     }
 
     const emailLower = inviteEmail.trim().toLowerCase();
     const emailJaExiste =
-      collaborators.some(c => c.email.toLowerCase() === emailLower) ||
-      pendingInvites.some(i => i.email.toLowerCase() === emailLower);
+      collaborators.some((c) => c.email.toLowerCase() === emailLower) ||
+      pendingInvites.some((i) => i.email.toLowerCase() === emailLower);
 
     if (emailJaExiste) {
-      setFormError('Este e-mail já foi convidado ou já faz parte da equipe.');
-      setInviteStatus('error');
+      setFormError("Este e-mail já foi convidado ou já faz parte da equipe.");
+      setInviteStatus("error");
       return;
     }
 
@@ -130,48 +156,50 @@ export default function Collaborators({ user }: CollaboratorsProps) {
         companyId: user.companyId,
       };
 
-      if (user.role === 'ADMIN') {
+      if (user.role === "ADMIN") {
         if (!selectedCompanyId) {
-          setFormError('Admin deve selecionar uma empresa.');
-          setInviteStatus('error');
+          setFormError("Admin deve selecionar uma empresa.");
+          setInviteStatus("error");
           return;
         }
         payload.companyId = selectedCompanyId;
       }
 
-      await api.post('/invitations', payload);
-      setInviteStatus('success');
+      await api.post("/invitations", payload);
+      setInviteStatus("success");
 
       fetchData();
-      setInviteEmail('');
-      setInviteRole('COMUM');
+      setInviteEmail("");
+      setInviteRole("COMUM");
 
       // Retorna para "idle" depois de 1.5s (permite novo envio)
-      setTimeout(() => setInviteStatus('idle'), 1500);
+      setTimeout(() => setInviteStatus("idle"), 1500);
     } catch (err: any) {
-      console.error('Falha ao enviar convite:', err);
-      setFormError(err.response?.data?.message || 'Ocorreu um erro.');
-      setInviteStatus('error');
+      console.error("Falha ao enviar convite:", err);
+      setFormError(err.response?.data?.message || "Ocorreu um erro.");
+      setInviteStatus("error");
     }
   };
 
   // Reseta status quando modal abrir
   useEffect(() => {
     if (isDialogOpen) {
-      setInviteStatus('idle');
-      setFormError('');
+      setInviteStatus("idle");
+      setFormError("");
     }
   }, [isDialogOpen]);
 
   const handleRemoveInvite = async (inviteId: string) => {
-    if (!window.confirm('Tem certeza que deseja remover este convite?')) return;
+    if (!window.confirm("Tem certeza que deseja remover este convite?")) return;
     try {
       await api.delete(`/invitations/${inviteId}`);
-      setPendingInvites(prev => prev.filter(invite => invite.id !== inviteId));
-      alert('Convite removido com sucesso!');
+      setPendingInvites((prev) =>
+        prev.filter((invite) => invite.id !== inviteId)
+      );
+      alert("Convite removido com sucesso!");
     } catch (error) {
-      console.error('Falha ao remover convite:', error);
-      alert('Ocorreu um erro ao remover o convite.');
+      console.error("Falha ao remover convite:", error);
+      alert("Ocorreu um erro ao remover o convite.");
     }
   };
 
@@ -185,7 +213,10 @@ export default function Collaborators({ user }: CollaboratorsProps) {
   };
 
   // 💡 INÍCIO DA NOVA FUNÇÃO PARA ATUALIZAR O CARGO
-  const handleRoleChange = async (collaboratorId: string, newRole: UserRole) => {
+  const handleRoleChange = async (
+    collaboratorId: string,
+    newRole: UserRole
+  ) => {
     // Previne que o gestor altere o próprio cargo
     if (user.id === collaboratorId) {
       alert("Você não pode alterar sua própria função.");
@@ -194,19 +225,24 @@ export default function Collaborators({ user }: CollaboratorsProps) {
 
     try {
       // Envia a requisição para o backend para atualizar o usuário
-      await api.put(`/user/${collaboratorId}`, { role: newRole, companyId: user.companyId });
+      await api.put(`/user/${collaboratorId}`, {
+        role: newRole,
+        companyId: user.companyId,
+      });
 
       // Atualiza o estado local para refletir a mudança instantaneamente na UI
-      setCollaborators(prevCollaborators =>
-        prevCollaborators.map(c =>
+      setCollaborators((prevCollaborators) =>
+        prevCollaborators.map((c) =>
           c.id === collaboratorId ? { ...c, role: newRole } : c
         )
       );
 
-      alert('Função do colaborador atualizada com sucesso!');
+      alert("Função do colaborador atualizada com sucesso!");
     } catch (error) {
       console.error("Erro ao atualizar a função:", error);
-      alert("Não foi possível atualizar a função do colaborador. Tente novamente.");
+      alert(
+        "Não foi possível atualizar a função do colaborador. Tente novamente."
+      );
       // Opcional: recarregar os dados para reverter a mudança visual em caso de erro
       fetchData();
     }
@@ -215,32 +251,51 @@ export default function Collaborators({ user }: CollaboratorsProps) {
 
   return (
     <div
-      className={`flex h-screen relative bg-background text-white ${theme === 'dark'
-          ? 'bg-gradient-to-br from-gray-950 via-gray-900 to-gray-800 text-gray-100'
-          : 'bg-gradient-to-br from-gray-50 via-blue-50 to-gray-100 text-gray-900'
-        }`}
-    >
-      <Sidebar theme={theme} user={user} />
+			className={`flex h-screen bg-background text-white overflow-hidden ${theme === "dark" ? "bg-gray-900" : ""
+				}`}
+		>
+			<Sidebar theme={theme} user={user} />
 
-      {/* Cabeçalho fixo */}
-      <header className={`absolute top-0 sm:left-64 left-0 right-0 z-10 flex items-center justify-between px-8 py-4 bg-opacity-70 backdrop-blur-md shadow-sm ${theme === 'dark' ? 'bg-gray-800' : 'bg-[#011677]'}`}>
-        <h1 className="text-lg font-semibold text-white ml-10 sm:ml-0">
-          Bem-vindo, <span className="text-white">{user.name}</span>
-        </h1>
-        <p className="text-sm text-gray-200 ml-5 sm:ml-0">
-          {new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })}
-        </p>
-      </header>
+			{/* 🔧 Conteúdo com rolagem independente */}
+			<div className="flex-1 flex flex-col overflow-hidden">
+				{/* Header fixo */}
+				<div
+					className={`bg-[#011677] sticky top-0 z-10 ${theme === "dark" ? "bg-gray-800" : "border-b border-gray-200"
+						}`}
+				>
+					<div className="container mx-auto px-6 py-4">
+						<div className="flex items-center gap-2 justify-center sm:justify-start">
+							<UserPlus className="w-6 h-6 text-white" />
+							<h1 className="text-xl font-semibold text-white">
+								Colaboradores
+							</h1>
+						</div>
+					</div>
+				</div>
+
 
       <main className="flex-1 w-full px-6 py-20 mt-16 overflow-y-auto">
         <Card
-          className={`shadow-xl rounded-2xl transition-all duration-300 ${theme === 'dark' ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'
-            }`}
+          className={`shadow-xl rounded-2xl transition-all duration-300 ${
+            theme === "dark"
+              ? "bg-gray-900 border-gray-800"
+              : "bg-white border-gray-200"
+          }`}
         >
           <CardHeader className="flex flex-row items-center justify-between pb-4 border-b border-gray-200 dark:border-gray-800">
             <div>
-              <CardTitle className={`${theme === 'dark' ? 'text-white' : 'text-black'} text-2xl font-bold`}>Equipe e Acessos</CardTitle>
-              <CardDescription className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+              <CardTitle
+                className={`${
+                  theme === "dark" ? "text-white" : "text-black"
+                } text-2xl font-bold`}
+              >
+                Equipe e Acessos
+              </CardTitle>
+              <CardDescription
+                className={`${
+                  theme === "dark" ? "text-gray-400" : "text-gray-600"
+                }`}
+              >
                 Gerencie colaboradores e permissões da sua equipe.
               </CardDescription>
             </div>
@@ -256,10 +311,20 @@ export default function Collaborators({ user }: CollaboratorsProps) {
                 </Button>
               </DialogTrigger>
 
-              <DialogContent className={`${theme === 'dark' ? 'bg-gray-900 text-gray-100' : 'bg-white'} rounded-xl shadow-2xl`}>
+              <DialogContent
+                className={`${
+                  theme === "dark" ? "bg-gray-900 text-gray-100" : "bg-white"
+                } rounded-xl shadow-2xl`}
+              >
                 <DialogHeader className="text-center">
-                  <DialogTitle className="text-xl font-semibold">Convidar Novo Colaborador</DialogTitle>
-                  <DialogDescription className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  <DialogTitle className="text-xl font-semibold">
+                    Convidar Novo Colaborador
+                  </DialogTitle>
+                  <DialogDescription
+                    className={`${
+                      theme === "dark" ? "text-gray-400" : "text-gray-600"
+                    }`}
+                  >
                     Preencha os dados para enviar o convite.
                   </DialogDescription>
                 </DialogHeader>
@@ -268,14 +333,33 @@ export default function Collaborators({ user }: CollaboratorsProps) {
                   {user.role === "ADMIN" && (
                     <div className="space-y-1">
                       <Label>Empresa</Label>
-                      <Select value={selectedCompanyId} onValueChange={setSelectedCompanyId} required>
-                        <SelectTrigger className={`${theme === 'dark' ? 'bg-gray-800 border-gray-700' : ''}`}>
+                      <Select
+                        value={selectedCompanyId}
+                        onValueChange={setSelectedCompanyId}
+                        required
+                      >
+                        <SelectTrigger
+                          className={`${
+                            theme === "dark"
+                              ? "bg-gray-800 border-gray-700"
+                              : ""
+                          }`}
+                        >
                           <SelectValue placeholder="Selecione a empresa" />
                         </SelectTrigger>
-                        <SelectContent className={`${theme === 'dark' ? 'bg-gray-800 border-gray-700' : ''}`}>
-                          {Array.isArray(companies) && companies.map((company) => (
-                            <SelectItem key={company.id} value={company.id}>{company.name}</SelectItem>
-                          ))}
+                        <SelectContent
+                          className={`${
+                            theme === "dark"
+                              ? "bg-gray-800 border-gray-700"
+                              : ""
+                          }`}
+                        >
+                          {Array.isArray(companies) &&
+                            companies.map((company) => (
+                              <SelectItem key={company.id} value={company.id}>
+                                {company.name}
+                              </SelectItem>
+                            ))}
                         </SelectContent>
                       </Select>
                     </div>
@@ -289,27 +373,54 @@ export default function Collaborators({ user }: CollaboratorsProps) {
                       required
                       value={inviteEmail}
                       onChange={(e) => setInviteEmail(e.target.value)}
-                      className={`${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-white focus:border-blue-500 focus:ring-blue-500/60' : 'input-gbl'}`}
+                      className={`${
+                        theme === "dark"
+                          ? "bg-gray-700 border-gray-600 text-white focus:border-blue-500 focus:ring-blue-500/60"
+                          : "input-gbl"
+                      }`}
                     />
                   </div>
 
                   <div>
                     <Label className="pb-3">Nível de Acesso</Label>
-                    <Select value={inviteRole} onValueChange={(value: UserRole) => setInviteRole(value)}>
-                      <SelectTrigger className={`${theme === 'dark' ? 'bg-gray-700 border-gray-700 text-gray-300' : ''}`}>
+                    <Select
+                      value={inviteRole}
+                      onValueChange={(value: UserRole) => setInviteRole(value)}
+                    >
+                      <SelectTrigger
+                        className={`${
+                          theme === "dark"
+                            ? "bg-gray-700 border-gray-700 text-gray-300"
+                            : ""
+                        }`}
+                      >
                         <SelectValue placeholder="Selecione um nível" />
                       </SelectTrigger>
-                      <SelectContent className={`${theme === 'dark' ? 'bg-gray-700 text-white border-gray-700' : ''}`}>
+                      <SelectContent
+                        className={`${
+                          theme === "dark"
+                            ? "bg-gray-700 text-white border-gray-700"
+                            : ""
+                        }`}
+                      >
                         <SelectItem value="COMUM">Usuário Comum</SelectItem>
                         <SelectItem value="AVALIADOR">Avaliador</SelectItem>
-                        {user.role === 'ADMIN' && <SelectItem value="GESTOR">Gestor de Inovação</SelectItem>}
+                        {user.role === "ADMIN" && (
+                          <SelectItem value="GESTOR">
+                            Gestor de Inovação
+                          </SelectItem>
+                        )}
                       </SelectContent>
                     </Select>
                   </div>
 
                   {/* Feedback */}
-                  {formError && <p className="text-red-500 text-sm text-center">{formError}</p>}
-                  {inviteStatus === 'success' && (
+                  {formError && (
+                    <p className="text-red-500 text-sm text-center">
+                      {formError}
+                    </p>
+                  )}
+                  {inviteStatus === "success" && (
                     <p className="text-green-600 font-medium text-center animate-pulse">
                       ✅ Convite enviado com sucesso!
                     </p>
@@ -317,15 +428,24 @@ export default function Collaborators({ user }: CollaboratorsProps) {
 
                   <Button
                     type="submit"
-                    disabled={inviteStatus === 'loading'}
+                    disabled={inviteStatus === "loading"}
                     className={`w-full cursor-pointer font-semibold py-2 rounded-md transition-all
-                      ${inviteStatus === 'loading' ? 'bg-blue-500 animate-pulse' :
-                        inviteStatus === 'success' ? 'bg-green-600 hover:bg-green-700' :
-                          'bg-[#001f61] hover:bg-[#002a7a]'} text-white`}
+                      ${
+                        inviteStatus === "loading"
+                          ? "bg-blue-500 animate-pulse"
+                          : inviteStatus === "success"
+                          ? "bg-green-600 hover:bg-green-700"
+                          : "bg-[#001f61] hover:bg-[#002a7a]"
+                      } text-white`}
                   >
-                    {inviteStatus === 'loading' && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    {inviteStatus === 'loading' ? 'Enviando...' :
-                      inviteStatus === 'success' ? 'Enviado!' : 'Enviar Convite'}
+                    {inviteStatus === "loading" && (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    )}
+                    {inviteStatus === "loading"
+                      ? "Enviando..."
+                      : inviteStatus === "success"
+                      ? "Enviado!"
+                      : "Enviar Convite"}
                   </Button>
                 </form>
               </DialogContent>
@@ -337,20 +457,22 @@ export default function Collaborators({ user }: CollaboratorsProps) {
               <TabsList className="grid grid-cols-2 w-full p-0 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
                 <TabsTrigger
                   value="collaborators"
-                  className={`cursor-pointer py-2 text-sm font-medium transition-all ${activeTab === 'collaborators'
-                      ? 'bg-[#011677] text-white shadow-md scale-[1.02]'
-                      : `${theme === 'dark' ? 'text-white' : 'text-black'}`
-                    }`}
+                  className={`cursor-pointer py-2 text-sm font-medium transition-all ${
+                    activeTab === "collaborators"
+                      ? "bg-[#011677] text-white shadow-md scale-[1.02]"
+                      : `${theme === "dark" ? "text-white" : "text-black"}`
+                  }`}
                 >
                   Colaboradores ({collaborators.length})
                 </TabsTrigger>
 
                 <TabsTrigger
                   value="pending"
-                  className={`cursor-pointer py-2 text-sm font-medium transition-all ${activeTab === 'pending'
-                      ? 'bg-[#011677] text-white shadow-md scale-[1.02]'
-                      : `${theme === 'dark' ? 'text-white' : 'text-black'}`
-                    }`}
+                  className={`cursor-pointer py-2 text-sm font-medium transition-all ${
+                    activeTab === "pending"
+                      ? "bg-[#011677] text-white shadow-md scale-[1.02]"
+                      : `${theme === "dark" ? "text-white" : "text-black"}`
+                  }`}
                 >
                   Pendentes ({pendingInvites.length})
                 </TabsTrigger>
@@ -361,9 +483,15 @@ export default function Collaborators({ user }: CollaboratorsProps) {
                 {isLoading ? (
                   <p className="text-center text-gray-500">Carregando...</p>
                 ) : collaborators.length === 0 ? (
-                  <p className="text-center text-gray-500">Nenhum colaborador encontrado.</p>
+                  <p className="text-center text-gray-500">
+                    Nenhum colaborador encontrado.
+                  </p>
                 ) : (
-                  <div className={`${theme === 'dark' ? 'text-white' : 'text-black'} overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700`}>
+                  <div
+                    className={`${
+                      theme === "dark" ? "text-white" : "text-black"
+                    } overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700`}
+                  >
                     <Table>
                       <TableHeader>
                         <TableRow>
@@ -377,10 +505,31 @@ export default function Collaborators({ user }: CollaboratorsProps) {
                           <TableRow key={colab.id}>
                             <TableCell>
                               <div className="flex items-center gap-3">
-                                <Avatar>
-                                  <AvatarImage src={colab.avatarUrl || undefined} />
-                                  <AvatarFallback className="border-[#011677] border-2">{colab.name?.[0]}</AvatarFallback>
+                                {/* Avatar estilizado */}
+                                <Avatar
+                                  className={`w-9 h-9 flex items-center justify-center rounded-full shadow-md transition-all duration-300 border
+    ${
+      theme === "dark"
+        ? "bg-gradient-to-br from-gray-700 to-gray-800 border-gray-600 hover:shadow-blue-500/20"
+        : "bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:shadow-blue-400/20"
+    }`}
+                                >
+                                  {user.avatar ? (
+                                    <img
+                                      src={user.avatar}
+                                      alt={user.name}
+                                      className="w-full h-full object-cover rounded-full"
+                                    />
+                                  ) : (
+                                    <AvatarFallback
+                                      className={`text-sm font-semibold select-none 
+        ${theme === "dark" ? "text-gray-200" : "text-[#011677]"}`}
+                                    >
+                                      {user.name.charAt(0).toUpperCase()}
+                                    </AvatarFallback>
+                                  )}
                                 </Avatar>
+
                                 {colab.name}
                               </div>
                             </TableCell>
@@ -391,23 +540,76 @@ export default function Collaborators({ user }: CollaboratorsProps) {
                               <Select
                                 defaultValue={colab.role}
                                 // Aciona a função de atualização quando o valor muda
-                                onValueChange={(newRole) => handleRoleChange(colab.id, newRole as UserRole)}
+                                onValueChange={(newRole) =>
+                                  handleRoleChange(
+                                    colab.id,
+                                    newRole as UserRole
+                                  )
+                                }
                                 // Habilita apenas para GESTOR e desabilita para o próprio usuário
-                                disabled={user.role !== "GESTOR" || user.id === colab.id}
+                                disabled={
+                                  user.role !== "GESTOR" || user.id === colab.id
+                                }
                               >
-                                <SelectTrigger className={`w-48 cursor-pointer border-gray-300 focus:ring-[#001f61]/30 ${theme === 'dark' ? 'bg-gray-700 text-gray-200 border-gray-600' : ''}`}>
+                                <SelectTrigger
+                                  className={`w-48 cursor-pointer border-gray-300 focus:ring-[#001f61]/30 ${
+                                    theme === "dark"
+                                      ? "bg-gray-700 text-gray-200 border-gray-600"
+                                      : ""
+                                  }`}
+                                >
                                   <SelectValue />
                                 </SelectTrigger>
-                                <SelectContent className={`shadow-lg ${theme === 'dark' ? 'bg-gray-800 border-gray-600' : 'bg-white'}`}>
-                                  <SelectItem className={`cursor-pointer ${theme === 'dark' ? 'text-gray-200 hover:bg-gray-700' : 'hover:bg-gray-100'}`} value="COMUM">Usuário Comum</SelectItem>
-                                  <SelectItem className={`cursor-pointer ${theme === 'dark' ? 'text-gray-200 hover:bg-gray-700' : 'hover:bg-gray-100'}`} value="AVALIADOR">Avaliador</SelectItem>
-                                  <SelectItem className={`cursor-pointer ${theme === 'dark' ? 'text-gray-200 hover:bg-gray-700' : 'hover:bg-gray-100'}`} value="GESTOR">Gestor de Inovação</SelectItem>
+                                <SelectContent
+                                  className={`shadow-lg ${
+                                    theme === "dark"
+                                      ? "bg-gray-800 border-gray-600"
+                                      : "bg-white"
+                                  }`}
+                                >
+                                  <SelectItem
+                                    className={`cursor-pointer ${
+                                      theme === "dark"
+                                        ? "text-gray-200 hover:bg-gray-700"
+                                        : "hover:bg-gray-100"
+                                    }`}
+                                    value="COMUM"
+                                  >
+                                    Usuário Comum
+                                  </SelectItem>
+                                  <SelectItem
+                                    className={`cursor-pointer ${
+                                      theme === "dark"
+                                        ? "text-gray-200 hover:bg-gray-700"
+                                        : "hover:bg-gray-100"
+                                    }`}
+                                    value="AVALIADOR"
+                                  >
+                                    Avaliador
+                                  </SelectItem>
+                                  <SelectItem
+                                    className={`cursor-pointer ${
+                                      theme === "dark"
+                                        ? "text-gray-200 hover:bg-gray-700"
+                                        : "hover:bg-gray-100"
+                                    }`}
+                                    value="GESTOR"
+                                  >
+                                    Gestor de Inovação
+                                  </SelectItem>
                                 </SelectContent>
                               </Select>
                               {/* 💡 FIM DAS ALTERAÇÕES NO SELECT */}
                             </TableCell>
                             <TableCell className="text-right">
-                              <Button variant="default" size="sm" disabled={user.id === colab.id} className={`text-white bg-red-600 cursor-pointer hover:bg-red-700 ...`}>Remover</Button>
+                              <Button
+                                variant="default"
+                                size="sm"
+                                disabled={user.id === colab.id}
+                                className={`text-white bg-red-600 cursor-pointer hover:bg-red-700 ...`}
+                              >
+                                Remover
+                              </Button>
                             </TableCell>
                           </TableRow>
                         ))}
@@ -422,9 +624,15 @@ export default function Collaborators({ user }: CollaboratorsProps) {
                 {isLoading ? (
                   <p className="text-center text-gray-500">Carregando...</p>
                 ) : pendingInvites.length === 0 ? (
-                  <p className="text-center text-gray-500">Nenhum convite pendente.</p>
+                  <p className="text-center text-gray-500">
+                    Nenhum convite pendente.
+                  </p>
                 ) : (
-                  <div className={`${theme === 'dark' ? 'text-white' : 'text-black'} overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700`}>
+                  <div
+                    className={`${
+                      theme === "dark" ? "text-white" : "text-black"
+                    } overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700`}
+                  >
                     <Table>
                       <TableHeader>
                         <TableRow>
@@ -439,9 +647,12 @@ export default function Collaborators({ user }: CollaboratorsProps) {
                           <TableRow key={invite.id}>
                             <TableCell>{invite.email}</TableCell>
                             <TableCell>{getRoleLabel(invite.role)}</TableCell>
-                            <TableCell>{new Date(invite.createdAt).toLocaleDateString('pt-BR')}</TableCell>
                             <TableCell>
-
+                              {new Date(invite.createdAt).toLocaleDateString(
+                                "pt-BR"
+                              )}
+                            </TableCell>
+                            <TableCell>
                               <Button
                                 variant="destructive"
                                 className="cursor-pointer flex items-center gap-1 text-sm px-2 py-1 bg-red-600 hover:bg-red-700 text-white rounded-md"
@@ -462,5 +673,6 @@ export default function Collaborators({ user }: CollaboratorsProps) {
         </Card>
       </main>
     </div>
+  </div>
   );
 }
